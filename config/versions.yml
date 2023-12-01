@@ -1,9 +1,0 @@
-# Allows us to 'pin' versions for updatecli & other purposes
-# entries optional, '*' is the default which should mean latest...
-# single leaf depth because otherwise 'at least 1 entry' because reasons
-# snake case since I've had trouble with kebab case in the past with updatecli
-#
-versions:
-  terraform: "1.5.7"
-  k9s: "*"
-  git_cliff: "*"

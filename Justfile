@@ -1,7 +1,7 @@
 set positional-arguments := true
 OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
-VERSION_FILE:=justfile_directory() / "config/versions.yml"
 TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
+UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 
 # show recipes
 [private]
@@ -11,7 +11,25 @@ TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
 # run updatecli with args e.g. just updatecli diff
 updatecli +args='diff':
   #!/usr/bin/env bash
-  GITHUB_TOKEN=$(gh auth token) updatecli --values "{{ VERSION_FILE }}" "$@"
+  set -eo pipefail
+
+  JQ_FILTER='
+    { "repo": .repo,
+      "yamlpath": .updatecli.yamlpath,
+      "version_pinning": .updatecli.version_pinning,
+      "trim_prefix": .updatecli.trim_prefix
+    } | with_entries(if .value == null then empty else . end)
+  '
+  tmpdir=$(mktemp -d -t updatecli.XXXXXX)
+  cat "{{ TOOL_CONFIG }}" | yq -c ".[]" | while read line; do
+    values=$(mktemp --tmpdir="$tmpdir" updatecli-values.XXXXXX.yml)
+    hasRepo=$(echo "$line" | jq -r ".repo")
+    if [[ "$hasRepo" != "null" ]]; then
+      echo $line | jq "$JQ_FILTER" | yq -y > "$values"
+      GITHUB_TOKEN=$(gh auth token) updatecli "$@" --values "$values" -c "{{ UPDATECLI_TEMPLATE }}"
+    fi
+  done
+  rm -rf "$tmpdir"
 
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli install_tfenv
@@ -29,7 +47,7 @@ install_tools:
   #
   set -euo pipefail
 
-  tf_v=$(cat "{{ VERSION_FILE }}" | yq -r ".versions.terraform")
+  tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
   tfenv install "$tf_v"
   tfenv use "$tf_v"
 
@@ -44,8 +62,14 @@ install_tools:
     else
       extract_cmdline=""
     fi
-    gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --verbose --version "$version" $extract_cmdline
+    if [[ "$repo" != "null" ]]; then
+      gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --verbose --version "$version" $extract_cmdline
+    fi
   done
+
+[private]
+updatecli_foreach:
+
 
 [private]
 install_github_cli:
