@@ -63,9 +63,12 @@ install_tools:
       extract_cmdline=""
     fi
     if [[ "$repo" != "null" ]]; then
-      gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --verbose --version "$version" $extract_cmdline
+      echo "Installing $binary@$version from $repo"
+      gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --version "$version" $extract_cmdline
     fi
   done
+  # Cleanup Just (mpr has it at 1.14)
+  sudo apt remove -y just 1>/dev/null 2>&1 || true
 
 [private]
 updatecli_foreach:
