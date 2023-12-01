@@ -1,0 +1,119 @@
+kubectx:
+  repo: ahmetb/kubectx
+  version: v0.9.5
+  artifact: kubectx_{tag}_linux_x86_64.tar.gz
+  extract: kubectx
+  binary: kubectx
+
+k9s:
+  repo: derailed/k9s
+  version: v0.28.2
+  artifact: k9s_Linux_amd64.tar.gz
+  extract: k9s
+  binary: k9s
+
+terraform-docs:
+  repo: terraform-docs/terraform-docs
+  version: v0.16.0
+  artifact: terraform-docs-{tag}-linux-amd64.tar.gz
+  extract: terraform-docs
+  binary: terraform-docs
+
+nova:
+  repo: FairwindsOps/nova
+  version: v3.7.0
+  artifact: nova_{version}_linux_amd64.tar.gz
+  extract: nova
+  binary: nova
+
+updatecli:
+  repo: updatecli/updatecli
+  version: v0.67.1
+  artifact: updatecli_Linux_x86_64.tar.gz
+  extract: updatecli
+  binary: updatecli
+
+tflint:
+  repo: terraform-linters/tflint
+  version: v0.49.0
+  artifact: tflint_linux_amd64.zip
+  extract: tflint
+  binary: tflint
+
+gopass:
+  repo: gopasspw/gopass
+  version: v1.15.10
+  artifact: gopass-{version}-linux-amd64.tar.gz
+  extract: gopass
+  binary: gopass
+
+tfsummarize:
+  repo: dineshba/tf-summarize
+  version: v0.3.6
+  # latest requires a github_token
+  # version: latest
+  artifact: tf-summarize_linux_amd64.tar.gz
+  extract: tf-summarize
+  binary: tf-summarize
+
+starship:
+  repo: starship/starship
+  version: v1.16.0
+  artifact: starship-x86_64-unknown-linux-gnu.tar.gz
+  extract: starship
+  binary: starship
+
+shellcheck:
+  repo: koalaman/shellcheck
+  version: v0.9.0
+  artifact: shellcheck-{tag}.linux.x86_64.tar.xz
+  extract: shellcheck-{tag}/shellcheck
+  binary: shellcheck
+
+shfmt:
+  repo: mvdan/sh
+  version: v3.7.0
+  artifact: shfmt_{tag}_linux_amd64
+  binary: shfmt
+
+hcledit:
+  repo: minamijoyo/hcledit
+  version: v0.2.10
+  artifact: hcledit_{version}_linux_amd64.tar.gz
+  extract: hcledit
+  binary: hcledit
+
+gron:
+  repo: tomnomnom/gron
+  version: v0.7.1
+  artifact: gron-linux-amd64-{version}.tgz
+  extract: gron
+  binary: gron
+
+git-cliff:
+  repo: orhun/git-cliff
+  version: v1.4.0
+  artifact: git-cliff-{version}-x86_64-unknown-linux-gnu.tar.gz
+  extract: git-cliff-{version}/git-cliff
+  binary: git-cliff
+
+git-absorb:
+  repo: tummychow/git-absorb
+  version: 0.6.11
+  artifact: git-absorb-{version}-x86_64-unknown-linux-musl.tar.gz
+  extract: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb
+  binary: git-absorb
+
+committed:
+  repo: crate-ci/committed
+  version: v1.0.20
+  artifact: committed-{tag}-x86_64-unknown-linux-musl.tar.gz
+  extract: ./committed
+  binary: committed
+
+actionlint:
+  repo: rhysd/actionlint
+  version: v1.6.26
+  artifact: actionlint_{version}_linux_amd64.tar.gz
+  extract: actionlint
+  binary: actionlint
