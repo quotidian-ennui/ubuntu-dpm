@@ -1,0 +1,23 @@
+name: git-cliff
+
+sources:
+  git-cliff:
+    name: Github release for git-cliff
+    kind: githubrelease
+    spec:
+      owner: orhun
+      repository: git-cliff
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.git_cliff }}'
+
+targets:
+  git-cliff:
+    kind: yaml
+    sourceid: git-cliff
+    name: Update git-cliff tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.git-cliff.version

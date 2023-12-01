@@ -1,0 +1,23 @@
+name: gron
+
+sources:
+  gron:
+    name: Github release for gron
+    kind: githubrelease
+    spec:
+      owner: tomnomnom
+      repository: gron
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.gron }}'
+
+targets:
+  gron:
+    kind: yaml
+    sourceid: gron
+    name: Update gron tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.gron.version

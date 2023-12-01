@@ -1,0 +1,23 @@
+name: tfsummarize
+
+sources:
+  tfsummarize:
+    name: Github release for tfsummarize
+    kind: githubrelease
+    spec:
+      owner: dineshba
+      repository: tf-summarize
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.tfsummarize }}'
+
+targets:
+  tfsummarize:
+    kind: yaml
+    sourceid: tfsummarize
+    name: Update tfsummarize tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.tfsummarize.version

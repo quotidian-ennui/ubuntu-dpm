@@ -1,0 +1,23 @@
+name: terraform-docs
+
+sources:
+  terraform-docs:
+    name: Github release for terraform-docs
+    kind: githubrelease
+    spec:
+      owner: terraform-docs
+      repository: terraform-docs
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.tfdocs }}'
+
+targets:
+  terraform-docs:
+    kind: yaml
+    sourceid: terraform-docs
+    name: Update terraform-docs tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.terraform-docs.version

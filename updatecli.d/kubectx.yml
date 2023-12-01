@@ -1,0 +1,23 @@
+name: kubectx
+
+sources:
+  kubectx:
+    name: Github release for kubectx
+    kind: githubrelease
+    spec:
+      owner: ahmetb
+      repository: kubectx
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.kubectx }}'
+
+targets:
+  kubectx:
+    kind: yaml
+    sourceid: kubectx
+    name: Update kubectx tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.kubectx.version

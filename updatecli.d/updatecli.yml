@@ -1,0 +1,23 @@
+name: updatecli
+
+sources:
+  updatecli:
+    name: Github release for updatecli
+    kind: githubrelease
+    spec:
+      owner: updatecli
+      repository: updatecli
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.updatecli }}'
+
+targets:
+  updatecli:
+    kind: yaml
+    sourceid: updatecli
+    name: Update updatecli tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.updatecli.version

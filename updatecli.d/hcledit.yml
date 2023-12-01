@@ -1,0 +1,23 @@
+name: hcledit
+
+sources:
+  hcledit:
+    name: Github release for hcledit
+    kind: githubrelease
+    spec:
+      owner: minamijoyo
+      repository: hcledit
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.hcledit }}'
+
+targets:
+  hcledit:
+    kind: yaml
+    sourceid: hcledit
+    name: Update hcledit tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.hcledit.version

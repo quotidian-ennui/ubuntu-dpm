@@ -1,0 +1,23 @@
+name: starship
+
+sources:
+  starship:
+    name: Github release for starship
+    kind: githubrelease
+    spec:
+      owner: starship
+      repository: starship
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.starship }}'
+
+targets:
+  starship:
+    kind: yaml
+    sourceid: starship
+    name: Update starship tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.starship.version

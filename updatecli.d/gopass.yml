@@ -1,0 +1,25 @@
+name: gopass
+
+sources:
+  gopass:
+    name: Github release for gopass
+    kind: githubrelease
+    spec:
+      owner: gopasspw
+      repository: gopass
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ default "*" .versions.gopass }}'
+    # transformers:
+    #   - trimprefix: "v"
+
+targets:
+  gopass:
+    kind: yaml
+    sourceid: gopass
+    name: Update gopass tool version
+    spec:
+      files:
+        - ./config/tools.yml
+      key: $.gopass.version
