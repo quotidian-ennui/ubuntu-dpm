@@ -1,0 +1,27 @@
+name: '{{ .repo }}'
+
+sources:
+  latest:
+    name: Github release for {{ .repo }}
+    kind: githubrelease
+    spec:
+      owner: '{{ (split "/" .repo)._0 }}'
+      repository: '{{ (split "/" .repo)._1 }}'
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+        pattern: '{{ .version_pinning }}'
+    {{ if .trim_prefix }}
+    transformers:
+      - trimprefix: '{{ .trim_prefix }}'
+    {{ end }}
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Update {{ .repo }} version'
+    spec:
+      files:
+        - ./config/tools.yml
+      key: '{{ .yamlpath }}'
