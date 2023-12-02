@@ -78,6 +78,7 @@ install_tools:
   done
   # Cleanup Just (mpr has it at 1.14)
   sudo apt remove -y just 1>/dev/null 2>&1 || true
+  echo ">>> casey/just installed at $(which just); you might want to 'hash -d just' to clear the bash hash cache"
 
 [private]
 install_github_cli:
