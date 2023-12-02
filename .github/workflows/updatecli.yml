@@ -1,0 +1,46 @@
+name: updatecli
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 03 * * SUN'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  updatecli:
+    name: Run updatecli
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: "Setup updatecli"
+        uses: updatecli/updatecli-action@8b93582c89c5c9d42349d01f4d372910dbde7be4 # v2.49.1
+      - name: "Run updatecli"
+        run: |
+          set -eo pipefail
+          JQ_FILTER='
+            { "repo": .repo,
+              "yamlpath": .updatecli.yamlpath,
+              "version_pinning": .updatecli.version_pinning,
+              "trim_prefix": .updatecli.trim_prefix
+            } | with_entries(if .value == null then empty else . end)
+          '
+          # pip yq != yq on the github runner (which is mikefarah/yq)
+          # shellcheck disable=SC2002
+          cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c ".[]" | while read -r line; do
+            values=$(mktemp --tmpdir="${RUNNER_TEMP}" updatecli-values.XXXXXX.yml)
+            hasRepo=$(echo "$line" | jq -r ".repo")
+            if [[ "$hasRepo" != "null" ]]; then
+              echo "$line" | jq "$JQ_FILTER" | yq -P -o yaml > "$values"
+              GITHUB_TOKEN="$UPDATECLI_GITHUB_TOKEN" updatecli apply --values "$values" -c "${{ github.workspace }}/config/updatecli.yml"
+            fi
+          done
+        env:
+          UPDATECLI_GITHUB_ACTOR: ${{ github.actor }}
+          UPDATECLI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPDATECLI_GH_ACTION: true

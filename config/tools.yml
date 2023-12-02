@@ -2,7 +2,7 @@ terraform:
   version: 1.5.7
 just:
   repo: casey/just
-  version: 1.16.0
+  version: 1.15.0
   artifact: just-{version}-x86_64-unknown-linux-musl.tar.gz
   extract: just
   binary: just

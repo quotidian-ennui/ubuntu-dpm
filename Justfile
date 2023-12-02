@@ -21,15 +21,24 @@ updatecli +args='diff':
     } | with_entries(if .value == null then empty else . end)
   '
   tmpdir=$(mktemp -d -t updatecli.XXXXXX)
-  cat "{{ TOOL_CONFIG }}" | yq -c ".[]" | while read line; do
+  cat "{{ TOOL_CONFIG }}" | yq -c ".[]" | while read -r line; do
     values=$(mktemp --tmpdir="$tmpdir" updatecli-values.XXXXXX.yml)
     hasRepo=$(echo "$line" | jq -r ".repo")
     if [[ "$hasRepo" != "null" ]]; then
-      echo $line | jq "$JQ_FILTER" | yq -y > "$values"
+      echo "$line" | jq "$JQ_FILTER" | yq -y > "$values"
       GITHUB_TOKEN=$(gh auth token) updatecli "$@" --values "$values" -c "{{ UPDATECLI_TEMPLATE }}"
     fi
   done
   rm -rf "$tmpdir"
+
+# pin github action to versions to hash (just pin ./.github/workflows/updatecli.yml)
+[no-cd]
+pin *args: check_npm_env
+  #!/usr/bin/env bash
+  set -eo pipefail
+  if [[ -z "$1" ]]; then echo "missing file to pin; abort"; exit 1; fi
+  npx pin-github-action -i "$1"
+  sed -i -e "s|pin@||" "$1"
 
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli install_tfenv
@@ -69,10 +78,6 @@ install_tools:
   done
   # Cleanup Just (mpr has it at 1.14)
   sudo apt remove -y just 1>/dev/null 2>&1 || true
-
-[private]
-updatecli_foreach:
-
 
 [private]
 install_github_cli:
@@ -122,3 +127,14 @@ is_ubuntu:
 
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
   if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit 1; fi
+
+[private]
+[no-cd]
+[no-exit-message]
+check_npm_env:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "npm/npx on windows git+bash, are you mad?; abort"; exit 1; fi
+  which npm >/dev/null 2>&1 || { echo "npm not found; abort"; exit 1; }
+  which npx >/dev/null 2>&1 || { echo "npx not found; abort"; exit 1; }
