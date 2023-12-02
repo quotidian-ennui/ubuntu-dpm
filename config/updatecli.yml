@@ -1,4 +1,35 @@
+# {{ $githubPullRequestAction := eq (env "UPDATECLI_GH_ACTION" | default "true") "true" }}
 name: '{{ .repo }}'
+
+# {{ if $githubPullRequestAction }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump {{ .repo }} version to {{ source "latest" }}'
+    kind: github/pullrequest
+    mergemethod: "rebase"
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: quotidian-ennui
+      repository: ubuntu-dpm
+      user: 'github-actions[bot]'
+      email: 41898282+github-actions[bot]@users.noreply.github.com
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump {{ .repo }} version to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
 
 sources:
   latest:
@@ -11,16 +42,19 @@ sources:
       versionfilter:
         kind: semver
         pattern: '{{ .version_pinning }}'
-    {{ if .trim_prefix }}
+    # {{ if .trim_prefix }}
     transformers:
       - trimprefix: '{{ .trim_prefix }}'
-    {{ end }}
+    # {{ end }}
 
 targets:
   update_yaml:
     kind: yaml
     sourceid: latest
     name: 'Update {{ .repo }} version'
+    # {{ if $githubPullRequestAction }}
+    scmid: github
+    # {{ end }}
     spec:
       files:
         - ./config/tools.yml
