@@ -8,6 +8,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  UPDATECLI_VERSION: v0.66.1
+  UPDATECLI_GITHUB_USER: qe-repo-updater[bot]
+  UPDATECLI_GITHUB_EMAIL: 152897211+qe-repo-updater[bot]@users.noreply.github.com
+
 jobs:
   updatecli:
     name: Run updatecli
@@ -20,7 +25,15 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: "Setup updatecli"
         uses: updatecli/updatecli-action@8b93582c89c5c9d42349d01f4d372910dbde7be4 # v2.49.1
-      - name: "Run updatecli"
+        with:
+          version: ${{ env.UPDATECLI_VERSION }}
+      - uses: actions/create-github-app-token@v1.6.1
+        id: app-token
+        with:
+          app-id: ${{ vars.WORKFLOW_UPDATE_APP_ID }}
+          private-key: ${{ secrets.WORKFLOW_UPDATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - name: "UpdateCLI"
         run: |
           set -eo pipefail
           JQ_FILTER='
@@ -37,10 +50,13 @@ jobs:
             hasRepo=$(echo "$line" | jq -r ".repo")
             if [[ "$hasRepo" != "null" ]]; then
               echo "$line" | jq "$JQ_FILTER" | yq -P -o yaml > "$values"
-              GITHUB_TOKEN="$UPDATECLI_GITHUB_TOKEN" updatecli apply --values "$values" -c "${{ github.workspace }}/config/updatecli.yml"
+              updatecli apply --values "$values" -c "${{ github.workspace }}/config/updatecli.yml"
             fi
           done
+          updatecli apply
         env:
-          UPDATECLI_GITHUB_ACTOR: ${{ github.actor }}
-          UPDATECLI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPDATECLI_GITHUB_USER: ${{ env.UPDATECLI_GITHUB_USER }}
+          UPDATECLI_GITHUB_EMAIL: ${{ env.UPDATECLI_GITHUB_EMAIL }}
+          UPDATECLI_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           UPDATECLI_GH_ACTION: true
