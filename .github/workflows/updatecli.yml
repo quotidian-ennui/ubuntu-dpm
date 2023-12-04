@@ -1,16 +1,13 @@
 name: updatecli
 on:
-  workflow_dispatch:
+  workflow_dispatch: null
   schedule:
     - cron: '15 03 * * SUN'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 env:
-  UPDATECLI_VERSION: v0.67.1
-
+  UPDATECLI_VERSION: v0.68.0
 jobs:
   updatecli:
     name: Run updatecli
