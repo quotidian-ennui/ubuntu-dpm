@@ -1,0 +1,56 @@
+# {{ $githubPullRequestAction := eq (env "UPDATECLI_GH_ACTION" | default "true") "true" }}
+name: '{{ .repo }}'
+
+# {{ if $githubPullRequestAction }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump updatecli version to {{ source "latest" }}'
+    kind: github/pullrequest
+    mergemethod: "rebase"
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: quotidian-ennui
+      repository: ubuntu-dpm
+      user: 'github-actions[bot]'
+      email: 41898282+github-actions[bot]@users.noreply.github.com
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump updatecli version to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for updatecli
+    kind: githubrelease
+    spec:
+      owner: updatecli
+      repository: updatecli
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump updatecli version'
+    # {{ if $githubPullRequestAction }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - .github/workflows/updatecli.yml
+      key: $.env.UPDATECLI_VERSION
