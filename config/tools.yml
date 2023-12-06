@@ -174,3 +174,12 @@ mikefarah-yq:
   updatecli:
     yamlpath: $.mikefarah-yq.version
     version_pinning: "*"
+mutagen:
+  repo: mutagen-io/mutagen
+  version: v0.17.4
+  artifact:  mutagen_linux_amd64_{tag}.tar.gz
+  extract: mutagen
+  binary: mutagen
+  updatecli:
+    yamlpath: $.mutagen.version
+    version_pinning: "*"
