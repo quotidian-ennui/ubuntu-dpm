@@ -119,6 +119,15 @@ hcledit:
   updatecli:
     yamlpath: $.hcledit.version
     version_pinning: "*"
+tfupdate:
+  repo: minamijoyo/tfupdate
+  version: v0.8.0
+  artifact: tfupdate_{version}_linux_amd64.tar.gz
+  extract: tfupdate
+  binary: tfupdate
+  updatecli:
+    yamlpath: $.tfupdate.version
+    version_pinning: "*"
 gron:
   repo: tomnomnom/gron
   version: v0.7.1
