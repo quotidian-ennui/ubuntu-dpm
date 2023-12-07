@@ -14,6 +14,10 @@ Yeah, I know, I'm a terrible person for using `just` because it's yet another th
 
 ## Notes
 
+- sudo visudo with this for _convenience reasons_. Don't do this on a production class machine.
+```
+%sudo   ALL=(ALL:ALL) NOPASSWD:ALL
+```
 - Installs `yq` via snap as part of the `init` recipe; which is subsequently removed by the `install` recipe. Since snap may require systemd to be running the `etc/wsl.conf` in your linux distro has to enable systemd and you have to do the appropriate `wsl --shutdown` dance.
 ```
 [boot]
