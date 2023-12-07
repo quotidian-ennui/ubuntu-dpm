@@ -54,4 +54,4 @@ if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit
 
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg wget
 install_apt_repos
-sudo apt-get install -y just direnv git zoxide jq tidy 
+sudo apt-get install -y just direnv git zoxide jq tidy
