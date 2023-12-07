@@ -192,3 +192,12 @@ mutagen:
   updatecli:
     yamlpath: $.mutagen.version
     version_pinning: "*"
+lazygit:
+  repo: jesseduffield/lazygit
+  version: v0.40.2
+  artifact:  lazygit_{version}_Linux_x86_64.tar.gz
+  extract: lazygit
+  binary: lazygit
+  updatecli:
+    yamlpath: $.lazygit.version
+    version_pinning: "*"
