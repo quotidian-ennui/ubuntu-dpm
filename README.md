@@ -14,18 +14,9 @@ Yeah, I know, I'm a terrible person for using `just` because it's yet another th
 
 ## Notes
 
-The keen-eyed will have seen that I'm installing `yq` via python+pip and also `mikefarah/yq` via dpm. I suppose I could install `mikefarah/yq` via snap, and then uninstall it in the same way that I'm uninstalling `just`.
-
-I have `mikefarah/yq` because I can do this `yq eval-all '. as $item ireduce ({}; . *+ $item )' "gh-aliases-old.yml" "gh-aliases-new.yml" > "gh-aliases.yml"` to merge my github aliases files together. I have this exported as a bash-function for me to use in scripts :
-
+- Installs `yq` via snap as part of the `init` recipe; which is subsequently removed by the `install` recipe. Since snap may require systemd to be running the `etc/wsl.conf` in your linux distro has to enable systemd and you have to do the appropriate `wsl --shutdown` dance.
 ```
-function findYQ() {
-  if builtin type -P myq >/dev/null 2>&1; then
-    echo "myq"
-  else
-    echo "yq"
-  fi
-}
-
-export -f findYQ
+[boot]
+systemd=true
 ```
+- Post init+install, you probably want to do a `hash -r` to clear out the bash hash cache otherwise you get `/usr/bin/just not found` errors.
