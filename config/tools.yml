@@ -174,12 +174,11 @@ actionlint:
   updatecli:
     yamlpath: $.actionlint.version
     version_pinning: "*"
-# We install mikefarah/yq as myq since the pip yq is not the same.
 mikefarah-yq:
   repo: mikefarah/yq
   version: v4.40.4
   artifact: yq_linux_amd64
-  binary: myq
+  binary: yq
   updatecli:
     yamlpath: $.mikefarah-yq.version
     version_pinning: "*"

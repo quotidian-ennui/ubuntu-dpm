@@ -52,15 +52,19 @@ install_tools:
   # Pre-Reqs:
   #  sudo apt install jq python3-pip
   #  pip install gh-release-install (https://github.com/jooola/gh-release-install)
-  #  pip install yq
-  #
+  #  snap install yq # to bootstrap this script, will be removed afterwards.
+  # We're using SNAP which might require systemd
+  # In /etc/wsl.conf in the linux distro
+  # [boot]
+  # systemd=true
+  # and then do the wsl --shutdown restart dance.
   set -euo pipefail
 
   tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
   tfenv install "$tf_v"
   tfenv use "$tf_v"
 
-  cat "{{ TOOL_CONFIG }}" | yq -c ".[]" | while read line; do
+  cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]" | while read line; do
     repo=$(echo "$line" | jq -r ".repo")
     version=$(echo "$line" | jq -r ".version")
     artifact=$(echo "$line" | jq -r ".artifact")
@@ -78,7 +82,10 @@ install_tools:
   done
   # Cleanup Just (mpr has it at 1.14)
   sudo apt remove -y just 1>/dev/null 2>&1 || true
-  echo ">>> casey/just installed at $(which just); you might want to 'hash -d just' to clear the bash hash cache"
+  sudo snap remove yq 1>/dev/null 2>&1 || true
+  echo ">>> casey/just installed at $(which just)"
+  echo ">>> mikefarah/yq installed at $(which yq)"
+  echo "You might want to 'hash -r' to clear the bash hash cache."
 
 [private]
 install_github_cli:
@@ -104,7 +111,8 @@ install_base:
   if [[ -z "$WSL_DISTRO_NAME" ]]; then
     sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
   fi
-  pip install gh-release-install yq
+  sudo snap install yq
+  pip install gh-release-install
 
 [private]
 install_tfenv:
