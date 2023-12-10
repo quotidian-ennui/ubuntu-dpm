@@ -21,7 +21,7 @@ kubectx:
     version_pinning: "*"
 k9s:
   repo: derailed/k9s
-  version: v0.28.2
+  version: v0.29.1
   artifact: k9s_Linux_amd64.tar.gz
   extract: k9s
   binary: k9s
@@ -185,7 +185,7 @@ mikefarah-yq:
 mutagen:
   repo: mutagen-io/mutagen
   version: v0.17.4
-  artifact:  mutagen_linux_amd64_{tag}.tar.gz
+  artifact: mutagen_linux_amd64_{tag}.tar.gz
   extract: mutagen
   binary: mutagen
   updatecli:
@@ -194,7 +194,7 @@ mutagen:
 lazygit:
   repo: jesseduffield/lazygit
   version: v0.40.2
-  artifact:  lazygit_{version}_Linux_x86_64.tar.gz
+  artifact: lazygit_{version}_Linux_x86_64.tar.gz
   extract: lazygit
   binary: lazygit
   updatecli:
