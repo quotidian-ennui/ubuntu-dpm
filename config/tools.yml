@@ -176,7 +176,7 @@ actionlint:
     version_pinning: "*"
 mikefarah-yq:
   repo: mikefarah/yq
-  version: v4.40.4
+  version: v4.40.5
   artifact: yq_linux_amd64
   binary: yq
   updatecli:
