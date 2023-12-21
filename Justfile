@@ -33,14 +33,6 @@ updatecli +args='diff':
   done
   rm -rf "$tmpdir"
 
-# pin github action to versions to hash (just pin ./.github/workflows/updatecli.yml)
-[no-cd]
-pin *args: check_npm_env
-  #!/usr/bin/env bash
-  set -eo pipefail
-  if [[ -z "$1" ]]; then echo "missing file to pin; abort"; exit 1; fi
-  npx pin-github-action -i "$1" -c " {ref}"
-
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli install_tfenv
 
@@ -117,9 +109,9 @@ install_tools:
   done
   write_installed
   # Cleanup Just (mpr has it at 1.14)
-  if [[ "$snap_apt" == "true" ]]; then
+  if [[ -n "$snap_apt" ]]; then
     sudo apt remove -y just 1>/dev/null 2>&1 || true
-    sudo snap remove yq 1>/dev/null 2>&1 || true
+    sudo snap remove --purge yq 1>/dev/null 2>&1 || true
     echo ">>> casey/just installed at $(which just)"
     echo ">>> mikefarah/yq installed at $(which yq)"
     echo "You might want to 'hash -r' to clear the bash hash cache."
@@ -176,14 +168,3 @@ is_ubuntu:
 
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
   if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit 1; fi
-
-[private]
-[no-cd]
-[no-exit-message]
-check_npm_env:
-  #!/usr/bin/env bash
-  set -eo pipefail
-
-  if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "npm/npx on windows git+bash, are you mad?; abort"; exit 1; fi
-  which npm >/dev/null 2>&1 || { echo "npm not found; abort"; exit 1; }
-  which npx >/dev/null 2>&1 || { echo "npx not found; abort"; exit 1; }
