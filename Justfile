@@ -37,8 +37,7 @@ pin *args: check_npm_env
   #!/usr/bin/env bash
   set -eo pipefail
   if [[ -z "$1" ]]; then echo "missing file to pin; abort"; exit 1; fi
-  npx pin-github-action -i "$1"
-  sed -i -e "s|pin@||" "$1"
+  npx pin-github-action -i "$1" -c " {ref}"
 
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli install_tfenv
