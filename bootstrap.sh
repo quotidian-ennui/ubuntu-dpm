@@ -43,9 +43,7 @@ install_apt_repos() {
   repo_kubectl
   repo_helm
   repo_ghcli
-  if [[ -z "$WSL_DISTRO_NAME" ]]; then
-    repo_docker
-  fi
+  repo_docker
   sudo apt-get update
 }
 
