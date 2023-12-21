@@ -2,6 +2,8 @@ set positional-arguments := true
 OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
+LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
+INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 
 # show recipes
 [private]
@@ -31,14 +33,6 @@ updatecli +args='diff':
   done
   rm -rf "$tmpdir"
 
-# pin github action to versions to hash (just pin ./.github/workflows/updatecli.yml)
-[no-cd]
-pin *args: check_npm_env
-  #!/usr/bin/env bash
-  set -eo pipefail
-  if [[ -z "$1" ]]; then echo "missing file to pin; abort"; exit 1; fi
-  npx pin-github-action -i "$1" -c " {ref}"
-
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli install_tfenv
 
@@ -57,13 +51,35 @@ install_tools:
   # [boot]
   # systemd=true
   # and then do the wsl --shutdown restart dance.
-  set -euo pipefail
+  set -eo pipefail
 
+  function write_installed() {
+    {
+      for i in "${!installed[@]}"; do
+        echo "$i=${installed[$i]}"
+      done
+    } > "{{ INSTALLED_VERSIONS}}"
+  }
+
+  function read_installed() {
+    if [[ -f "{{ INSTALLED_VERSIONS}}" ]]; then
+      while IFS== read -r key value; do
+        installed[$key]=$value
+      done < "{{ INSTALLED_VERSIONS}}"
+    fi
+  }
+
+  mkdir -p "{{ LOCAL_CONFIG }}"
   tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
   tfenv install "$tf_v"
   tfenv use "$tf_v"
 
-  cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]" | while read line; do
+  declare -A installed
+  read_installed
+  snap_apt=""
+  tools=$(cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]")
+  for line in $tools
+  do
     repo=$(echo "$line" | jq -r ".repo")
     version=$(echo "$line" | jq -r ".version")
     artifact=$(echo "$line" | jq -r ".artifact")
@@ -74,17 +90,32 @@ install_tools:
     else
       extract_cmdline=""
     fi
-    if [[ "$repo" != "null" ]]; then
-      echo "Installing $binary@$version from $repo"
-      gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --version "$version" $extract_cmdline
+    if [[ "$repo" != "null" ]]
+    then
+      if [[ "${installed[$binary]}" != "$version" ]]
+      then
+        echo "[+] $binary@$version from $repo (attempt install)"
+        gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --version "$version" $extract_cmdline
+        installed[$binary]="$version"
+        case "$binary" in
+          just | yq) snap_apt="true";;
+          *) ;;
+        esac
+      else
+        echo "[=] $binary@$version from $repo (already installed)"
+        continue
+      fi
     fi
   done
+  write_installed
   # Cleanup Just (mpr has it at 1.14)
-  sudo apt remove -y just 1>/dev/null 2>&1 || true
-  sudo snap remove yq 1>/dev/null 2>&1 || true
-  echo ">>> casey/just installed at $(which just)"
-  echo ">>> mikefarah/yq installed at $(which yq)"
-  echo "You might want to 'hash -r' to clear the bash hash cache."
+  if [[ -n "$snap_apt" ]]; then
+    sudo apt remove -y just 1>/dev/null 2>&1 || true
+    sudo snap remove --purge yq 1>/dev/null 2>&1 || true
+    echo ">>> casey/just installed at $(which just)"
+    echo ">>> mikefarah/yq installed at $(which yq)"
+    echo "You might want to 'hash -r' to clear the bash hash cache."
+  fi
 
 [private]
 install_github_cli:
@@ -137,14 +168,3 @@ is_ubuntu:
 
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
   if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit 1; fi
-
-[private]
-[no-cd]
-[no-exit-message]
-check_npm_env:
-  #!/usr/bin/env bash
-  set -eo pipefail
-
-  if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "npm/npx on windows git+bash, are you mad?; abort"; exit 1; fi
-  which npm >/dev/null 2>&1 || { echo "npm not found; abort"; exit 1; }
-  which npx >/dev/null 2>&1 || { echo "npx not found; abort"; exit 1; }
