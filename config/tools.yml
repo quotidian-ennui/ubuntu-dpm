@@ -30,7 +30,7 @@ k9s:
     version_pinning: "*"
 terraform-docs:
   repo: terraform-docs/terraform-docs
-  version: v0.16.0
+  version: v0.17.0
   artifact: terraform-docs-{tag}-linux-amd64.tar.gz
   extract: terraform-docs
   binary: terraform-docs
