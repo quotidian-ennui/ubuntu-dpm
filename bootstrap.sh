@@ -38,6 +38,14 @@ repo_ghcli() {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
 }
 
+install_vscode() {
+  if [[ -z "$WSL_DISTRO_NAME" && -n "${XDG_CURRENT_DESKTOP}" ]]; then
+    vscode_deb=$(mktemp --tmpdir vscode.XXXXX.deb)
+    wget -q -O "$vscode_deb" "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+    sudo apt -y install "$vscode_deb"
+  fi
+}
+
 install_apt_repos() {
   repo_prebuilt
   repo_kubectl
@@ -52,4 +60,5 @@ if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit
 
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg wget
 install_apt_repos
+install_vscode
 sudo apt-get install -y just direnv git zoxide jq tidy
