@@ -155,6 +155,7 @@ install_tfenv:
     echo "tfenv already installed"
     (cd $HOME/.tfenv && git pull --rebase)
   else
+    mkdir -p $HOME/.local/bin
     (cd $HOME && git clone https://github.com/tfutils/tfenv .tfenv)
     ln -s $HOME/.tfenv/bin/* $HOME/.local/bin
   fi
