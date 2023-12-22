@@ -42,7 +42,18 @@ updatecli +args='diff':
 @tools: is_ubuntu install_tools
 
 # install sdk tooling
-@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_tfenv
+@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_tfenv install_go
+
+# not entirely sure I like this as a chicken & egg situation since goenv must be installed
+# by 'tools' recipe
+[private]
+install_go:
+  #!/usr/bin/env bash
+
+  set -eo pipefail
+  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+  goenv --install "$go_v"
+  goenv --use "$go_v"
 
 [private]
 install_sdkman:
