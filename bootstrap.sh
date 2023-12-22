@@ -52,6 +52,7 @@ install_apt_repos() {
   repo_helm
   repo_ghcli
   repo_docker
+  sudo add-apt-repository ppa:git-core/ppa
   sudo apt-get update
 }
 
