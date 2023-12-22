@@ -3,6 +3,7 @@ OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
+LOCAL_BIN:= env_var('HOME') / ".local/bin"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 CURL:="curl -fSsL"
 alias install:=tools
@@ -70,10 +71,11 @@ install_sdkman:
   mvn_v=${maven_latest#"v"}
   gradle_v=${gradle_latest#"v"}
   jbang_v=${jbang_latest#"v"}
-  echo "GraalVM $graal_v" && sdk install java "$graal_v-graalce" && sdk default java "$graal_v-graalce"
-  echo "Gradle $gradle_v" && sdk install gradle "$gradle_v" && sdk default gradle "$gradle_v"
-  echo "Maven $mvn_v" && sdk install maven "$mvn_v" && sdk default maven "$mvn_v"
-  echo "jbang $jbang_v" && sdk install jbang "$jbang_v" && sdk default jbang "$jbang_v"
+  sdk install java "$graal_v-graalce" && sdk default java "$graal_v-graalce"
+  sdk install gradle "$gradle_v" && sdk default gradle "$gradle_v"
+  sdk install maven "$mvn_v" && sdk default maven "$mvn_v"
+  sdk install jbang "$jbang_v" && sdk default jbang "$jbang_v"
+  echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$mvn_v, jbang=$jbang_v"
 
 [private]
 install_nvm:
@@ -137,6 +139,7 @@ install_tools:
   }
 
   mkdir -p "{{ LOCAL_CONFIG }}"
+  mkdir -p "{{ LOCAL_BIN }}"
 
   declare -A installed
   read_installed
@@ -159,7 +162,7 @@ install_tools:
       if [[ "${installed[$binary]}" != "$version" ]]
       then
         echo "[+] $binary@$version from $repo (attempt install)"
-        gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --version "$version" $extract_cmdline
+        gh-release-install "$repo" "$artifact" "{{ LOCAL_BIN }}/$binary" --version "$version" $extract_cmdline
         installed[$binary]="$version"
         case "$binary" in
           just | yq) snap_apt="true";;
@@ -219,13 +222,13 @@ install_tfenv:
     echo "tfenv already installed"
     (cd $HOME/.tfenv && git pull --rebase)
   else
-    mkdir -p $HOME/.local/bin
+    mkdir -p "{{ LOCAL_BIN }}"
     (cd $HOME && git clone https://github.com/tfutils/tfenv .tfenv)
-    ln -s $HOME/.tfenv/bin/* $HOME/.local/bin
+    ln -s $HOME/.tfenv/bin/* {{ LOCAL_BIN }}
+    tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
+    $HOME/.tfenv/bin/tfenv install "$tf_v"
+    $HOME/.tfenv/bin/tfenv use "$tf_v"
   fi
-  tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
-  $HOME/.tfenv/bin/tfenv install "$tf_v"
-  $HOME/.tfenv/bin/tfenv use "$tf_v"
 
 [private]
 [no-cd]
