@@ -200,3 +200,12 @@ lazygit:
   updatecli:
     yamlpath: $.lazygit.version
     version_pinning: "*"
+goenv:
+  repo: ankitcharolia/goenv
+  version: 1.1.7
+  artifact: goenv-linux-amd64.tar.gz
+  extract: goenv
+  binary: goenv
+  updatecli:
+    yamlpath: $.goenv.version
+    version_pinning: "*"

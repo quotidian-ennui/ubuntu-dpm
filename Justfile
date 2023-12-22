@@ -3,7 +3,10 @@ OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
+LOCAL_BIN:= env_var('HOME') / ".local/bin"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
+CURL:="curl -fSsL"
+alias install:=tools
 
 # show recipes
 [private]
@@ -34,10 +37,76 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # initialise to install tools
-@init: is_ubuntu install_base install_github_cli install_tfenv
+@init: is_ubuntu install_base install_github_cli
 
 # install tooling
-@install: is_ubuntu install_tools
+@tools: is_ubuntu install_tools
+
+# install sdk tooling
+@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_tfenv install_go
+
+# not entirely sure I like this as a chicken & egg situation since goenv must be installed
+# by 'tools' recipe
+[private]
+install_go:
+  #!/usr/bin/env bash
+
+  set -eo pipefail
+  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+  goenv --install "$go_v"
+  goenv --use "$go_v"
+
+[private]
+install_sdkman:
+  #!/usr/bin/env bash
+  set -eo pipefail
+  {{ CURL }} "https://get.sdkman.io" | bash
+
+  source ~/.sdkman/bin/sdkman-init.sh
+  graal_latest=$(gh release list -R graalvm/graalvm-ce-builds | grep -i Latest | awk '{print $6}')
+  gradle_latest=$(gh release list -R gradle/gradle | grep -i Latest | awk '{print $1}')
+  maven_latest=$(gh release list -R apache/maven | grep -i Latest | awk '{print $1}')
+  jbang_latest=$(gh release list -R jbangdev/jbang | grep -i Latest | awk '{print $1}')
+  graal_v=${graal_latest#"v"}
+  mvn_v=${maven_latest#"v"}
+  gradle_v=${gradle_latest#"v"}
+  jbang_v=${jbang_latest#"v"}
+  sdk install java "$graal_v-graalce" && sdk default java "$graal_v-graalce"
+  sdk install gradle "$gradle_v" && sdk default gradle "$gradle_v"
+  sdk install maven "$mvn_v" && sdk default maven "$mvn_v"
+  sdk install jbang "$jbang_v" && sdk default jbang "$jbang_v"
+  echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$mvn_v, jbang=$jbang_v"
+
+[private]
+install_nvm:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  nvm_v=$(gh release list -R nvm-sh/nvm | grep -i Latest | awk '{print $1}')
+  {{ CURL }}  "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+  source ~/.nvm/nvm.sh
+  nvm install --lts && nvm use --lts
+
+[private]
+install_rust:
+  #!/usr/bin/env bash
+  set -eo pipefail
+  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y
+  {{ CURL }} "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
+  ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
+  rm -f ./cargo-binstall >/dev/null 2>&1
+
+[private]
+install_rvm:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+  {{ CURL }}  "https://get.rvm.io" | bash -s stable
+  source ~/.rvm/scripts/rvm
+  ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
+  ruby_v=${ruby_latest#"v"}
+  echo "Ruby $ruby_v" && rvm install ruby "$ruby_v" && rvm use "$ruby_v"
 
 [private]
 install_tools:
@@ -70,9 +139,7 @@ install_tools:
   }
 
   mkdir -p "{{ LOCAL_CONFIG }}"
-  tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
-  tfenv install "$tf_v"
-  tfenv use "$tf_v"
+  mkdir -p "{{ LOCAL_BIN }}"
 
   declare -A installed
   read_installed
@@ -95,7 +162,7 @@ install_tools:
       if [[ "${installed[$binary]}" != "$version" ]]
       then
         echo "[+] $binary@$version from $repo (attempt install)"
-        gh-release-install "$repo" "$artifact" "$HOME/.local/bin/$binary" --version "$version" $extract_cmdline
+        gh-release-install "$repo" "$artifact" "{{ LOCAL_BIN }}/$binary" --version "$version" $extract_cmdline
         installed[$binary]="$version"
         case "$binary" in
           just | yq) snap_apt="true";;
@@ -155,9 +222,12 @@ install_tfenv:
     echo "tfenv already installed"
     (cd $HOME/.tfenv && git pull --rebase)
   else
-    mkdir -p $HOME/.local/bin
+    mkdir -p "{{ LOCAL_BIN }}"
     (cd $HOME && git clone https://github.com/tfutils/tfenv .tfenv)
-    ln -s $HOME/.tfenv/bin/* $HOME/.local/bin
+    ln -s $HOME/.tfenv/bin/* {{ LOCAL_BIN }}
+    tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
+    $HOME/.tfenv/bin/tfenv install "$tf_v"
+    $HOME/.tfenv/bin/tfenv use "$tf_v"
   fi
 
 [private]
