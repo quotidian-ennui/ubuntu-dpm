@@ -21,7 +21,7 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: "Setup updatecli"
-        uses: updatecli/updatecli-action@a028faef6eb138f3f022cf4830e3623521634ea8 # v2.51.0
+        uses: updatecli/updatecli-action@7443aa3f35bcc6a9061030d73e953bf6ede758f9 # v2.52.0
         with:
           version: ${{ env.UPDATECLI_VERSION }}
       - uses: actions/create-github-app-token@2986852ad836768dfea7781f31828eb3e17990fa # v1.6.2
