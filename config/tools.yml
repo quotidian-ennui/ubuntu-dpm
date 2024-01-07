@@ -86,7 +86,7 @@ tfsummarize:
     version_pinning: "*"
 starship:
   repo: starship/starship
-  version: v1.17.0
+  version: v1.17.1
   artifact: starship-x86_64-unknown-linux-gnu.tar.gz
   extract: starship
   binary: starship
