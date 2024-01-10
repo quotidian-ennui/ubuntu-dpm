@@ -6,12 +6,15 @@ LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 CURL:="curl -fSsL"
+
 alias install:=tools
 
 # show recipes
 [private]
 @help:
   just --list --list-prefix "  "
+  echo ""
+  echo "Generally, you'll just use 'just tools' to update the binary tools"
 
 # run updatecli with args e.g. just updatecli diff
 updatecli +args='diff':
@@ -39,15 +42,15 @@ updatecli +args='diff':
 # initialise to install tools
 @init: is_ubuntu install_base install_github_cli
 
-# install tooling
+# install binary tools
 @tools: is_ubuntu install_tools
 
-# install sdk tooling
-@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_tfenv install_go
+# install all the sdk tooling
+@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_go (install_tvm "terraform") (install_tvm "opentofu")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
-[private]
+# Install goenv (because golang)
 install_go:
   #!/usr/bin/env bash
 
@@ -56,7 +59,7 @@ install_go:
   goenv --install "$go_v"
   goenv --use "$go_v"
 
-[private]
+# Install SDKMAN (because JVM)
 install_sdkman:
   #!/usr/bin/env bash
   set -eo pipefail
@@ -77,7 +80,7 @@ install_sdkman:
   sdk install jbang "$jbang_v" && sdk default jbang "$jbang_v"
   echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$mvn_v, jbang=$jbang_v"
 
-[private]
+# Install NVM (because nodejs)
 install_nvm:
   #!/usr/bin/env bash
   set -eo pipefail
@@ -87,7 +90,7 @@ install_nvm:
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
 
-[private]
+# Install rustup && cargo-binstall (because rust)
 install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
@@ -96,7 +99,7 @@ install_rust:
   ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
   rm -f ./cargo-binstall >/dev/null 2>&1
 
-[private]
+# Install RVM (because ruby)
 install_rvm:
   #!/usr/bin/env bash
   set -eo pipefail
@@ -107,6 +110,42 @@ install_rvm:
   ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
   ruby_v=${ruby_latest#"v"}
   echo "Ruby $ruby_v" && rvm install ruby "$ruby_v" && rvm use "$ruby_v"
+
+# Install one of the terraform env managers (terraform|opentofu)
+install_tvm variant:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  tfenv_base=""
+  tfenv_github=""
+  tfenv_yamlpath=""
+  tfenv_bin=""
+  case "{{ variant }}" in
+    terraform|tf)
+      tfenv_base=".tfenv"
+      tfenv_github="https://github.com/tfutils/tfenv"
+      tfenv_yamlpath=".terraform.version"
+      tfenv_bin="tfenv"
+      ;;
+    opentofu|tofu)
+      tfenv_base=".tofuenv"
+      tfenv_github="https://github.com/tofuutils/tofuenv"
+      tfenv_yamlpath=".opentofu.version"
+      tfenv_bin="tofuenv"
+      ;;
+    *) echo "Unknown variant: {{ variant }}"; exit 1 ;;
+  esac
+  if [[ -d "$HOME/$tfenv_base" ]]; then
+    echo "{{ variant }} env manager already installed"
+    (cd "$HOME/$tfenv_base" && git pull --rebase)
+  else
+    mkdir -p "{{ LOCAL_BIN }}"
+    (cd $HOME && git clone "$tfenv_github" "$tfenv_base")
+    ln -s $HOME/$tfenv_base/bin/* {{ LOCAL_BIN }}
+    tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r "$tfenv_yamlpath")
+    $HOME/$tfenv_base/bin/$tfenv_bin install "$tf_v"
+    $HOME/$tfenv_base/bin/$tfenv_bin use "$tf_v"
+  fi
 
 [private]
 install_tools:
@@ -212,23 +251,6 @@ install_base:
   fi
   sudo snap install yq
   pip install gh-release-install
-
-[private]
-install_tfenv:
-  #!/usr/bin/env bash
-  set -eo pipefail
-
-  if [[ -d "$HOME/.tfenv" ]]; then
-    echo "tfenv already installed"
-    (cd $HOME/.tfenv && git pull --rebase)
-  else
-    mkdir -p "{{ LOCAL_BIN }}"
-    (cd $HOME && git clone https://github.com/tfutils/tfenv .tfenv)
-    ln -s $HOME/.tfenv/bin/* {{ LOCAL_BIN }}
-    tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".terraform.version")
-    $HOME/.tfenv/bin/tfenv install "$tf_v"
-    $HOME/.tfenv/bin/tfenv use "$tf_v"
-  fi
 
 [private]
 [no-cd]
