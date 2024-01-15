@@ -24,7 +24,7 @@ jobs:
         uses: updatecli/updatecli-action@7443aa3f35bcc6a9061030d73e953bf6ede758f9 # v2.52.0
         with:
           version: ${{ env.UPDATECLI_VERSION }}
-      - uses: actions/create-github-app-token@2986852ad836768dfea7781f31828eb3e17990fa # v1.6.2
+      - uses: actions/create-github-app-token@f04aa94d10cf56334d1c580e077ce2e3569e805d # v1.6.3
         id: app-token
         with:
           app-id: ${{ vars.WORKFLOW_UPDATE_APP_ID }}
