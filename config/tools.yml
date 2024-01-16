@@ -211,3 +211,12 @@ goenv:
   updatecli:
     yamlpath: $.goenv.version
     version_pinning: "*"
+difftastic:
+  repo: Wilfred/difftastic
+  version: 0.54.0
+  artifact: difft-x86_64-unknown-linux-gnu.tar.gz
+  extract: difft
+  binary: difft
+  updatecli:
+    yamlpath: $.difftastic.version
+    version_pinning: "*"
