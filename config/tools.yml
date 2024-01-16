@@ -50,7 +50,7 @@ nova:
     version_pinning: "*"
 updatecli:
   repo: updatecli/updatecli
-  version: v0.70.0
+  version: v0.71.0
   artifact: updatecli_Linux_x86_64.tar.gz
   extract: updatecli
   binary: updatecli
