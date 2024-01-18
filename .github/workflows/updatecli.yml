@@ -35,11 +35,14 @@ jobs:
         run: |
           set -eo pipefail
           JQ_FILTER='
-            { "repo": .repo,
+            {
+              "repo": .repo,
               "yamlpath": .updatecli.yamlpath,
-              "version_pinning": .updatecli.version_pinning,
+              "pattern": (if .updatecli.pattern == null then "*" else .updatecli.pattern end),
+              "kind": (if .updatecli.kind == null then "semver" else .updatecli.kind end),
               "trim_prefix": .updatecli.trim_prefix
-            } | with_entries(if .value == null then empty else . end)
+            }
+            | with_entries(if .value == null then empty else . end)
           '
           # pip yq != yq on the github runner (which is mikefarah/yq)
           # shellcheck disable=SC2002
