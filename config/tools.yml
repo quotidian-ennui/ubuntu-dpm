@@ -23,7 +23,7 @@ kubectx:
     version_pinning: "*"
 k9s:
   repo: derailed/k9s
-  version: v0.31.5
+  version: v0.31.6
   artifact: k9s_Linux_amd64.tar.gz
   extract: k9s
   binary: k9s
