@@ -8,6 +8,7 @@ INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 CURL:="curl -fSsL"
 
 alias install:=tools
+alias prepare:=init
 
 # show recipes
 [private]
@@ -22,11 +23,14 @@ updatecli +args='diff':
   set -eo pipefail
 
   JQ_FILTER='
-    { "repo": .repo,
+    {
+      "repo": .repo,
       "yamlpath": .updatecli.yamlpath,
-      "version_pinning": .updatecli.version_pinning,
+      "pattern": (if .updatecli.pattern == null then "*" else .updatecli.pattern end),
+      "kind": (if .updatecli.kind == null then "semver" else .updatecli.kind end),
       "trim_prefix": .updatecli.trim_prefix
-    } | with_entries(if .value == null then empty else . end)
+    }
+    | with_entries(if .value == null then empty else . end)
   '
   tmpdir=$(mktemp -d -t updatecli.XXXXXX)
   cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]" | while read -r line; do

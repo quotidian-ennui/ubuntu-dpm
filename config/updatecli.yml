@@ -40,8 +40,8 @@ sources:
       repository: '{{ (split "/" .repo)._1 }}'
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
-        kind: semver
-        pattern: '{{ .version_pinning }}'
+        kind: '{{ .kind }}'
+        pattern: '{{ .pattern }}'
     # {{ if .trim_prefix }}
     transformers:
       - trimprefix: '{{ .trim_prefix }}'

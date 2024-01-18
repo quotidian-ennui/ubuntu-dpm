@@ -10,7 +10,7 @@ just:
   binary: just
   updatecli:
     yamlpath: $.just.version
-    version_pinning: "*"
+    pattern: "*"
     trim_prefix: v
 kubectx:
   repo: ahmetb/kubectx
@@ -20,7 +20,6 @@ kubectx:
   binary: kubectx
   updatecli:
     yamlpath: $.kubectx.version
-    version_pinning: "*"
 k9s:
   repo: derailed/k9s
   version: v0.31.6
@@ -29,7 +28,6 @@ k9s:
   binary: k9s
   updatecli:
     yamlpath: $.k9s.version
-    version_pinning: "*"
 terraform-docs:
   repo: terraform-docs/terraform-docs
   version: v0.17.0
@@ -38,16 +36,14 @@ terraform-docs:
   binary: terraform-docs
   updatecli:
     yamlpath: $.terraform-docs.version
-    version_pinning: "*"
 nova:
-  repo: FairwindsOps/nova
+  repo: fairwindsops/nova
   version: v3.7.0
   artifact: nova_{version}_linux_amd64.tar.gz
   extract: nova
   binary: nova
   updatecli:
     yamlpath: $.nova.version
-    version_pinning: "*"
 updatecli:
   repo: updatecli/updatecli
   version: v0.71.0
@@ -56,7 +52,6 @@ updatecli:
   binary: updatecli
   updatecli:
     yamlpath: $.updatecli.version
-    version_pinning: "*"
 tflint:
   repo: terraform-linters/tflint
   version: v0.50.1
@@ -65,7 +60,6 @@ tflint:
   binary: tflint
   updatecli:
     yamlpath: $.tflint.version
-    version_pinning: "*"
 gopass:
   repo: gopasspw/gopass
   version: v1.15.11
@@ -74,7 +68,6 @@ gopass:
   binary: gopass
   updatecli:
     yamlpath: $.gopass.version
-    version_pinning: "*"
 tfsummarize:
   repo: dineshba/tf-summarize
   version: v0.3.7
@@ -85,7 +78,6 @@ tfsummarize:
   binary: tf-summarize
   updatecli:
     yamlpath: $.tfsummarize.version
-    version_pinning: "*"
 starship:
   repo: starship/starship
   version: v1.17.1
@@ -94,7 +86,6 @@ starship:
   binary: starship
   updatecli:
     yamlpath: $.starship.version
-    version_pinning: "*"
 shellcheck:
   repo: koalaman/shellcheck
   version: v0.9.0
@@ -103,7 +94,6 @@ shellcheck:
   binary: shellcheck
   updatecli:
     yamlpath: $.shellcheck.version
-    version_pinning: "*"
 shfmt:
   repo: mvdan/sh
   version: v3.7.0
@@ -111,7 +101,6 @@ shfmt:
   binary: shfmt
   updatecli:
     yamlpath: $.shfmt.version
-    version_pinning: "*"
 hcledit:
   repo: minamijoyo/hcledit
   version: v0.2.10
@@ -120,7 +109,6 @@ hcledit:
   binary: hcledit
   updatecli:
     yamlpath: $.hcledit.version
-    version_pinning: "*"
 tfupdate:
   repo: minamijoyo/tfupdate
   version: v0.8.0
@@ -129,7 +117,6 @@ tfupdate:
   binary: tfupdate
   updatecli:
     yamlpath: $.tfupdate.version
-    version_pinning: "*"
 gron:
   repo: tomnomnom/gron
   version: v0.7.1
@@ -138,7 +125,6 @@ gron:
   binary: gron
   updatecli:
     yamlpath: $.gron.version
-    version_pinning: "*"
 git-cliff:
   repo: orhun/git-cliff
   version: v1.4.0
@@ -147,7 +133,6 @@ git-cliff:
   binary: git-cliff
   updatecli:
     yamlpath: $.git-cliff.version
-    version_pinning: "*"
 git-absorb:
   repo: tummychow/git-absorb
   version: 0.6.11
@@ -156,7 +141,6 @@ git-absorb:
   binary: git-absorb
   updatecli:
     yamlpath: $.git-absorb.version
-    version_pinning: "*"
     trim_prefix: v
 committed:
   repo: crate-ci/committed
@@ -166,7 +150,6 @@ committed:
   binary: committed
   updatecli:
     yamlpath: $.committed.version
-    version_pinning: "*"
 actionlint:
   repo: rhysd/actionlint
   version: v1.6.26
@@ -175,7 +158,6 @@ actionlint:
   binary: actionlint
   updatecli:
     yamlpath: $.actionlint.version
-    version_pinning: "*"
 mikefarah-yq:
   repo: mikefarah/yq
   version: v4.40.5
@@ -183,7 +165,6 @@ mikefarah-yq:
   binary: yq
   updatecli:
     yamlpath: $.mikefarah-yq.version
-    version_pinning: "*"
 mutagen:
   repo: mutagen-io/mutagen
   version: v0.17.4
@@ -192,7 +173,6 @@ mutagen:
   binary: mutagen
   updatecli:
     yamlpath: $.mutagen.version
-    version_pinning: "*"
 lazygit:
   repo: jesseduffield/lazygit
   version: v0.40.2
@@ -201,7 +181,6 @@ lazygit:
   binary: lazygit
   updatecli:
     yamlpath: $.lazygit.version
-    version_pinning: "*"
 goenv:
   repo: ankitcharolia/goenv
   version: 1.1.7
@@ -210,16 +189,14 @@ goenv:
   binary: goenv
   updatecli:
     yamlpath: $.goenv.version
-    version_pinning: "*"
 difftastic:
-  repo: Wilfred/difftastic
+  repo: wilfred/difftastic
   version: 0.54.0
   artifact: difft-x86_64-unknown-linux-gnu.tar.gz
   extract: difft
   binary: difft
   updatecli:
     yamlpath: $.difftastic.version
-    version_pinning: "*"
 gitsemver:
   repo: psanetra/git-semver
   version: v1.1.0
@@ -228,4 +205,3 @@ gitsemver:
   binary: git-semver
   updatecli:
     yamlpath: $.gitsemver.version
-    version_pinning: "*"
