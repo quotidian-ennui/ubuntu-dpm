@@ -54,7 +54,7 @@ updatecli:
     yamlpath: $.updatecli.version
 tflint:
   repo: terraform-linters/tflint
-  version: v0.50.1
+  version: v0.50.2
   artifact: tflint_linux_amd64.zip
   extract: tflint
   binary: tflint
