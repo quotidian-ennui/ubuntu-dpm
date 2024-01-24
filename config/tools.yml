@@ -205,3 +205,19 @@ gitsemver:
   binary: git-semver
   updatecli:
     yamlpath: $.gitsemver.version
+iamlive:
+  repo: iann0036/iamlive
+  version: v1.1.6
+  artifact: iamlive-{tag}-linux-amd64.tar.gz
+  extract: iamlive
+  binary: iamlive
+  updatecli:
+    yamlpath: $.iamlive.version
+qv:
+  repo: timvw/qv
+  version: v0.8.4
+  artifact: qv-{version}-x86_64-unknown-linux-musl-generic.tar.gz
+  extract: qv
+  binary: qv
+  updatecli:
+    yamlpath: $.qv.version
