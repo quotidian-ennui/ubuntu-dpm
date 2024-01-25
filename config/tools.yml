@@ -1,3 +1,12 @@
+# Notes:
+# contents == path-to-binary-in-archive:name-of-binary-in-local-bin
+# version == could be latest but requires a github_token, usually just the name of the release
+# artifact == the name of the artifact in the associated release
+# updatecli settings
+# updatecli.kind == defaults to 'semver' probably doesn't need to change
+# updatecli.pattern == defaults to '*', use a specific version to pin the version
+# updatecli.yamlpath == the yamlpath to update; probably should be defaulted.
+# updatecli.trim_prefix == defaults to ''
 terraform:
   version: 1.5.7
 opentofu:
@@ -6,139 +15,122 @@ just:
   repo: casey/just
   version: 1.23.0
   artifact: just-{version}-x86_64-unknown-linux-musl.tar.gz
-  extract: just
-  binary: just
+  contents: just
   updatecli:
     yamlpath: $.just.version
+    kind: semver
     pattern: "*"
     trim_prefix: v
 kubectx:
   repo: ahmetb/kubectx
   version: v0.9.5
   artifact: kubectx_{tag}_linux_x86_64.tar.gz
-  extract: kubectx
-  binary: kubectx
+  contents: kubectx
   updatecli:
     yamlpath: $.kubectx.version
 k9s:
   repo: derailed/k9s
   version: v0.31.7
   artifact: k9s_Linux_amd64.tar.gz
-  extract: k9s
-  binary: k9s
+  contents: k9s
   updatecli:
     yamlpath: $.k9s.version
 terraform-docs:
   repo: terraform-docs/terraform-docs
   version: v0.17.0
   artifact: terraform-docs-{tag}-linux-amd64.tar.gz
-  extract: terraform-docs
-  binary: terraform-docs
+  contents: terraform-docs
   updatecli:
     yamlpath: $.terraform-docs.version
 nova:
   repo: fairwindsops/nova
   version: v3.7.0
   artifact: nova_{version}_linux_amd64.tar.gz
-  extract: nova
-  binary: nova
+  contents: nova
   updatecli:
     yamlpath: $.nova.version
 updatecli:
   repo: updatecli/updatecli
   version: v0.71.0
   artifact: updatecli_Linux_x86_64.tar.gz
-  extract: updatecli
-  binary: updatecli
+  contents: updatecli
   updatecli:
     yamlpath: $.updatecli.version
 tflint:
   repo: terraform-linters/tflint
   version: v0.50.2
   artifact: tflint_linux_amd64.zip
-  extract: tflint
-  binary: tflint
+  contents: tflint
   updatecli:
     yamlpath: $.tflint.version
 gopass:
   repo: gopasspw/gopass
   version: v1.15.11
   artifact: gopass-{version}-linux-amd64.tar.gz
-  extract: gopass
-  binary: gopass
+  contents: gopass
   updatecli:
     yamlpath: $.gopass.version
 tfsummarize:
   repo: dineshba/tf-summarize
   version: v0.3.7
-  # latest requires a github_token
-  # version: latest
   artifact: tf-summarize_linux_amd64.tar.gz
-  extract: tf-summarize
-  binary: tf-summarize
+  contents: tf-summarize
   updatecli:
     yamlpath: $.tfsummarize.version
 starship:
   repo: starship/starship
   version: v1.17.1
   artifact: starship-x86_64-unknown-linux-gnu.tar.gz
-  extract: starship
-  binary: starship
+  contents: starship
   updatecli:
     yamlpath: $.starship.version
 shellcheck:
   repo: koalaman/shellcheck
   version: v0.9.0
   artifact: shellcheck-{tag}.linux.x86_64.tar.xz
-  extract: shellcheck-{tag}/shellcheck
-  binary: shellcheck
+  contents: shellcheck-{tag}/shellcheck:shellcheck
   updatecli:
     yamlpath: $.shellcheck.version
 shfmt:
   repo: mvdan/sh
   version: v3.7.0
   artifact: shfmt_{tag}_linux_amd64
-  binary: shfmt
+  contents: :shfmt
   updatecli:
     yamlpath: $.shfmt.version
 hcledit:
   repo: minamijoyo/hcledit
   version: v0.2.10
   artifact: hcledit_{version}_linux_amd64.tar.gz
-  extract: hcledit
-  binary: hcledit
+  contents: hcledit
   updatecli:
     yamlpath: $.hcledit.version
 tfupdate:
   repo: minamijoyo/tfupdate
   version: v0.8.0
   artifact: tfupdate_{version}_linux_amd64.tar.gz
-  extract: tfupdate
-  binary: tfupdate
+  contents: tfupdate
   updatecli:
     yamlpath: $.tfupdate.version
 gron:
   repo: tomnomnom/gron
   version: v0.7.1
   artifact: gron-linux-amd64-{version}.tgz
-  extract: gron
-  binary: gron
+  contents: gron
   updatecli:
     yamlpath: $.gron.version
 git-cliff:
   repo: orhun/git-cliff
   version: v1.4.0
   artifact: git-cliff-{version}-x86_64-unknown-linux-gnu.tar.gz
-  extract: git-cliff-{version}/git-cliff
-  binary: git-cliff
+  contents: git-cliff-{version}/git-cliff:git-cliff
   updatecli:
     yamlpath: $.git-cliff.version
 git-absorb:
   repo: tummychow/git-absorb
   version: 0.6.11
   artifact: git-absorb-{version}-x86_64-unknown-linux-musl.tar.gz
-  extract: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb
-  binary: git-absorb
+  contents: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb:git-absorb
   updatecli:
     yamlpath: $.git-absorb.version
     # trim_prefix: v
@@ -146,86 +138,76 @@ committed:
   repo: crate-ci/committed
   version: v1.0.20
   artifact: committed-{tag}-x86_64-unknown-linux-musl.tar.gz
-  extract: ./committed
-  binary: committed
+  contents: ./committed:committed
   updatecli:
     yamlpath: $.committed.version
 actionlint:
   repo: rhysd/actionlint
   version: v1.6.26
   artifact: actionlint_{version}_linux_amd64.tar.gz
-  extract: actionlint
-  binary: actionlint
+  contents: actionlint
   updatecli:
     yamlpath: $.actionlint.version
 mikefarah-yq:
   repo: mikefarah/yq
   version: v4.40.5
   artifact: yq_linux_amd64
-  binary: yq
+  contents: :yq
   updatecli:
     yamlpath: $.mikefarah-yq.version
 mutagen:
   repo: mutagen-io/mutagen
   version: v0.17.4
   artifact: mutagen_linux_amd64_{tag}.tar.gz
-  extract: mutagen
-  binary: mutagen
+  contents: mutagen
   updatecli:
     yamlpath: $.mutagen.version
 lazygit:
   repo: jesseduffield/lazygit
   version: v0.40.2
   artifact: lazygit_{version}_Linux_x86_64.tar.gz
-  extract: lazygit
-  binary: lazygit
+  contents: lazygit
   updatecli:
     yamlpath: $.lazygit.version
 goenv:
   repo: ankitcharolia/goenv
   version: 1.1.7
   artifact: goenv-linux-amd64.tar.gz
-  extract: goenv
-  binary: goenv
+  contents: goenv
   updatecli:
     yamlpath: $.goenv.version
 difftastic:
   repo: wilfred/difftastic
   version: 0.54.0
   artifact: difft-x86_64-unknown-linux-gnu.tar.gz
-  extract: difft
-  binary: difft
+  contents: difft
   updatecli:
     yamlpath: $.difftastic.version
 gitsemver:
   repo: psanetra/git-semver
   version: v1.1.0
   artifact: git-semver_{version}_linux_amd64.tar.gz
-  extract: git-semver
-  binary: git-semver
+  contents: git-semver
   updatecli:
     yamlpath: $.gitsemver.version
 iamlive:
   repo: iann0036/iamlive
   version: v1.1.6
   artifact: iamlive-{tag}-linux-amd64.tar.gz
-  extract: iamlive
-  binary: iamlive
+  contents: iamlive
   updatecli:
     yamlpath: $.iamlive.version
 qv:
   repo: timvw/qv
   version: v0.8.4
   artifact: qv-{version}-x86_64-unknown-linux-musl-generic.tar.gz
-  extract: qv
-  binary: qv
+  contents: qv
   updatecli:
     yamlpath: $.qv.version
 gitleaks:
   repo: gitleaks/gitleaks
   version: v8.18.1
   artifact: gitleaks_{version}_linux_x64.tar.gz
-  extract: gitleaks
-  binary: gitleaks
+  contents: gitleaks
   updatecli:
     yamlpath: $.gitleaks.version

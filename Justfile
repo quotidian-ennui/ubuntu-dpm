@@ -193,9 +193,11 @@ install_tools:
     repo=$(echo "$line" | jq -r ".repo")
     version=$(echo "$line" | jq -r ".version")
     artifact=$(echo "$line" | jq -r ".artifact")
-    extract=$(echo "$line" | jq -r ".extract")
-    binary=$(echo "$line" | jq -r ".binary")
-    if [[ "$extract" != "null" ]]; then
+    contents_line=$(echo "$line" | jq -r ".contents")
+    extract=$(echo "$contents_line" | cut -f1 -d':')
+    binary=$(echo "$contents_line" | cut -f2 -d':')
+    binary=${binary:-$extract}
+    if [[ -n "$extract" ]]; then
       extract_cmdline="--extract $extract"
     else
       extract_cmdline=""
