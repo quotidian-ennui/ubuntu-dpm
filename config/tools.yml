@@ -141,7 +141,7 @@ git-absorb:
   binary: git-absorb
   updatecli:
     yamlpath: $.git-absorb.version
-    trim_prefix: v
+    # trim_prefix: v
 committed:
   repo: crate-ci/committed
   version: v1.0.20
@@ -221,3 +221,11 @@ qv:
   binary: qv
   updatecli:
     yamlpath: $.qv.version
+gitleaks:
+  repo: gitleaks/gitleaks
+  version: v8.18.1
+  artifact: gitleaks_{version}_linux_x64.tar.gz
+  extract: gitleaks
+  binary: gitleaks
+  updatecli:
+    yamlpath: $.gitleaks.version
