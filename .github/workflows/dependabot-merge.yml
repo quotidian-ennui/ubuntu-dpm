@@ -1,51 +1,113 @@
 name: dependabot-merge
-
+run-name: Merge PR (${{ github.event.client_payload.detail.pull_request }})
 on:
-  pull_request:
+  repository_dispatch:
+    types:
+      - pr-trigger
 
-
-permissions: {}
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  statuses: write
 
 jobs:
   bootstrap:
     name: Pipeline Bootstrap
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
+      is_pr: ${{ steps.compute.outputs.is_pr }}
+      is_dependabot_pr: ${{ steps.compute.outputs.is_dependabot_pr }}
       actions_modified: ${{ steps.changes.outputs.workflows_any_changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.event.client_payload.base.ref }}
       - name: Changed Files
         # Attempt to figure out what files have changed
         id: changes
-        uses: tj-actions/changed-files@90a06d6ba9543371ab4df8eeca0be07ca6054959 # v42.0.2
+        uses: tj-actions/changed-files@ae82ed4ae04587b665efad2f206578aa6f0e8539 # v42.0.0
         with:
           files_yaml: |
             workflows:
               - ".github/workflows/**"
+      - name: Compute Activities
+        id: compute
+        run: |
+          if [[ "${{ github.event.client_payload.detail.pull_request }}" != "" ]]
+          then
+            echo "is_pr=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "is_pr=false"  >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "${{ github.event.client_payload.detail.pull_request }}" != "" && "${{ github.event.client_payload.base.actor }}" == "dependabot[bot]" ]]
+          then
+            echo "is_dependabot_pr=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "is_dependabot_pr=false"  >> "$GITHUB_OUTPUT"
+          fi
 
   actions_merge:
-    needs: bootstrap
-    permissions:
-      contents: write
-      pull-requests: write
-    if: |
-      github.actor == 'dependabot[bot]' &&
-      needs.bootstrap.outputs.actions_modified == 'true'
     runs-on: ubuntu-latest
+    name: Dependabot Merge (action changes)
+    needs:
+      - bootstrap
+    if: |
+      needs.bootstrap.outputs.is_dependabot_pr == 'true' &&
+      needs.bootstrap.outputs.actions_modified == 'true'
     steps:
-      - name: Find associated PR
-        uses: jwalton/gh-find-current-pr@v1.3.2
-        id: findpr
+      - name: Checkout branch
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          github-token: ${{ github.token }}
-          state: open
-          sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
-      - name: merge-actions
+          ref: ${{ github.event.client_payload.base.ref }}
+      - name: Allow merge on semver-minor
+        id: allow_merge
+        run: |
+          function patch_or_minor() {
+            local update_type=${1/version-update:/}
+            case "$update_type" in
+            semver-patch|semver-minor) return 0;;
+            *) return 1;;
+            esac
+          }
+          # shellcheck disable=SC2091
+          if patch_or_minor "${{ github.event.client_payload.detail.dependabot_update_type }}"
+          then
+            echo "automerge=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "automerge=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: "Create Token"
+        uses: actions/create-github-app-token@c4fa18d55c5d49e6a2793e351ea4938322c61072 # v1.6.4
+        id: app-token
+        with:
+          app-id: ${{ vars.WORKFLOW_UPDATE_APP_ID }}
+          private-key: ${{ secrets.WORKFLOW_UPDATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - name: Update PR with Automerge comment
+        id: comment
+        uses: quotidian-ennui/actions-olio/pr-or-issue-comment@da869dde1ba7d5ba0aaa10e94f4c8fce3a8adae0 # v0.1.0
+        with:
+          issue_number: ${{ github.event.client_payload.detail.pull_request }}
+          body: |
+            :dependabot: Attempt Merge: ${{ steps.allow_merge.outputs.automerge }}
+
+            | Decision Table | Value |
+            | ------ | ------ |
+            |Automerge allowed up to| semver-minor |
+            |Update Type| ${{ github.event.client_payload.detail.dependabot_update_type }} |
+            |is_dependabot| ${{ needs.bootstrap.outputs.is_dependabot_pr }} |
+            |action changes| ${{ needs.bootstrap.outputs.actions_modified }} |
+          token: ${{ secrets.GITHUB_TOKEN }}
+          search_term: "dependabot-action-automerge-status"
+      - name: Dependabot Merge
         continue-on-error: true
-        uses: fastify/github-action-merge-dependabot@59fc8817458fac20df8884576cfe69dbb77c9a07 # v3.9.1
-        with:
-          pr-number: ${{ steps.findpr.outputs.pr }}
-          target: minor
+        if: |
+          startsWith(github.event.client_payload.base.ref, 'dependabot') &&
+          steps.allow_merge.outputs.automerge == 'true'
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh pr review --approve "${{ github.event.client_payload.detail.pull_request }}"
+          gh pr merge -r --auto "${{ github.event.client_payload.detail.pull_request }}"
