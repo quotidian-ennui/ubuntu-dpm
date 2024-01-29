@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 env:
-  UPDATECLI_VERSION: v0.71.0
+  UPDATECLI_VERSION: v0.72.0
   UPDATECLI_GITHUB_USER: qe-repo-updater[bot]
   UPDATECLI_GITHUB_EMAIL: 152897211+qe-repo-updater[bot]@users.noreply.github.com
 jobs:
