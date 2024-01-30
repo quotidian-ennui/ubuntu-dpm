@@ -59,5 +59,7 @@ jobs:
           UPDATECLI_GITHUB_USER: ${{ env.UPDATECLI_GITHUB_USER }}
           UPDATECLI_GITHUB_EMAIL: ${{ env.UPDATECLI_GITHUB_EMAIL }}
           UPDATECLI_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           UPDATECLI_GH_ACTION: true
