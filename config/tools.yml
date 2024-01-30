@@ -171,7 +171,7 @@ lazygit:
     yamlpath: $.lazygit.version
 goenv:
   repo: ankitcharolia/goenv
-  version: 1.1.7
+  version: 1.1.8
   artifact: goenv-linux-amd64.tar.gz
   contents: goenv
   updatecli:
