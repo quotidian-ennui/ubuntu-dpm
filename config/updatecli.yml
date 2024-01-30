@@ -1,7 +1,7 @@
-# {{ $githubPullRequestAction := eq (env "UPDATECLI_GH_ACTION" | default "true") "true" }}
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: '{{ .repo }}'
 
-# {{ if $githubPullRequestAction }}
+# {{ if $scmEnabled }}
 actions:
   pull_request:
     scmid: github
@@ -18,8 +18,8 @@ scms:
     kind: github
     spec:
       branch: main
-      owner: quotidian-ennui
-      repository: ubuntu-dpm
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
       user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
       email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
       username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
@@ -51,8 +51,8 @@ targets:
   update_yaml:
     kind: yaml
     sourceid: latest
-    name: 'Update {{ .repo }} version'
-    # {{ if $githubPullRequestAction }}
+    name: 'Update {{ .repo }} version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
     scmid: github
     # {{ end }}
     spec:
