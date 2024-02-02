@@ -157,7 +157,7 @@ mikefarah-yq:
     yamlpath: $.mikefarah-yq.version
 mutagen:
   repo: mutagen-io/mutagen
-  version: v0.17.4
+  version: v0.17.5
   artifact: mutagen_linux_amd64_{tag}.tar.gz
   contents: mutagen
   updatecli:
