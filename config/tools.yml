@@ -206,7 +206,7 @@ qv:
     yamlpath: $.qv.version
 gitleaks:
   repo: gitleaks/gitleaks
-  version: v8.18.1
+  version: v8.18.2
   artifact: gitleaks_{version}_linux_x64.tar.gz
   contents: gitleaks
   updatecli:
