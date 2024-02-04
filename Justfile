@@ -45,13 +45,13 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # initialise to install tools
-@init: is_ubuntu install_base install_github_cli
+@init: is_supported install_base install_github_cli
 
 # install binary tools
-@tools: is_ubuntu install_tools
+@tools: is_supported install_tools
 
 # install all the sdk tooling
-@sdk: is_ubuntu install_sdkman install_nvm install_rvm install_rust install_go (install_tvm "terraform") (install_tvm "opentofu")
+@sdk: is_supported install_sdkman install_nvm install_rvm install_rust install_go (install_tvm "terraform") (install_tvm "opentofu")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
@@ -268,9 +268,12 @@ install_base:
 [private]
 [no-cd]
 [no-exit-message]
-is_ubuntu:
+is_supported:
   #!/usr/bin/env bash
   set -eo pipefail
 
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
-  if [[ "$(lsb_release -si)" != "Ubuntu" ]]; then echo "Try again on Ubuntu"; exit 1; fi
+  case "$(lsb_release -si)" in
+    Ubuntu) ;;
+    *) echo "Try again on Ubuntu"; exit 1;;
+  esac
