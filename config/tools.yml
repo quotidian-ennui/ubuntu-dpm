@@ -178,7 +178,7 @@ goenv:
     yamlpath: $.goenv.version
 difftastic:
   repo: wilfred/difftastic
-  version: 0.54.0
+  version: 0.55.0
   artifact: difft-x86_64-unknown-linux-gnu.tar.gz
   contents: difft
   updatecli:
