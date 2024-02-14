@@ -68,29 +68,41 @@ install_go:
 install_sdkman:
   #!/usr/bin/env bash
   set -eo pipefail
-  {{ CURL }} "https://get.sdkman.io" | bash
 
+  if [[ ! -d "$HOME/.sdkman" ]]; then
+    # It does feel that if we already have SDKMAN installed then
+    # we could execute sdk selfupdate & sdk upgrade
+    {{ CURL }} "https://get.sdkman.io" | bash
+  fi
+  # This is a bit of a hack to avoid the interactive prompt but setting
+  # it on the commandline doesn't always work.
+  sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
   source ~/.sdkman/bin/sdkman-init.sh
-  graal_latest=$(gh release list -R graalvm/graalvm-ce-builds | grep -i Latest | awk '{print $6}')
-  gradle_latest=$(gh release list -R gradle/gradle | grep -i Latest | awk '{print $1}')
-  maven_latest=$(gh release list -R apache/maven | grep -i Latest | awk '{print $1}')
-  jbang_latest=$(gh release list -R jbangdev/jbang | grep -i Latest | awk '{print $1}')
-  graal_v=${graal_latest#"v"}
-  mvn_v=${maven_latest#"v"}
+  graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  gradle_latest=$(gh release list -R gradle/gradle --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  maven_latest=$(gh release list -R apache/maven --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  jbang_latest=$(gh release list -R jbangdev/jbang --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+
+  graal_v=${graal_latest#"jdk-"}
+  mvn_v=${maven_latest#"maven-"}
   gradle_v=${gradle_latest#"v"}
+  # Need to use 8.5 rather than 8.5.0
+  gradle_v=${gradle_v%".0"}
   jbang_v=${jbang_latest#"v"}
-  sdk install java "$graal_v-graalce" && sdk default java "$graal_v-graalce"
-  sdk install gradle "$gradle_v" && sdk default gradle "$gradle_v"
-  sdk install maven "$mvn_v" && sdk default maven "$mvn_v"
-  sdk install jbang "$jbang_v" && sdk default jbang "$jbang_v"
+
+  sdk install java "$graal_v-graalce"
+  sdk install gradle "$gradle_v"
+  sdk install maven "$mvn_v"
+  sdk install jbang "$jbang_v"
   echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$mvn_v, jbang=$jbang_v"
+  sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
 
 # Install NVM (because nodejs)
 install_nvm:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  nvm_v=$(gh release list -R nvm-sh/nvm | grep -i Latest | awk '{print $1}')
+  nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
   {{ CURL }}  "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
