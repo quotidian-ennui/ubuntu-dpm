@@ -9,6 +9,7 @@ UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
 LOCAL_SHARE:= env_var('HOME') / ".local/share/ubuntu-dpm"
+GOENV_ROOT:= env_var('HOME') / ".goenv"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 
 alias prepare:=init
@@ -49,7 +50,7 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # Update apt + tools
-@update: apt_update tools
+@update: apt_update tools update_goenv
 
 # initialise to install tools
 init: is_supported
@@ -87,17 +88,45 @@ sdk_install_help:
 [private]
 sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
-# not entirely sure I like this as a chicken & egg situation since goenv must be installed
-# by 'tools' recipe
 # Install goenv (because golang)
 [private]
 sdk_install_go:
   #!/usr/bin/env bash
 
   set -eo pipefail
-  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
-  goenv --install "$go_v"
-  goenv --use "$go_v"
+  mkdir -p "{{ LOCAL_BIN }}"
+
+  go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
+  rm -f "{{ LOCAL_BIN }}/goenv"
+  if [[ -d "{{ GOENV_ROOT }}" ]]; then
+    echo "goenv already installed"
+    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
+  else
+    git clone "https://github.com/go-nv/goenv.git" "{{ GOENV_ROOT }}"
+  fi
+  ln -s {{ GOENV_ROOT }}/bin/* {{ LOCAL_BIN }}
+  if [[ -z "$DPM_SKIP_GO_PROFILE" ]]; then
+    if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
+      echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bashrc
+      echo 'eval "$($GOENV_ROOT/bin/goenv init -)"' >> ~/.bashrc
+    fi
+  fi
+  go_v=$(ls -1 "{{ GOENV_ROOT }}/plugins/go-build/share/gobuild" | grep -v -e "beta" -e "rc" | sort -rV | head -n 1)
+  "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
+  "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
+  "{{ GOENV_ROOT }}/bin/goenv" versions
+
+
+# Pulls the goenv repo because it doesn't do --list-remotes
+[private]
+update_goenv:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  if [[ -d "{{ GOENV_ROOT }}" ]]; then
+    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
+  fi
+
 
 # Install SDKMAN (because JVM)
 [private]
