@@ -44,6 +44,9 @@ updatecli +args='diff':
   done
   rm -rf "$tmpdir"
 
+# Update apt + tools
+@update: apt_update tools
+
 # initialise to install tools
 @init: is_supported install_base install_github_cli
 
@@ -217,7 +220,7 @@ install_tools:
     fi
     if [[ "$repo" != "null" ]]
     then
-      if [[ "${installed[$binary]}" != "$version" ]]
+      if [[ "${installed[$binary]}" != "$version" || ! -x "{{ LOCAL_BIN }}/$binary" ]]
       then
         echo "[+] $binary@$version from $repo (attempt install)"
         gh-release-install "$repo" "$artifact" "{{ LOCAL_BIN }}/$binary" --version "$version" $extract_cmdline
@@ -262,20 +265,25 @@ install_base:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  sudo apt-get -y install kubectl helm gh jq python3-pip
+  sudo apt -y install kubectl helm gh jq python3-pip
   if [[ -z "{{ SKIP_DOCKER }}" ]]
   then
     if [[ -z "$WSL_DISTRO_NAME" ]]
     then
-      sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     else
-      sudo apt-get -y install docker-buildx-plugin
+      sudo apt -y install docker-buildx-plugin
     fi
   fi
   if ! which yq >/dev/null 2>&1; then
     sudo snap install yq
   fi
   pip install gh-release-install
+
+[private]
+@apt_update:
+  sudo apt -y update
+  sudo apt -y upgrade
 
 [private]
 [no-cd]

@@ -52,8 +52,8 @@ install_apt_repos() {
   repo_helm
   repo_ghcli
   repo_docker
-  sudo add-apt-repository ppa:git-core/ppa
-  sudo apt-get update
+  sudo add-apt-repository -y ppa:git-core/ppa
+  sudo apt update
 }
 
 if [[ "$(uname -o | tr '[:upper:]' '[:lower:]')" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
@@ -62,7 +62,7 @@ case "$(lsb_release -si)" in
   *) echo "Try again on Ubuntu"; exit 1;;
 esac
 
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg wget software-properties-common
+sudo apt install -y apt-transport-https ca-certificates curl gnupg wget software-properties-common
 install_apt_repos
 install_vscode
-sudo apt-get install -y just direnv git zoxide jq tidy
+sudo apt install -y just direnv git zoxide jq tidy
