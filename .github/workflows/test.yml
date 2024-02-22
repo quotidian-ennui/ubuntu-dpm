@@ -26,7 +26,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -53,7 +53,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -73,7 +73,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -92,7 +92,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -112,7 +112,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -132,7 +132,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
@@ -151,7 +151,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Just
-        uses: taiki-e/install-action@875aa7bb88c61a90732e8d159a915df57f27e475 # v2.27.5
+        uses: taiki-e/install-action@19e9b549a48620cc50fcf6e6e866b8fb4eca1b01 # v2.27.6
         with:
           tool: just@1.24.0
       - name: Test Install
