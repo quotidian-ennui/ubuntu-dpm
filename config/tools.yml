@@ -128,7 +128,7 @@ git-cliff:
     yamlpath: $.git-cliff.version
 git-absorb:
   repo: tummychow/git-absorb
-  version: 0.6.11
+  version: 0.6.12
   artifact: git-absorb-{version}-x86_64-unknown-linux-musl.tar.gz
   contents: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb:git-absorb
   updatecli:
