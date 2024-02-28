@@ -4,6 +4,7 @@ TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
+GOENV_ROOT:= env_var('HOME') / ".goenv"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 SKIP_DOCKER:= env_var_or_default("SKIP_DOCKER", "")
 CURL:="curl -fSsL"
@@ -45,7 +46,7 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # Update apt + tools
-@update: apt_update tools
+@update: apt_update tools update_goenv
 
 # initialise to install tools
 @init: is_supported install_base install_github_cli
@@ -56,16 +57,41 @@ updatecli +args='diff':
 # install all the sdk tooling
 @sdk: is_supported install_sdkman install_nvm install_rvm install_rust install_go (install_tvm "terraform") (install_tvm "opentofu")
 
-# not entirely sure I like this as a chicken & egg situation since goenv must be installed
-# by 'tools' recipe
 # Install goenv (because golang)
 install_go:
   #!/usr/bin/env bash
 
   set -eo pipefail
-  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
-  goenv --install "$go_v"
-  goenv --use "$go_v"
+  mkdir -p "{{ LOCAL_BIN }}"
+
+  go_v=$(cat "{{ TOOL_CONFIG }}" | yq -r ".golang.version")
+  rm -f "{{ LOCAL_BIN }}/goenv"
+  if [[ -d "{{ GOENV_ROOT }}" ]]; then
+    echo "goenv already installed"
+    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
+  else
+    git clone "https://github.com/go-nv/goenv.git" "{{ GOENV_ROOT }}"
+  fi
+  ln -s {{ GOENV_ROOT }}/bin/* {{ LOCAL_BIN }}
+  if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
+    echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bashrc
+    echo 'eval "$($GOENV_ROOT/bin/goenv init -)"' >> ~/.bashrc
+  fi
+  "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
+  "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
+  "{{ GOENV_ROOT }}/bin/goenv" versions
+
+
+# Pulls the goenv repo because it doesn't do --list-remotes
+[private]
+update_goenv:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  if [[ -d "{{ GOENV_ROOT }}" ]]; then
+    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
+  fi
+
 
 # Install SDKMAN (because JVM)
 install_sdkman:
