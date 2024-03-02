@@ -192,7 +192,7 @@ gitsemver:
     yamlpath: $.gitsemver.version
 iamlive:
   repo: iann0036/iamlive
-  version: v1.1.7
+  version: v1.1.8
   artifact: iamlive-{tag}-linux-amd64.tar.gz
   contents: iamlive
   updatecli:
