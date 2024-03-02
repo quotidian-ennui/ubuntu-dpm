@@ -14,6 +14,12 @@ repo_docker() {
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
 
+# trivy
+repo_trivy() {
+  wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+  echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+}
+
 # proget makedeb (Just)
 repo_prebuilt() {
   wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null
@@ -52,6 +58,7 @@ install_apt_repos() {
   repo_helm
   repo_ghcli
   repo_docker
+  repo_trivy
   sudo add-apt-repository -y ppa:git-core/ppa
   sudo apt update
 }
@@ -62,7 +69,7 @@ case "$(lsb_release -si)" in
   *) echo "Try again on Ubuntu"; exit 1;;
 esac
 
-sudo apt install -y apt-transport-https ca-certificates curl gnupg wget software-properties-common
+sudo apt install -y apt-transport-https ca-certificates curl gnupg wget software-properties-common 
 install_apt_repos
 install_vscode
 sudo apt install -y just direnv git zoxide jq tidy

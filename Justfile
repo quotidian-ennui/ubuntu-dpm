@@ -265,7 +265,7 @@ install_base:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  sudo apt -y install kubectl helm gh jq python3-pip
+  sudo apt -y install kubectl helm gh jq python3-pip trivy
   if [[ -z "{{ SKIP_DOCKER }}" ]]
   then
     if [[ -z "$WSL_DISTRO_NAME" ]]
