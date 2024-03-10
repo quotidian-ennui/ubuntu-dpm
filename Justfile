@@ -73,6 +73,7 @@ install_sdkman:
   set -eo pipefail
 
   if [[ ! -d "$HOME/.sdkman" ]]; then
+    sudo apt install -y zip unzip
     # It does feel that if we already have SDKMAN installed then
     # we could execute sdk selfupdate & sdk upgrade
     {{ CURL }} "https://get.sdkman.io" | bash
