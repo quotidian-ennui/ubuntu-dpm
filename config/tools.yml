@@ -86,7 +86,7 @@ starship:
     yamlpath: $.starship.version
 shellcheck:
   repo: koalaman/shellcheck
-  version: v0.9.0
+  version: v0.10.0
   artifact: shellcheck-{tag}.linux.x86_64.tar.xz
   contents: shellcheck-{tag}/shellcheck:shellcheck
   updatecli:
