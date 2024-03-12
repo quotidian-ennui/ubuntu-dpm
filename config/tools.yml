@@ -30,7 +30,7 @@ kubectx:
     yamlpath: $.kubectx.version
 k9s:
   repo: derailed/k9s
-  version: v0.32.0
+  version: v0.32.3
   artifact: k9s_Linux_amd64.tar.gz
   contents: k9s
   updatecli:
