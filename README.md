@@ -6,7 +6,8 @@ It's not intended to be that useful to anyone else, but if you want to use it, y
 
 ## TLDR;
 
-- `bootstrap.sh` to bootstrap extra apt repos and install some initial tooling
+- `bootstrap.sh repos` to install the apt repos we need
+- `bootstrap.sh baseline` to install some initial tooling
 - `just init`
 - `just tools` | `just install`
 - `just sdk`

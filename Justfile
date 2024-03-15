@@ -48,7 +48,12 @@ updatecli +args='diff':
 @update: apt_update tools
 
 # initialise to install tools
-@init: is_supported install_base install_github_cli
+init: is_supported configure_ghcli
+  #!/usr/bin/env bash
+
+  set -eo pipefail
+  mkdir -p ~/.config/direnv && wget -q -O ~/.config/direnv/direnvrc https://raw.githubusercontent.com/direnv/direnv/master/stdlib.sh
+  mkdir -p ~/.local/share/direnv/allow
 
 # install binary tools
 @tools: is_supported install_tools
@@ -73,7 +78,6 @@ install_sdkman:
   set -eo pipefail
 
   if [[ ! -d "$HOME/.sdkman" ]]; then
-    sudo apt install -y zip unzip
     # It does feel that if we already have SDKMAN installed then
     # we could execute sdk selfupdate & sdk upgrade
     {{ CURL }} "https://get.sdkman.io" | bash
@@ -247,11 +251,11 @@ install_tools:
   fi
 
 [private]
-install_github_cli:
+configure_ghcli:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  if ! gh auth status; then
+  if ! gh auth status >/dev/null 2>&1; then
     gh auth login -h github.com
   fi
   gh extension install quotidian-ennui/gh-my || true
@@ -260,23 +264,6 @@ install_github_cli:
   gh extension install quotidian-ennui/gh-approve-deploy || true
   gh extension install actions/gh-actions-cache || true
   gh extension install mcwarman/gh-update-pr || true
-
-[private]
-install_base:
-  #!/usr/bin/env bash
-  set -eo pipefail
-
-  sudo apt -y install kubectl helm gh jq python3-pip trivy
-  if [[ -z "{{ SKIP_DOCKER }}" ]]
-  then
-    sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    sudo groupadd docker || true
-    sudo usermod -aG docker $USER
-  fi
-  if ! which yq >/dev/null 2>&1; then
-    sudo snap install yq
-  fi
-  pip install gh-release-install
 
 [private]
 @apt_update:
