@@ -8,9 +8,9 @@
 # updatecli.yamlpath == the yamlpath to update; probably should be defaulted.
 # updatecli.trim_prefix == defaults to ''
 terraform:
-  version: 1.5.7
+  version: 1.6.6
 opentofu:
-  version: 1.6.0
+  version: 1.6.2
 just:
   repo: casey/just
   version: 1.25.2
