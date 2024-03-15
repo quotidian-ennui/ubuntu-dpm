@@ -269,12 +269,9 @@ install_base:
   sudo apt -y install kubectl helm gh jq python3-pip trivy
   if [[ -z "{{ SKIP_DOCKER }}" ]]
   then
-    if [[ -z "$WSL_DISTRO_NAME" ]]
-    then
-      sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    else
-      sudo apt -y install docker-buildx-plugin
-    fi
+    sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo groupadd docker || true
+    sudo usermod -aG docker $USER
   fi
   if ! which yq >/dev/null 2>&1; then
     sudo snap install yq
