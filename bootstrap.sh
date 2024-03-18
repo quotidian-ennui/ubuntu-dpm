@@ -7,7 +7,7 @@ set -eo pipefail
 
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-properties-common"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-BASELINE_TOOL_LIST="vim nfs-common unison just direnv git zoxide jq tidy kubectl helm gh jq python3-pip trivy net-tools zip unzip"
+BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq python3-pip trivy net-tools zip unzip"
 
 DOCKER_USE_WINCREDS='
 {
@@ -111,6 +111,9 @@ action_baseline() {
   sudo apt install -y $BASELINE_TOOL_LIST
   if ! which yq >/dev/null 2>&1; then
     sudo snap install yq
+  fi
+  if ! which just >/dev/null 2>&1; then
+    sudo apt install -y just
   fi
   pip install gh-release-install
   install_docker
