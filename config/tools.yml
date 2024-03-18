@@ -65,7 +65,7 @@ tflint:
     yamlpath: $.tflint.version
 gopass:
   repo: gopasspw/gopass
-  version: v1.15.11
+  version: v1.15.12
   artifact: gopass-{version}-linux-amd64.tar.gz
   contents: gopass
   updatecli:
