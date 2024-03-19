@@ -87,7 +87,9 @@ install_sdkman:
   # it on the commandline doesn't always work.
   sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
   source ~/.sdkman/bin/sdkman-init.sh
-  graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  # graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  # JDK21 is LTS... so we'll use that
+  graal_latest=jdk-21.0.2
   gradle_latest=$(gh release list -R gradle/gradle --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
   maven_latest=$(gh release list -R apache/maven --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
   jbang_latest=$(gh release list -R jbangdev/jbang --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
