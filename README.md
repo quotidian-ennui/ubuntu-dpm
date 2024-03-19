@@ -16,11 +16,23 @@ Yeah, I know, I'm a terrible person for using `just` because it's yet another th
 
 ## Notes
 
-- `echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers` (or into `/etc/sudoers.d/i_hates_security`). This is for _convenience reasons_; it's a terrible idea.
-- Installs `yq` via snap as part of the `init` recipe; which is subsequently removed by the `install` recipe. Since snap may require systemd to be running the `etc/wsl.conf` in your WSL2 linux distro has to enable systemd and you have to do the appropriate `wsl --shutdown` dance. This may already be true if you're building a new machine (as I did in 2023-12; but YMMV).
+- I also do this before I start
+```bash
+echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient
+sudo apt update && sudo apt -y install vim nfs-common unison jq direnv zip unzip net-tools git
+if [[ -z "$WSL_DISTRO_NAME" ]]; then
+  sudo apt -y install openssh-server
+fi
+if [[ -z "$WSL_DISTRO_NAME" && -n "${XDG_CURRENT_DESKTOP}" ]]; then
+  sudo apt -y install fonts-firacode
+fi
+sudo update-alternatives --set editor /usr/bin/vim.basic
+sudo apt -y autoremove
+if [ ! -f ~/.ssh/id_ed25519 ]; then
+  ssh-keygen -t ed25519 -a 32
+fi
 ```
-[boot]
-systemd=true
-```
+- `echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient` is a terrible idea.
+- If `yq` is not installed then we use it via docker as part of the tool installation; afterwards it'll exist.
 - Post init+tools, you probably want to do a `hash -r` to clear out the bash hash cache otherwise you get `/usr/bin/just not found` errors.
 - Keeps a track of the files its installed in `~/.config/ubuntu-dpm/installed-versions` so it doesn't try to install the same version of things repeatedly.
