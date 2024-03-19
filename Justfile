@@ -42,6 +42,7 @@ updatecli +args='diff':
       GITHUB_TOKEN=$(gh auth token) updatecli "$@" --values "$values" -c "{{ UPDATECLI_TEMPLATE }}"
     fi
   done
+  GITHUB_TOKEN=$(gh auth token) updatecli "$@"
   rm -rf "$tmpdir"
 
 # Update apt + tools
