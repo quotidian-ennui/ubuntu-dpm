@@ -7,7 +7,7 @@ set -eo pipefail
 
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-properties-common"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq python3-pip trivy net-tools zip unzip"
+BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip"
 
 DOCKER_USE_WINCREDS='
 {
@@ -15,11 +15,16 @@ DOCKER_USE_WINCREDS='
 }
 '
 
+WSL_CONF='
+[boot]
+systemd=true
+'
+
 # docker
 repo_docker() {
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+  curl -fsSL https://download.docker.com/linux/$(distro_name)/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
   sudo chmod a+r /etc/apt/keyrings/docker.gpg
-  echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(distro_name) \
     "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
@@ -44,7 +49,7 @@ repo_kubectl() {
 
 # helm
 repo_helm() {
-  curl -fsSL https://baltocdn.com/helm/signing.asc | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/helm.gpg 
+  curl -fsSL https://baltocdn.com/helm/signing.asc | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/helm.gpg
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
 }
 
@@ -72,10 +77,15 @@ install_docker() {
     if [[ -n "$WSL_DISTRO_NAME" ]]; then
       wincred_version=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/docker-credential-helpers/releases/latest | xargs basename)
       mkdir -p ~/.local/bin
+      mkdir -p ~/.docker
       curl -fSsL -o ~/.local/bin/docker-credential-wincred.exe \
         "https://github.com/docker/docker-credential-helpers/releases/download/${wincred_version}/docker-credential-wincred-${wincred_version}.windows-$(dpkg --print-architecture).exe"
       chmod +x ~/.local/bin/docker-credential-wincred.exe
       echo $DOCKER_USE_WINCREDS > ~/.docker/config.json
+      if [[ ! -f /etc/wsl.conf ]]; then
+        sudo echo $WSL_CONF > /etc/wsl.conf
+        echo ">>> /etc/wsl.conf modified, you need to restart WSL"
+      fi
     fi
   fi
 }
@@ -103,27 +113,35 @@ action_repos() {
   repo_ghcli
   repo_docker
   repo_trivy
-  sudo add-apt-repository -y ppa:git-core/ppa
+  if [[ "$(distro_name)" == "ubuntu" ]]; then
+    sudo add-apt-repository -y ppa:git-core/ppa
+  fi
   sudo apt update
 }
 
 action_baseline() {
   sudo apt install -y $BASELINE_TOOL_LIST
-  if ! which yq >/dev/null 2>&1; then
-    sudo snap install yq
-  fi
   if ! which just >/dev/null 2>&1; then
     sudo apt install -y just
   fi
-  pip install gh-release-install
+  pipx install gh-release-install
   install_docker
   install_vscode
 }
 
+distro_name() {
+  if [[ -e "/etc/os-release" ]]; then
+    release=$(. /etc/os-release && echo "$ID" | tr '[:upper:]' '[:lower:]')
+  else
+    release=$(lsb_release -si | tr '[:upper:]' '[:lower:]') || true
+  fi
+  echo $release
+}
+
 if [[ "$(uname -o | tr '[:upper:]' '[:lower:]')" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
-case "$(lsb_release -si)" in
-  Ubuntu) ;;
-  *) echo "Try again on Ubuntu"; exit 1;;
+case "$(distro_name)" in
+  ubuntu|debian) ;;
+  *) echo "Try again on Ubuntu or Debian"; exit 1;;
 esac
 
 ACTION=$1 || true

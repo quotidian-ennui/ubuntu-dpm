@@ -177,9 +177,8 @@ install_tvm variant:
 install_tools:
   #!/usr/bin/env bash
   # Pre-Reqs:
-  #  sudo apt install jq python3-pip
-  #  pip install gh-release-install (https://github.com/jooola/gh-release-install)
-  #  snap install yq # to bootstrap this script, will be removed afterwards.
+  #  sudo apt install jq pipx
+  #  pipx install gh-release-install (https://github.com/jooola/gh-release-install)
   # We're using SNAP which might require systemd
   # In /etc/wsl.conf in the linux distro
   # [boot]
@@ -187,7 +186,21 @@ install_tools:
   # and then do the wsl --shutdown restart dance.
   set -eo pipefail
 
-  function write_installed() {
+  yq_init() {
+    if ! which yq >/dev/null 2>&1; then
+      docker pull mikefarah/yq
+    fi
+  }
+
+  yq_wrapper() {
+    if ! which yq >/dev/null 2>&1; then
+      docker run --rm -i -v "${PWD}":/workdir mikefarah/yq "$@"
+    else
+      yq "$@"
+    fi
+  }
+
+  write_installed() {
     {
       for i in "${!installed[@]}"; do
         echo "$i=${installed[$i]}"
@@ -195,7 +208,7 @@ install_tools:
     } > "{{ INSTALLED_VERSIONS}}"
   }
 
-  function read_installed() {
+  read_installed() {
     if [[ -f "{{ INSTALLED_VERSIONS}}" ]]; then
       while IFS== read -r key value; do
         installed[$key]=$value
@@ -205,11 +218,12 @@ install_tools:
 
   mkdir -p "{{ LOCAL_CONFIG }}"
   mkdir -p "{{ LOCAL_BIN }}"
+  yq_init
 
   declare -A installed
   read_installed
   snap_apt=""
-  tools=$(cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]")
+  tools=$(cat "{{ TOOL_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
   for line in $tools
   do
     repo=$(echo "$line" | jq -r ".repo")
@@ -245,7 +259,6 @@ install_tools:
   # Cleanup Just (mpr has it at 1.14)
   if [[ -n "$snap_apt" ]]; then
     sudo apt remove -y just 1>/dev/null 2>&1 || true
-    sudo snap remove --purge yq 1>/dev/null 2>&1 || true
     echo ">>> casey/just installed at $(which just)"
     echo ">>> mikefarah/yq installed at $(which yq)"
     echo "You might want to 'hash -r' to clear the bash hash cache."
@@ -279,7 +292,12 @@ is_supported:
   set -eo pipefail
 
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
-  case "$(lsb_release -si)" in
-    Ubuntu) ;;
-    *) echo "Try again on Ubuntu"; exit 1;;
+  if [[ -e "/etc/os-release" ]]; then
+    release=$(. /etc/os-release && echo "$ID" | tr '[:upper:]' '[:lower:]')
+  else
+    release=$(lsb_release -si | tr '[:upper:]' '[:lower:]') || true
+  fi
+  case "$release" in
+    ubuntu|debian) ;;
+    *) echo "Try again on Ubuntu or Debian"; exit 1;;
   esac
