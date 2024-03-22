@@ -79,7 +79,7 @@ tfsummarize:
     yamlpath: $.tfsummarize.version
 starship:
   repo: starship/starship
-  version: v1.17.1
+  version: v1.18.0
   artifact: starship-x86_64-unknown-linux-gnu.tar.gz
   contents: starship
   updatecli:
