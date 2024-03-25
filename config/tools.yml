@@ -164,7 +164,7 @@ mutagen:
     yamlpath: $.mutagen.version
 lazygit:
   repo: jesseduffield/lazygit
-  version: v0.40.2
+  version: v0.41.0
   artifact: lazygit_{version}_Linux_x86_64.tar.gz
   contents: lazygit
   updatecli:
