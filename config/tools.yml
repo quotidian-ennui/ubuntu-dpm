@@ -150,7 +150,7 @@ actionlint:
     yamlpath: $.actionlint.version
 mikefarah-yq:
   repo: mikefarah/yq
-  version: v4.42.1
+  version: v4.43.1
   artifact: yq_linux_amd64
   contents: :yq
   updatecli:
