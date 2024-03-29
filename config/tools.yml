@@ -199,7 +199,7 @@ iamlive:
     yamlpath: $.iamlive.version
 qv:
   repo: timvw/qv
-  version: v0.8.4
+  version: v0.9.0
   artifact: qv-{version}-x86_64-unknown-linux-musl-generic.tar.gz
   contents: qv
   updatecli:
