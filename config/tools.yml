@@ -185,7 +185,7 @@ difftastic:
     yamlpath: $.difftastic.version
 gitsemver:
   repo: psanetra/git-semver
-  version: v1.1.0
+  version: v1.1.1
   artifact: git-semver_{version}_linux_amd64.tar.gz
   contents: git-semver
   updatecli:
