@@ -61,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_rust
+          just sdk rust
           cargo binstall -V
 
   test_nvm_install:
@@ -81,7 +81,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_nvm
+          just sdk nvm
 
   test_tfenv_install:
     runs-on: ubuntu-latest
@@ -100,7 +100,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_tvm terraform
+          just sdk tvm terraform
           "$HOME/.local/bin/terraform" -version
 
   test_tofuenv_install:
@@ -120,7 +120,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_tvm opentofu
+          just sdk tvm opentofu
           "$HOME/.local/bin/tofu" -version
 
   test_rvm_install:
@@ -140,7 +140,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_rvm
+          just sdk rvm
 
   test_sdkman_install:
     runs-on: ubuntu-latest
@@ -159,7 +159,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          just install_sdkman
+          just sdk java
 
   test_status:
     name: Assert Tests Passed

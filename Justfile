@@ -5,10 +5,8 @@ UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
-SKIP_DOCKER:= env_var_or_default("SKIP_DOCKER", "")
 CURL:="curl -fSsL"
 
-alias install:=tools
 alias prepare:=init
 
 # show recipes
@@ -59,13 +57,35 @@ init: is_supported configure_ghcli
 # install binary tools
 @tools: is_supported install_tools
 
-# install all the sdk tooling
-@sdk: is_supported install_sdkman install_nvm install_rvm install_rust install_go (install_tvm "terraform") (install_tvm "opentofu")
+# Show help for sdk subcommand
+[private]
+[no-exit-message]
+[no-cd]
+sdk_install_help:
+  #!/usr/bin/env bash
+  set -eo pipefail
+  JUSTFILE_JSON=$(just --dump-format json --dump --unstable)
+  tasks=$(echo $JUSTFILE_JSON | jq -c '.recipes | .[] | select( .name | test("^sdk_install_.*")) | { "recipe" : .name, "doc": .doc }')
+  echo "just sdk <action>"
+  while IFS= read -r line; do
+    recipe=$(echo $line | jq -r '.recipe')
+    doc=$(echo $line | jq -r '.doc')
+    echo "  ${recipe/sdk_install_/}|$doc"
+  done <<< "$tasks" | column -s"|" -t
+
+# install your preferred set of SDKs
+@sdk action='help' *args="": is_supported
+  just sdk_install_{{action}} {{args}}
+
+# Install all the SDK tooling
+[private]
+sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "terraform") (sdk_install_tvm "opentofu")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
 # Install goenv (because golang)
-install_go:
+[private]
+sdk_install_go:
   #!/usr/bin/env bash
 
   set -eo pipefail
@@ -74,7 +94,8 @@ install_go:
   goenv --use "$go_v"
 
 # Install SDKMAN (because JVM)
-install_sdkman:
+[private]
+sdk_install_java:
   #!/usr/bin/env bash
   set -eo pipefail
 
@@ -109,7 +130,8 @@ install_sdkman:
   sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
 
 # Install NVM (because nodejs)
-install_nvm:
+[private]
+sdk_install_nvm:
   #!/usr/bin/env bash
   set -eo pipefail
 
@@ -117,9 +139,12 @@ install_nvm:
   {{ CURL }}  "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
+  npm install -g -y wsl-open pin-github-action prettier
+
 
 # Install rustup && cargo-binstall (because rust)
-install_rust:
+[private]
+sdk_install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
   {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y
@@ -128,7 +153,8 @@ install_rust:
   rm -f ./cargo-binstall >/dev/null 2>&1
 
 # Install RVM (because ruby)
-install_rvm:
+[private]
+sdk_install_rvm:
   #!/usr/bin/env bash
   set -eo pipefail
 
@@ -139,8 +165,9 @@ install_rvm:
   ruby_v=${ruby_latest#"v"}
   echo "Ruby $ruby_v" && rvm install ruby "$ruby_v" && rvm use "$ruby_v"
 
-# Install one of the terraform env managers (terraform|opentofu)
-install_tvm variant:
+# Install one of the terraform env managers (terraform or opentofu)
+[private]
+sdk_install_tvm variant:
   #!/usr/bin/env bash
   set -eo pipefail
 
