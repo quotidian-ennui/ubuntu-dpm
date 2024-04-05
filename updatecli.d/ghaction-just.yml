@@ -25,8 +25,8 @@ scms:
       username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
       token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
       commitmessage:
-        type: "chore"
-        scope: "deps"
+        type: "deps"
+        scope: "ci"
         title: 'Bump just version to {{ source "latest" }}'
         hidecredit: true
 # {{ end }}
@@ -48,7 +48,7 @@ targets:
   update_yaml:
     kind: yaml
     sourceid: latest
-    name: 'Bump updatecli version to {{ source "latest" }}'
+    name: 'Bump just version to {{ source "latest" }}'
     # {{ if $scmEnabled }}
     scmid: github
     # {{ end }}
