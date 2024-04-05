@@ -1,11 +1,11 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
-name: 'opentofu'
+name: 'just'
 
 # {{ if $scmEnabled }}
 actions:
   pull_request:
     scmid: github
-    title: 'chore(deps): Bump opentofu version to {{ source "latest" }}'
+    title: 'chore(deps): Bump just version to {{ source "latest" }}'
     kind: github/pullrequest
     mergemethod: "squash"
     spec:
@@ -27,17 +27,17 @@ scms:
       commitmessage:
         type: "chore"
         scope: "deps"
-        title: 'Bump opentofu version to {{ source "latest" }}'
+        title: 'Bump just version to {{ source "latest" }}'
         hidecredit: true
 # {{ end }}
 
 sources:
   latest:
-    name: Github release for opentofu
+    name: Github release for just
     kind: githubrelease
     spec:
-      owner: opentofu
-      repository: opentofu
+      owner: casey
+      repository: just
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
         kind: semver
@@ -48,11 +48,11 @@ targets:
   update_yaml:
     kind: yaml
     sourceid: latest
-    name: 'Bump opentofu version to {{ source "latest" }}'
+    name: 'Bump updatecli version to {{ source "latest" }}'
     # {{ if $scmEnabled }}
     scmid: github
     # {{ end }}
     spec:
       files:
-        - ./config/tools.yml
-      key: $.opentofu.version
+        - .github/workflows/test.yml
+      key: $.env.JUST_VERSION

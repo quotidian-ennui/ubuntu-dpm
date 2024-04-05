@@ -14,6 +14,9 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  JUST_VERSION: 1.24.0
+
 jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
@@ -28,7 +31,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         # jq + yq are available already in the github runner.
@@ -55,7 +58,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -75,7 +78,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -94,7 +97,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -114,7 +117,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -134,7 +137,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -153,7 +156,7 @@ jobs:
       - name: Install Just
         uses: taiki-e/install-action@d475def0028dbe8f19e36f8f5bc73b90cfc78de8 # v2.32.1
         with:
-          tool: just@1.24.0
+          tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
