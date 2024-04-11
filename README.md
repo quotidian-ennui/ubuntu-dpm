@@ -6,6 +6,8 @@ It's not intended to be that useful to anyone else, but if you want to use it, y
 
 ## TLDR;
 
+> If you want to use your own tools.yml file then `export DPM_TOOLS_YAML=/path/to/my/tools.yml` before running `just tools`.
+
 - `bootstrap.sh repos` to install the apt repos we need
 - `bootstrap.sh baseline` to install some initial tooling
 - `just init`

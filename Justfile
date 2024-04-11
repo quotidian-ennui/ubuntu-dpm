@@ -1,6 +1,8 @@
 set positional-arguments := true
 OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
-TOOL_CONFIG:=justfile_directory() / "config/tools.yml"
+
+TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
+
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
