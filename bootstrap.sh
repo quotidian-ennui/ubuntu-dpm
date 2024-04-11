@@ -20,43 +20,49 @@ WSL_CONF='
 systemd=true
 '
 
+download_keyrings(){
+  local url=$1
+  local name=$2
+  local file="/usr/share/keyrings/$name.gpg"
+  curl -fsSL "$url" | gpg --no-tty --batch --dearmor | sudo dd of="$file" && sudo chmod go+r "$file"
+}
+
 # docker
 repo_docker() {
-  curl -fsSL https://download.docker.com/linux/$(distro_name)/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
-  sudo chmod a+r /etc/apt/keyrings/docker.gpg
-  echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(distro_name) \
-    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  download_keyrings "https://download.docker.com/linux/$(distro_name)/gpg" "docker"
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/$(distro_name) \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
 
 # trivy
 repo_trivy() {
-  wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/trivy.gpg
+  download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
   echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
 }
 
 # proget makedeb (Just)
 repo_prebuilt() {
-  wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg
-  echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/prebuilt-mpr.list
+  download_keyrings "https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub" "prebuilt-mpr"
+  echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/prebuilt-mpr.list
 }
 
 # kubectl
 repo_kubectl() {
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  download_keyrings https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key "kubernetes"
+  echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 }
 
 # helm
 repo_helm() {
-  curl -fsSL https://baltocdn.com/helm/signing.asc | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/helm.gpg
+  download_keyrings https://baltocdn.com/helm/signing.asc "helm"
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
 }
 
 # gh cli
 repo_ghcli() {
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli.gpg && sudo chmod go+r /usr/share/keyrings/githubcli.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
 }
 
 install_vscode() {
