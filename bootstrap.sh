@@ -140,7 +140,7 @@ action_baseline() {
     sudo apt install -y just
   fi
   pipx install gh-release-install
-  if [[ "$(distro_name)" == "debian" ]]; then
+  if [[ -n "$WSL_DISTRO_NAME" && "$(distro_name)" == "debian" ]]; then
     sudo apt install -y wslu
   fi
   install_docker
