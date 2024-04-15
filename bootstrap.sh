@@ -65,6 +65,12 @@ repo_ghcli() {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
 }
 
+# wsl utilities
+repo_wslutilities() {
+  download_keyrings https://pkg.wslutiliti.es/public.key  "wslutilities"
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/wslutilities.gpg] https://pkg.wslutiliti.es/debian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/wslutilities.list
+}
+
 install_vscode() {
   if [[ -z "$WSL_DISTRO_NAME" && -n "${XDG_CURRENT_DESKTOP}" ]]; then
     vscode_deb=$(mktemp --tmpdir vscode.XXXXX.deb)
@@ -122,6 +128,9 @@ action_repos() {
   if [[ "$(distro_name)" == "ubuntu" ]]; then
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    repo_wslutilities
+  fi
   sudo apt update
 }
 
@@ -131,6 +140,9 @@ action_baseline() {
     sudo apt install -y just
   fi
   pipx install gh-release-install
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    sudo apt install -y wslu
+  fi
   install_docker
   install_vscode
 }
