@@ -211,3 +211,11 @@ gitleaks:
   contents: gitleaks
   updatecli:
     yamlpath: $.gitleaks.version
+jf:
+  repo: sayanarijit/jf
+  version: v0.6.2
+  artifact: jf-x86_64-unknown-linux-gnu.tar.gz
+  contents: jf
+  updatecli:
+    yamlpath: $.jf.version
+
