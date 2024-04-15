@@ -128,7 +128,7 @@ action_repos() {
   if [[ "$(distro_name)" == "ubuntu" ]]; then
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
-  if [[ -n "$WSL_DISTRO_NAME" && "$(distro_name)" == "debian" ]]; then
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then
     repo_wslutilities
   fi
   sudo apt update
@@ -140,7 +140,7 @@ action_baseline() {
     sudo apt install -y just
   fi
   pipx install gh-release-install
-  if [[ -n "$WSL_DISTRO_NAME" && "$(distro_name)" == "debian" ]]; then
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then
     sudo apt install -y wslu
   fi
   install_docker
