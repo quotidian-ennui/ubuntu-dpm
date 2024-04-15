@@ -100,7 +100,7 @@ shfmt:
     yamlpath: $.shfmt.version
 hcledit:
   repo: minamijoyo/hcledit
-  version: v0.2.10
+  version: v0.2.11
   artifact: hcledit_{version}_linux_amd64.tar.gz
   contents: hcledit
   updatecli:
