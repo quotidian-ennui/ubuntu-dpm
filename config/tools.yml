@@ -107,7 +107,7 @@ hcledit:
     yamlpath: $.hcledit.version
 tfupdate:
   repo: minamijoyo/tfupdate
-  version: v0.8.1
+  version: v0.8.2
   artifact: tfupdate_{version}_linux_amd64.tar.gz
   contents: tfupdate
   updatecli:
