@@ -81,7 +81,7 @@ sdk_install_help:
 
 # Install all the SDK tooling
 [private]
-sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "terraform") (sdk_install_tvm "opentofu")
+sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "terraform") (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
@@ -147,7 +147,7 @@ sdk_install_nvm:
 # Install rustup && cargo-binstall (because rust)
 [private]
 sdk_install_rust:
-  #!/usr/bin/env bash
+  #!/usr/bin/env bash``
   set -eo pipefail
   {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y
   {{ CURL }} "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
@@ -167,7 +167,7 @@ sdk_install_rvm:
   ruby_v=${ruby_latest#"v"}
   echo "Ruby $ruby_v" && rvm install ruby "$ruby_v" && rvm use "$ruby_v"
 
-# Install one of the terraform env managers (terraform or opentofu)
+# Install one of the terraform env managers ($1=terraform/opentofu)
 [private]
 sdk_install_tvm variant:
   #!/usr/bin/env bash
@@ -203,6 +203,42 @@ sdk_install_tvm variant:
     $HOME/$tfenv_base/bin/$tfenv_bin install "$tf_v"
     $HOME/$tfenv_base/bin/$tfenv_bin use "$tf_v"
   fi
+
+# Install aws-cli ($1=update/install/uninstall)
+[private]
+sdk_install_aws action="update":
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  download_and_run_installer() {
+    tmpdir=$(mktemp -d -t awscli.XXXXXX)
+    curl -fSsL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$tmpdir/awscliv2.zip"
+    unzip -q -d "$tmpdir" "$tmpdir/awscliv2.zip"
+    (cd "$tmpdir" && sudo ./aws/install "$@")
+    rm -rf "$tmpdir"
+  }
+
+  case "{{ action }}" in
+    install)
+      download_and_run_installer
+      aws --version
+      ;;
+    uninstall|rm)
+      sudo rm /usr/local/bin/aws
+      sudo rm /usr/local/bin/aws_completer
+      sudo rm -rf /usr/local/aws-cli
+      echo "Skip deleting ~/.aws (chicken mode)"
+      ;;
+    update|upgrade)
+      download_and_run_installer --update
+      aws --version
+      ;;
+    *)
+      echo "Installs / updates the AWS CLI"
+      echo "just aws install|rm|update"
+      exit 0
+      ;;
+  esac
 
 [private]
 install_tools:
