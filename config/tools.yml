@@ -225,3 +225,17 @@ fzf:
   contents: fzf
   updatecli:
     yamlpath: $.fzf.version
+fd:
+  repo: sharkdp/fd
+  version: v9.0.0
+  artifact: fd-{tag}-x86_64-unknown-linux-gnu.tar.gz
+  contents: fd-{tag}-x86_64-unknown-linux-gnu/fd:fd
+  updatecli:
+    yamlpath: $.fd.version
+bat:
+  repo: sharkdp/bat
+  version: v0.24.0
+  artifact: bat-{tag}-x86_64-unknown-linux-gnu.tar.gz
+  contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
+  updatecli:
+    yamlpath: $.bat.version
