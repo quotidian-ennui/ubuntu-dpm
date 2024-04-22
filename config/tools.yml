@@ -218,4 +218,10 @@ jf:
   contents: jf
   updatecli:
     yamlpath: $.jf.version
-
+fzf:
+  repo: junegunn/fzf
+  version: 0.50.0
+  artifact: fzf-{version}-linux_amd64.tar.gz
+  contents: fzf
+  updatecli:
+    yamlpath: $.fzf.version
