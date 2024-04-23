@@ -9,6 +9,7 @@ PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-prop
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip"
 
+# shellcheck disable=SC2089
 DOCKER_USE_WINCREDS='
 {
   "credsStore": "wincred.exe"
@@ -30,6 +31,7 @@ download_keyrings(){
 # docker
 repo_docker() {
   download_keyrings "https://download.docker.com/linux/$(distro_name)/gpg" "docker"
+  # shellcheck disable=SC1091
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/$(distro_name) \
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -76,9 +78,10 @@ install_vscode() {
 install_docker() {
   if [[ -z "$SKIP_DOCKER" ]]
   then
+    # shellcheck disable=SC2086
     sudo apt -y install $DOCKER_TOOL_LIST
     sudo groupadd docker || true
-    sudo usermod -aG docker $USER
+    sudo usermod -aG docker "$USER"
     # If we're on windows then we can use the docker credential helper
     if [[ -n "$WSL_DISTRO_NAME" ]]; then
       wincred_version=$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/docker/docker-credential-helpers/releases/latest | xargs basename)
@@ -87,9 +90,9 @@ install_docker() {
       curl -fSsL -o ~/.local/bin/docker-credential-wincred.exe \
         "https://github.com/docker/docker-credential-helpers/releases/download/${wincred_version}/docker-credential-wincred-${wincred_version}.windows-$(dpkg --print-architecture).exe"
       chmod +x ~/.local/bin/docker-credential-wincred.exe
-      echo $DOCKER_USE_WINCREDS > ~/.docker/config.json
+      echo "$DOCKER_USE_WINCREDS" > ~/.docker/config.json
       if [[ ! -f /etc/wsl.conf ]]; then
-        sudo echo $WSL_CONF > /etc/wsl.conf
+        echo "$WSL_CONF" | sudo tee /etc/wsl.conf
         echo ">>> /etc/wsl.conf modified, you need to restart WSL"
       fi
     fi
@@ -112,6 +115,7 @@ EOF
 }
 
 action_repos() {
+  # shellcheck disable=SC2086
   sudo apt install -y $PRE_REQ_TOOLS
   repo_kubectl
   repo_helm
@@ -121,18 +125,19 @@ action_repos() {
   if [[ "$(distro_name)" == "ubuntu" ]]; then
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
-  if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  if [[ -n "$WSL_DISTRO_NAME" && "$(distro_name)" == "debian" ]]; then
     repo_wslutilities
   fi
   sudo apt update
 }
 
 action_baseline() {
+  # shellcheck disable=SC2086
   sudo apt install -y $BASELINE_TOOL_LIST
   pipx install gh-release-install
     if ! which just >/dev/null 2>&1; then
     # Oneshot install that we know works for us.
-    $HOME/.local/bin/gh-release-install "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --extract just
+    "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --extract just
   fi
   install_docker
   install_vscode
@@ -147,18 +152,19 @@ action_baseline() {
     # echo ":WSLInterop:M::MZ::/init:PF" | sudo tee /usr/lib/binfmt.d/WSLInterop.conf
     # sudo apt install binfmt-support
     # sudo systemctl restart binfmt-support
-    sudo systemctl restart systemd-binfmt || true
-    echo ">>> You might need to restart WSL for the changes to take effect"
+    # sudo systemctl restart systemd-binfmt || true
+    echo ">>> You might need to restart WSL for binfmt changes to take effect"
   fi
 }
 
 distro_name() {
   if [[ -e "/etc/os-release" ]]; then
+    # shellcheck disable=SC1091
     release=$(. /etc/os-release && echo "$ID" | tr '[:upper:]' '[:lower:]')
   else
     release=$(lsb_release -si | tr '[:upper:]' '[:lower:]') || true
   fi
-  echo $release
+  echo "$release"
 }
 
 if [[ "$(uname -o | tr '[:upper:]' '[:lower:]')" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
