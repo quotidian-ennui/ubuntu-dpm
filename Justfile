@@ -255,7 +255,7 @@ install_tools:
 
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
-      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq"
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
       $HOME/.local/bin/yq "$@"
     else
       yq "$@"
