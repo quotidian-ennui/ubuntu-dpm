@@ -8,6 +8,7 @@ set -eo pipefail
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-properties-common"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip"
+JOB_SUMMARY=""
 
 # shellcheck disable=SC2089
 DOCKER_USE_WINCREDS='
@@ -20,6 +21,9 @@ WSL_CONF='
 [boot]
 systemd=true
 '
+append_with_newline() {
+  printf -v "$1" '%s\n%s' "${!1}" "$2";
+}
 
 download_keyrings(){
   local url=$1
@@ -93,7 +97,7 @@ install_docker() {
       echo "$DOCKER_USE_WINCREDS" > ~/.docker/config.json
       if [[ ! -f /etc/wsl.conf ]]; then
         echo "$WSL_CONF" | sudo tee /etc/wsl.conf
-        echo ">>> /etc/wsl.conf modified, you need to restart WSL"
+        append_with_newline JOB_SUMMARY ">>> /etc/wsl.conf modified, you need to restart WSL"
       fi
     fi
   fi
@@ -139,8 +143,8 @@ action_baseline() {
     # Oneshot install that we know works for us.
     "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --extract just
   fi
-  install_docker
   install_vscode
+  install_docker
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
     sudo apt install -y wslu
     # Having wslview in debian & ubuntu can cause trouble with binfmt
@@ -153,7 +157,7 @@ action_baseline() {
     # sudo apt install binfmt-support
     # sudo systemctl restart binfmt-support
     # sudo systemctl restart systemd-binfmt || true
-    echo ">>> You might need to restart WSL for binfmt changes to take effect"
+    append_with_newline JOB_SUMMARY ">>> You might need to restart WSL for binfmt changes to take effect"
   fi
 }
 
@@ -184,3 +188,4 @@ case $ACTION in
 esac
 
 action_"$ACTION"
+printf "%s\n" "$JOB_SUMMARY"
