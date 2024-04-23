@@ -149,7 +149,7 @@ sdk_install_nvm:
 sdk_install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
-  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y
+  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y --no-modify-path
   {{ CURL }} "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
   ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
   rm -f ./cargo-binstall >/dev/null 2>&1
