@@ -41,12 +41,6 @@ repo_trivy() {
   echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
 }
 
-# proget makedeb (Just)
-repo_prebuilt() {
-  download_keyrings "https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub" "prebuilt-mpr"
-  echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/prebuilt-mpr.list
-}
-
 # kubectl
 repo_kubectl() {
   download_keyrings https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key "kubernetes"
@@ -119,7 +113,6 @@ EOF
 
 action_repos() {
   sudo apt install -y $PRE_REQ_TOOLS
-  repo_prebuilt
   repo_kubectl
   repo_helm
   repo_ghcli
@@ -136,10 +129,13 @@ action_repos() {
 
 action_baseline() {
   sudo apt install -y $BASELINE_TOOL_LIST
-  if ! which just >/dev/null 2>&1; then
-    sudo apt install -y just
-  fi
   pipx install gh-release-install
+    if ! which just >/dev/null 2>&1; then
+    # Oneshot install that we know works for us.
+    $HOME/.local/bin/gh-release-install "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --extract just
+  fi
+  install_docker
+  install_vscode
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
     sudo apt install -y wslu
     # Having wslview in debian & ubuntu can cause trouble with binfmt
@@ -151,10 +147,9 @@ action_baseline() {
     # echo ":WSLInterop:M::MZ::/init:PF" | sudo tee /usr/lib/binfmt.d/WSLInterop.conf
     # sudo apt install binfmt-support
     # sudo systemctl restart binfmt-support
-    sudo systemctl restart systemd-binfmt
+    sudo systemctl restart systemd-binfmt || true
+    echo ">>> You might need to restart WSL for the changes to take effect"
   fi
-  install_docker
-  install_vscode
 }
 
 distro_name() {

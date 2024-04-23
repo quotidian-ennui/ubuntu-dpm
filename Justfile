@@ -253,15 +253,10 @@ install_tools:
   # and then do the wsl --shutdown restart dance.
   set -eo pipefail
 
-  yq_init() {
-    if ! which yq >/dev/null 2>&1; then
-      docker pull mikefarah/yq
-    fi
-  }
-
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
-      docker run --rm -i -v "${PWD}":/workdir mikefarah/yq "$@"
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq"
+      $HOME/.local/bin/yq "$@"
     else
       yq "$@"
     fi
@@ -285,7 +280,6 @@ install_tools:
 
   mkdir -p "{{ LOCAL_CONFIG }}"
   mkdir -p "{{ LOCAL_BIN }}"
-  yq_init
 
   declare -A installed
   read_installed
