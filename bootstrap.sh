@@ -142,6 +142,16 @@ action_baseline() {
   pipx install gh-release-install
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
     sudo apt install -y wslu
+    # Having wslview in debian & ubuntu can cause trouble with binfmt
+    # stop systemctl from starting binfmt.
+    # c.f. : https://github.com/microsoft/WSL/issues/8843
+    # https://github.com/microsoft/WSL/issues/8986
+    sudo systemctl mask systemd-binfmt.service
+    # Could also 'force' it to work.
+    # echo ":WSLInterop:M::MZ::/init:PF" | sudo tee /usr/lib/binfmt.d/WSLInterop.conf
+    # sudo apt install binfmt-support
+    # sudo systemctl restart binfmt-support
+    sudo systemctl restart systemd-binfmt
   fi
   install_docker
   install_vscode
