@@ -149,7 +149,7 @@ sdk_install_nvm:
 sdk_install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
-  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y
+  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y --no-modify-path
   {{ CURL }} "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
   ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
   rm -f ./cargo-binstall >/dev/null 2>&1
@@ -253,15 +253,10 @@ install_tools:
   # and then do the wsl --shutdown restart dance.
   set -eo pipefail
 
-  yq_init() {
-    if ! which yq >/dev/null 2>&1; then
-      docker pull mikefarah/yq
-    fi
-  }
-
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
-      docker run --rm -i -v "${PWD}":/workdir mikefarah/yq "$@"
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
+      $HOME/.local/bin/yq "$@"
     else
       yq "$@"
     fi
@@ -285,7 +280,6 @@ install_tools:
 
   mkdir -p "{{ LOCAL_CONFIG }}"
   mkdir -p "{{ LOCAL_BIN }}"
-  yq_init
 
   declare -A installed
   read_installed
