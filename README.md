@@ -4,27 +4,69 @@ Tries to be a thing that can 'manage' applications on an ubuntu machine. The why
 
 It's not intended to be that useful to anyone else, but if you want to use it, you can (but don't hold me accountable; you're good enough to want to use this, you're good enough to understand bash scripts).
 
-## TLDR
+## Usage
 
 > All in all from a `wsl --install Debian|Ubuntu` or similar you should have everything ready toolwise in ~10 minutes (there's a lot of network traffic).
 >
-> - If you want to use your own tools.yml file then `export DPM_TOOLS_YAML=/path/to/my/tools.yml` before running `just tools`.
-> - You may need to do a `wsl.exe --shutdown` dance after `bootstrap.sh baseline`. We will try to modify /etc/wsl.conf if it doesn't already exist to enable systemd (because docker wants it) and we do some shenanigans to binfmt to stop it from making wslview sad.
 
-- `bootstrap.sh repos` to install the apt repos we need
-- `bootstrap.sh baseline` to install some initial tooling
-- `just init`
-- `just tools` | `just install`
-- `just sdk all`
+### WSL2 Bootstrap
 
-## Notes
+If you're installing on WSL2 then you need to enable systemd; since you're editing wsl.conf then you'll need to restart WSL (`wsl --shutdown` etc.)
 
-- I also do this before I start
+```bash
+bsh ❯ cat /etc/wsl.conf
+[automount]
+enabled = true
+options = "metadata,umask=22,fmask=11"
+mountFsTab = false
+
+[network]
+generateResolvConf = false
+
+[boot]
+systemd=true
+```
+
+Because I have `generateResolveConf=false` I maintain my own resolv.conf; allowing WSL to generate the resolv.conf can be problematic (for reasons). If `powershell.exe -Command "Get-DnsClientServerAddress -AddressFamily ipv4 | Select-Object -ExpandProperty ServerAddresses" | sed 's/\r//g' | sort -u | xargs -n 1 echo nameserver` gives you something different to what's in the default resolv.conf, then you probably want to manage your own.
+
+```bash
+bsh ❯ cat /etc/resolv.conf
+nameserver 8.8.8.8
+```
+
+### Optional security liability
+
+This is obviously a terrible idea.
 
 ```bash
 echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient
-sudo apt update && sudo apt -y install vim nfs-common unison jq direnv zip unzip net-tools git rcm
-# This stuff is useful, but entirely optional.
+```
+
+### The Meat
+
+- If you want to use your own tools.yml file then `export DPM_TOOLS_YAML=/path/to/my/tools.yml` before running `just tools`.
+- You may need to do a `wsl.exe --shutdown` dance after `bootstrap.sh baseline`. We will try to modify /etc/wsl.conf if it doesn't already exist to enable systemd (because docker wants it) and we do some shenanigans to binfmt to stop it from making wslview sad.
+- `export SKIP_DOCKER=true` if you don't want docker to be installed.
+
+```bash
+# to install the apt repos we need
+./bootstrap.sh repos
+# to install some initial tooling
+./bootstrap.sh baseline
+# Now you will need to know your ghcli token info
+just init
+# Install all the tools
+just tools
+# choose your sdk poison
+just sdk help
+```
+
+## Notes
+
+- I also do this before I start.
+
+```bash
+sudo apt update && sudo apt -y install vim zip unzip net-tools git
 if [[ -z "$WSL_DISTRO_NAME" ]]; then
   sudo apt -y install openssh-server
 fi
@@ -38,8 +80,6 @@ if [ ! -f ~/.ssh/id_ed25519 ]; then
 fi
 ```
 
-- `echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient` is a terrible idea.
 - `just` is installed during `bootstrap.sh baseline` via gh-release-install; it gets ovewritten again when you do `just tools`
 - `yq` will be installed during `just tools` if it doesn't already exist (and promptly overwritten by the tool installation); previously we used docker, but people might not want docker all the time every time.
-- Post init+tools, you probably want to do a `hash -r` to clear out the bash hash cache otherwise you get `/usr/bin/just not found` errors.
 - Keeps a track of the files its installed in `~/.config/ubuntu-dpm/installed-versions` so it doesn't try to install the same version of things repeatedly.
