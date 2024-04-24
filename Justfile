@@ -6,6 +6,7 @@ TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
+LOCAL_SHARE:= env_var('HOME') / ".local/share/ubuntu-dpm"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 CURL:="curl -fSsL"
 
@@ -364,3 +365,31 @@ is_supported:
     ubuntu|debian) ;;
     *) echo "Try again on Ubuntu or Debian"; exit 1;;
   esac
+
+
+# install & use fzf-git with fzf
+fzf-git:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  SUMMARY=""
+  # install fzf-tmux since it's not in the fzf tar.gz
+  if [[ ! -f "{{ LOCAL_BIN }}/fzf-tmux" ]]; then
+    {{ CURL }} https://raw.githubusercontent.com/junegunn/fzf/master/bin/fzf-tmux -o "{{ LOCAL_BIN }}/fzf-tmux"
+    chmod +x "{{ LOCAL_BIN }}/fzf-tmux"
+  fi
+  mkdir -p "{{ LOCAL_SHARE }}"
+  if [[ ! -d "{{ LOCAL_SHARE }}/fzf-git.sh" ]]; then
+    cd "{{ LOCAL_SHARE }}" && git clone https://github.com/junegunn/fzf-git.sh
+  else
+    cd "{{ LOCAL_SHARE }}/fzf-git.sh" && git pull --rebase
+  fi
+  if ! grep "fzf --bash" "$HOME/.bashrc" >/dev/null 2>&1; then
+    printf '\n[[ -s "$HOME/.local/bin/fzf" ]] && eval $($HOME/.local/bin/fzf --bash)\n' >> $HOME/.bashrc
+    SUMMARY+="\n>>> Added fzf --bash to .bashrc"
+  fi
+  if ! grep "fzf-git" "$HOME/.bashrc" >/dev/null 2>&1; then
+    printf '\n[[ -s "$HOME/.local/share/ubuntu-dpm/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.local/share/ubuntu-dpm/fzf-git.sh/fzf-git.sh"\n' >> $HOME/.bashrc
+    SUMMARY+="\n>>> Added fzf-git.sh to .bashrc"
+  fi
+  echo -e "$SUMMARY"
