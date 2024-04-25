@@ -34,6 +34,22 @@ bsh ❯ cat /etc/resolv.conf
 nameserver 8.8.8.8
 ```
 
+Since you're editing wsl.conf and doing a restart, now would be a good time to check your `.wslconfig` which controls some global parameters; you can read more at <https://learn.microsoft.com/en-us/windows/wsl/wsl-config> but I don't go for the default behaviour. Your values will be your own, I have the sysctl setting for open/elasticsearch.
+
+```pwsh
+PS C:\Users\QuotidianEnnui> cat .\.wslconfig
+[wsl2]
+processors=12
+memory=24GB
+swap=12GB
+localhostForwarding=true
+guiApplications=true
+kernelCommandLine="sysctl.vm.max_map_count=262144"
+
+[experimental]
+autoMemoryReclaim=gradual
+```
+
 ### Optional security liability
 
 This is obviously a terrible idea.
