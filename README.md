@@ -44,9 +44,7 @@ echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient
 
 ### The Meat
 
-- If you want to use your own tools.yml file then `export DPM_TOOLS_YAML=/path/to/my/tools.yml` before running `just tools`.
 - You may need to do a `wsl.exe --shutdown` dance after `bootstrap.sh baseline`. We will try to modify /etc/wsl.conf if it doesn't already exist to enable systemd (because docker wants it) and we do some shenanigans to binfmt to stop it from making wslview sad.
-- `export SKIP_DOCKER=true` if you don't want docker to be installed.
 
 ```bash
 # to install the apt repos we need
@@ -60,6 +58,14 @@ just tools
 # choose your sdk poison
 just sdk help
 ```
+
+### Fine control over behaviour
+
+Various environment variables control behaviour.
+
+- `SKIP_DOCKER` set to any value if you don't want docker to be installed.
+- `DPM_SKIP_GHCLI_CONFIG` - set to any value if you want to skip github-cli configuration (and authentication etc.).
+- `DPM_TOOLS_YAML` can be set to your custom tools build path.
 
 ## Notes
 
