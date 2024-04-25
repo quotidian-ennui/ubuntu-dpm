@@ -239,3 +239,10 @@ bat:
   contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
   updatecli:
     yamlpath: $.bat.version
+snyk:
+  repo: snyk/cli
+  version: v1.1290.0
+  artifact: snyk-linux
+  contents: :snyk
+  updatecli:
+    yamlpath: $.snyk.version
