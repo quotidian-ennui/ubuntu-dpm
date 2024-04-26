@@ -21,11 +21,12 @@ WSL_CONF='
 [boot]
 systemd=true
 '
+
 append_with_newline() {
-  printf -v "$1" '%s\n%s' "${!1}" "$2";
+  printf -v "$1" '%s\n%s' "${!1}" "$2"
 }
 
-download_keyrings(){
+download_keyrings() {
   local url=$1
   local name=$2
   local file="/usr/share/keyrings/$name.gpg"
@@ -34,11 +35,12 @@ download_keyrings(){
 
 # docker
 repo_docker() {
-  download_keyrings "https://download.docker.com/linux/$(distro_name)/gpg" "docker"
+  local distro_name="$1"
+  download_keyrings "https://download.docker.com/linux/$distro_name/gpg" "docker"
   # shellcheck disable=SC1091
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/$(distro_name) \
-    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/$distro_name \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
+    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 }
 
 # trivy
@@ -67,7 +69,7 @@ repo_ghcli() {
 
 # wsl utilities
 repo_wslutilities() {
-  download_keyrings https://pkg.wslutiliti.es/public.key  "wslutilities"
+  download_keyrings https://pkg.wslutiliti.es/public.key "wslutilities"
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/wslutilities.gpg] https://pkg.wslutiliti.es/debian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/wslutilities.list
 }
 
@@ -80,8 +82,7 @@ install_vscode() {
 }
 
 install_docker() {
-  if [[ -z "$SKIP_DOCKER" ]]
-  then
+  if [[ -z "$SKIP_DOCKER" && -z "$DPM_SKIP_DOCKER" ]]; then
     # shellcheck disable=SC2086
     sudo apt -y install $DOCKER_TOOL_LIST
     sudo groupadd docker || true
@@ -94,7 +95,7 @@ install_docker() {
       curl -fSsL -o ~/.local/bin/docker-credential-wincred.exe \
         "https://github.com/docker/docker-credential-helpers/releases/download/${wincred_version}/docker-credential-wincred-${wincred_version}.windows-$(dpkg --print-architecture).exe"
       chmod +x ~/.local/bin/docker-credential-wincred.exe
-      echo "$DOCKER_USE_WINCREDS" > ~/.docker/config.json
+      echo "$DOCKER_USE_WINCREDS" >~/.docker/config.json
       if [[ ! -f /etc/wsl.conf ]]; then
         echo "$WSL_CONF" | sudo tee /etc/wsl.conf
         append_with_newline JOB_SUMMARY ">>> /etc/wsl.conf modified, you need to restart WSL"
@@ -104,7 +105,7 @@ install_docker() {
 }
 
 action_help() {
-  cat << EOF
+  cat <<EOF
 
 New Ubuntu Machine bootstrap; some attention required
 
@@ -115,36 +116,38 @@ Usage: $(basename "$0") repos | baseline | help
   help       : Show this help
 
 EOF
- exit 1
+  exit 1
 }
 
 action_repos() {
+  local distro_name="$1"
   # shellcheck disable=SC2086
   sudo apt install -y $PRE_REQ_TOOLS
-  repo_kubectl
-  repo_helm
-  repo_ghcli
-  repo_docker
-  repo_trivy
-  if [[ "$(distro_name)" == "ubuntu" ]]; then
+  repo_kubectl "$distro_name"
+  repo_helm "$distro_name"
+  repo_ghcli "$distro_name"
+  repo_docker "$distro_name"
+  repo_trivy "$distro_name"
+  if [[ "$distro_name" == "ubuntu" ]]; then
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
-  if [[ -n "$WSL_DISTRO_NAME" && "$(distro_name)" == "debian" ]]; then
+  if [[ -n "$WSL_DISTRO_NAME" && "$distro_name" == "debian" ]]; then
     repo_wslutilities
   fi
   sudo apt update
 }
 
 action_baseline() {
+  local distro_name="$1"
   # shellcheck disable=SC2086
   sudo apt install -y $BASELINE_TOOL_LIST
   pipx install gh-release-install
-    if ! which just >/dev/null 2>&1; then
+  if ! which just >/dev/null 2>&1; then
     # Oneshot install that we know works for us.
     "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --extract just
   fi
-  install_vscode
-  install_docker
+  install_vscode "$distro_name"
+  install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
     sudo apt install -y wslu
     # Having wslview in debian & ubuntu can cause trouble with binfmt
@@ -159,6 +162,10 @@ action_baseline() {
     # sudo systemctl restart systemd-binfmt || true
     append_with_newline JOB_SUMMARY ">>> You might need to restart WSL for binfmt changes to take effect"
   fi
+  # Get 'column' etc.
+  if [[ "$distro_name" == "debian" ]]; then
+    sudo apt install -y bsdextrautils
+  fi
 }
 
 distro_name() {
@@ -171,21 +178,28 @@ distro_name() {
   echo "$release"
 }
 
-if [[ "$(uname -o | tr '[:upper:]' '[:lower:]')" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
-case "$(distro_name)" in
-  ubuntu|debian) ;;
-  *) echo "Try again on Ubuntu or Debian"; exit 1;;
+DISTRO_NAME=$(distro_name)
+
+if [[ "$(uname -o | tr '[:upper:]' '[:lower:]')" == "msys" ]]; then
+  echo "Try again on WSL2+Ubuntu"
+  exit 1
+fi
+case "$DISTRO_NAME" in
+ubuntu | debian) ;;
+*)
+  echo "Try again on Ubuntu or Debian"
+  exit 1
+  ;;
 esac
 
 ACTION=$1 || true
 ACTION=${ACTION:-"help"}
 case $ACTION in
-  repos|baseline|help)
-    ;;
-  *)
-    ACTION="help"
-    ;;
+repos | baseline | help) ;;
+*)
+  ACTION="help"
+  ;;
 esac
 
-action_"$ACTION"
+action_"$ACTION" "$DISTRO_NAME"
 printf "%s\n" "$JOB_SUMMARY"
