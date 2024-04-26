@@ -1,0 +1,5 @@
+fzf-git:
+  repo: junegunn/fzf-git.sh
+bitbucket-pr:
+  repo: quotidian-ennui/bitbucket-pr
+  contents: :bb-pr
