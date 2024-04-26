@@ -358,8 +358,7 @@ install_repos:
 
   # shellcheck disable=SC2002
   repos=$(cat "{{ REPO_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
-  for line in $repos
-  do
+  for line in $repos; do
     repo=$(echo "$line" | jq -r ".repo")
     contents_line=$(echo "$line" | jq -r ".contents")
     source=$(echo "$contents_line" | cut -f1 -d':')
@@ -369,9 +368,9 @@ install_repos:
     if [[ "$repo" != "null" ]]; then
       if [[ ! -d "{{ LOCAL_SHARE }}/$repo" ]]; then
         echo "[+] $repo (attempt install)"
-        cd "{{ LOCAL_SHARE }}" && git clone --quiet "https://github.com/$repo" "$repo" > /dev/null
+        cd "{{ LOCAL_SHARE }}" && git clone --quiet "https://github.com/$repo" "$repo" >/dev/null
       else
-        pushd "{{ LOCAL_SHARE }}/$repo" > /dev/null
+        pushd "{{ LOCAL_SHARE }}/$repo" >/dev/null
 
         git fetch --quiet
         local=$(git rev-parse @)
@@ -388,11 +387,11 @@ install_repos:
           exit 1
         fi
 
-        popd > /dev/null
+        popd >/dev/null
       fi
 
       if [[ "$destination" != "null" ]]; then
-        if [ ! -L "$HOME/.local/bin/$destination" ] ; then
+        if [ ! -L "$HOME/.local/bin/$destination" ]; then
           ln -s "{{ LOCAL_SHARE }}/$repo/$source" "$HOME/.local/bin/$destination"
         fi
       fi
