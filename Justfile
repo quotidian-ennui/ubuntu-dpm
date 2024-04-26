@@ -397,16 +397,17 @@ fzf-git:
   set -eo pipefail
 
   SUMMARY=""
+  FZF_GIT="junegunn/fzf-git.sh"
   # install fzf-tmux since it's not in the fzf tar.gz
   if [[ ! -f "{{ LOCAL_BIN }}/fzf-tmux" ]]; then
     curl -fSsL https://raw.githubusercontent.com/junegunn/fzf/master/bin/fzf-tmux -o "{{ LOCAL_BIN }}/fzf-tmux"
     chmod +x "{{ LOCAL_BIN }}/fzf-tmux"
   fi
   mkdir -p "{{ LOCAL_SHARE }}"
-  if [[ ! -d "{{ LOCAL_SHARE }}/fzf-git.sh" ]]; then
-    cd "{{ LOCAL_SHARE }}" && git clone https://github.com/junegunn/fzf-git.sh
+  if [[ ! -d "{{ LOCAL_SHARE }}/$FZF_GIT" ]]; then
+    cd "{{ LOCAL_SHARE }}" && git clone "https://github.com/$FZF_GIT" "$FZF_GIT"
   else
-    cd "{{ LOCAL_SHARE }}/fzf-git.sh" && git pull --rebase
+    cd "{{ LOCAL_SHARE }}/$FZF_GIT" && git pull --rebase
   fi
 
   if [[ -z "$DPM_SKIP_FZF_PROFILE" ]]; then
@@ -417,7 +418,7 @@ fzf-git:
     fi
     if ! grep "fzf-git" "$HOME/.bashrc" >/dev/null 2>&1; then
       #shellcheck disable=SC2016
-      printf '\n[[ -s "$HOME/.local/share/ubuntu-dpm/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.local/share/ubuntu-dpm/fzf-git.sh/fzf-git.sh"\n' >> "$HOME/.bashrc"
+      printf '\n[[ -s "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh"\n' >> "$HOME/.bashrc"
       SUMMARY+="\n>>> Added fzf-git.sh to .bashrc"
     fi
   fi
