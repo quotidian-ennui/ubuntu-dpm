@@ -6,8 +6,8 @@ TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
+LOCAL_SHARE:= env_var('HOME') / ".local/share/ubuntu-dpm"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
-CURL:="curl -fSsL"
 
 alias prepare:=init
 
@@ -34,6 +34,7 @@ updatecli +args='diff':
     | with_entries(if .value == null then empty else . end)
   '
   tmpdir=$(mktemp -d -t updatecli.XXXXXX)
+  # shellcheck disable=SC2002
   cat "{{ TOOL_CONFIG }}" | yq -p yaml -o json | jq -c ".[]" | while read -r line; do
     values=$(mktemp --tmpdir="$tmpdir" updatecli-values.XXXXXX.yml)
     hasRepo=$(echo "$line" | jq -r ".repo")
@@ -46,7 +47,15 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # Update apt + tools
-@update: apt_update tools
+update: apt_update tools
+  #!/usr/bin/env bash
+
+  set -eo pipefail
+  # update fzf-git if we need to
+  if [[ -d "{{ LOCAL_SHARE }}/fzf-git.sh" ]]; then
+    echo ">>> updating fzf-git"
+    cd "{{ LOCAL_SHARE }}/fzf-git.sh" && git pull --rebase
+  fi
 
 # initialise to install tools
 init: is_supported configure_ghcli
@@ -65,13 +74,14 @@ init: is_supported configure_ghcli
 [no-cd]
 sdk_install_help:
   #!/usr/bin/env bash
+
   set -eo pipefail
   JUSTFILE_JSON=$(just --dump-format json --dump --unstable)
-  tasks=$(echo $JUSTFILE_JSON | jq -c '.recipes | .[] | select( .name | test("^sdk_install_.*")) | { "recipe" : .name, "doc": .doc }')
+  tasks=$(echo "$JUSTFILE_JSON" | jq -c '.recipes | .[] | select( .name | test("^sdk_install_.*")) | { "recipe" : .name, "doc": .doc }')
   echo "just sdk <action>"
   while IFS= read -r line; do
-    recipe=$(echo $line | jq -r '.recipe')
-    doc=$(echo $line | jq -r '.doc')
+    recipe=$(echo "$line" | jq -r '.recipe')
+    doc=$(echo "$line" | jq -r '.doc')
     echo "  ${recipe/sdk_install_/}|$doc"
   done <<< "$tasks" | column -s"|" -t
 
@@ -104,11 +114,12 @@ sdk_install_java:
   if [[ ! -d "$HOME/.sdkman" ]]; then
     # It does feel that if we already have SDKMAN installed then
     # we could execute sdk selfupdate & sdk upgrade
-    {{ CURL }} "https://get.sdkman.io" | bash
+    curl -fSsL "https://get.sdkman.io" | bash
   fi
   # This is a bit of a hack to avoid the interactive prompt but setting
   # it on the commandline doesn't always work.
   sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
+  #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
   # graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
   # JDK21 is LTS... so we'll use that
@@ -138,7 +149,8 @@ sdk_install_nvm:
   set -eo pipefail
 
   nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  {{ CURL }}  "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+  curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+  #shellcheck disable=SC1090
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
   npm install -g -y wsl-open pin-github-action prettier
@@ -149,8 +161,8 @@ sdk_install_nvm:
 sdk_install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
-  {{ CURL }}  --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y --no-modify-path
-  {{ CURL }} "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
+  curl -fSsL --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y --no-modify-path
+  curl -fSsL "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
   ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
   rm -f ./cargo-binstall >/dev/null 2>&1
 
@@ -161,7 +173,8 @@ sdk_install_rvm:
   set -eo pipefail
 
   gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-  {{ CURL }}  "https://get.rvm.io" | bash -s stable
+  curl -fSsL "https://get.rvm.io" | bash -s stable
+  #shellcheck disable=SC1090
   source ~/.rvm/scripts/rvm
   ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
   ruby_v=${ruby_latest#"v"}
@@ -177,6 +190,7 @@ sdk_install_tvm variant:
   tfenv_github=""
   tfenv_yamlpath=""
   tfenv_bin=""
+  #shellcheck disable=SC2194
   case "{{ variant }}" in
     terraform|tf)
       tfenv_base=".tfenv"
@@ -197,11 +211,13 @@ sdk_install_tvm variant:
     (cd "$HOME/$tfenv_base" && git pull --rebase)
   else
     mkdir -p "{{ LOCAL_BIN }}"
-    (cd $HOME && git clone "$tfenv_github" "$tfenv_base")
-    ln -s $HOME/$tfenv_base/bin/* {{ LOCAL_BIN }}
+    (cd "$HOME" && git clone "$tfenv_github" "$tfenv_base")
+    #shellcheck disable=SC1083
+    ln -s "$HOME/$tfenv_base/bin"/* {{ LOCAL_BIN }}
+    #shellcheck disable=SC2002
     tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r "$tfenv_yamlpath")
-    $HOME/$tfenv_base/bin/$tfenv_bin install "$tf_v"
-    $HOME/$tfenv_base/bin/$tfenv_bin use "$tf_v"
+    "$HOME/$tfenv_base/bin/$tfenv_bin" install "$tf_v"
+    "$HOME/$tfenv_base/bin/$tfenv_bin" use "$tf_v"
   fi
 
 # Install aws-cli ($1=update/install/uninstall)
@@ -218,6 +234,8 @@ sdk_install_aws action="update":
     rm -rf "$tmpdir"
   }
 
+  # since action is a just param
+  # shellcheck disable=SC2194
   case "{{ action }}" in
     install)
       download_and_run_installer
@@ -256,7 +274,7 @@ install_tools:
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
       gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
-      $HOME/.local/bin/yq "$@"
+      "$HOME/.local/bin/yq" "$@"
     else
       yq "$@"
     fi
@@ -272,6 +290,7 @@ install_tools:
 
   read_installed() {
     if [[ -f "{{ INSTALLED_VERSIONS}}" ]]; then
+      # shellcheck disable=SC1097
       while IFS== read -r key value; do
         installed[$key]=$value
       done < "{{ INSTALLED_VERSIONS}}"
@@ -284,6 +303,7 @@ install_tools:
   declare -A installed
   read_installed
   snap_apt=""
+  # shellcheck disable=SC2002
   tools=$(cat "{{ TOOL_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
   for line in $tools
   do
@@ -304,6 +324,8 @@ install_tools:
       if [[ "${installed[$binary]}" != "$version" || ! -x "{{ LOCAL_BIN }}/$binary" ]]
       then
         echo "[+] $binary@$version from $repo (attempt install)"
+        # since extract_cmdline needs to be expanded.
+        # shellcheck disable=SC2086
         gh-release-install "$repo" "$artifact" "{{ LOCAL_BIN }}/$binary" --version "$version" $extract_cmdline
         installed[$binary]="$version"
         case "$binary" in
@@ -354,8 +376,11 @@ is_supported:
   #!/usr/bin/env bash
   set -eo pipefail
 
+  # since OS_NAME is a just variable
+  # shellcheck disable=SC2050
   if [[ "{{ OS_NAME }}" == "msys" ]]; then echo "Try again on WSL2+Ubuntu"; exit 1; fi
   if [[ -e "/etc/os-release" ]]; then
+    # shellcheck disable=SC1091
     release=$(. /etc/os-release && echo "$ID" | tr '[:upper:]' '[:lower:]')
   else
     release=$(lsb_release -si | tr '[:upper:]' '[:lower:]') || true
@@ -364,3 +389,37 @@ is_supported:
     ubuntu|debian) ;;
     *) echo "Try again on Ubuntu or Debian"; exit 1;;
   esac
+
+
+# install & use fzf-git with fzf
+fzf-git:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  SUMMARY=""
+  FZF_GIT="junegunn/fzf-git.sh"
+  # install fzf-tmux since it's not in the fzf tar.gz
+  if [[ ! -f "{{ LOCAL_BIN }}/fzf-tmux" ]]; then
+    curl -fSsL https://raw.githubusercontent.com/junegunn/fzf/master/bin/fzf-tmux -o "{{ LOCAL_BIN }}/fzf-tmux"
+    chmod +x "{{ LOCAL_BIN }}/fzf-tmux"
+  fi
+  mkdir -p "{{ LOCAL_SHARE }}"
+  if [[ ! -d "{{ LOCAL_SHARE }}/$FZF_GIT" ]]; then
+    cd "{{ LOCAL_SHARE }}" && git clone "https://github.com/$FZF_GIT" "$FZF_GIT"
+  else
+    cd "{{ LOCAL_SHARE }}/$FZF_GIT" && git pull --rebase
+  fi
+
+  if [[ -z "$DPM_SKIP_FZF_PROFILE" ]]; then
+    if ! grep "fzf --bash" "$HOME/.bashrc" >/dev/null 2>&1; then
+      #shellcheck disable=SC2016
+      printf '\n[[ -s "$HOME/.local/bin/fzf" ]] && eval $($HOME/.local/bin/fzf --bash)\n' >> "$HOME/.bashrc"
+      SUMMARY+="\n>>> Added fzf --bash to .bashrc"
+    fi
+    if ! grep "fzf-git" "$HOME/.bashrc" >/dev/null 2>&1; then
+      #shellcheck disable=SC2016
+      printf '\n[[ -s "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh"\n' >> "$HOME/.bashrc"
+      SUMMARY+="\n>>> Added fzf-git.sh to .bashrc"
+    fi
+  fi
+  echo -e "$SUMMARY"
