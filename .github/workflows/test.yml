@@ -2,8 +2,12 @@ name: test
 run-name: Run Tests
 on:
   workflow_dispatch: null
-  pull_request: null
-  push: null
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
