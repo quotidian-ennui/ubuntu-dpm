@@ -26,223 +26,162 @@ kubectx:
   version: v0.9.5
   artifact: kubectx_{tag}_linux_x86_64.tar.gz
   contents: kubectx
-  updatecli:
-    yamlpath: $.kubectx.version
 k9s:
   repo: derailed/k9s
   version: v0.32.4
   artifact: k9s_Linux_amd64.tar.gz
   contents: k9s
-  updatecli:
-    yamlpath: $.k9s.version
 terraform-docs:
   repo: terraform-docs/terraform-docs
   version: v0.17.0
   artifact: terraform-docs-{tag}-linux-amd64.tar.gz
   contents: terraform-docs
-  updatecli:
-    yamlpath: $.terraform-docs.version
 nova:
   repo: fairwindsops/nova
   version: v3.8.0
   artifact: nova_{version}_linux_amd64.tar.gz
   contents: nova
-  updatecli:
-    yamlpath: $.nova.version
 updatecli:
   repo: updatecli/updatecli
   version: v0.75.0
   artifact: updatecli_Linux_x86_64.tar.gz
   contents: updatecli
-  updatecli:
-    yamlpath: $.updatecli.version
 tflint:
   repo: terraform-linters/tflint
   version: v0.50.3
   artifact: tflint_linux_amd64.zip
   contents: tflint
-  updatecli:
-    yamlpath: $.tflint.version
 gopass:
   repo: gopasspw/gopass
   version: v1.15.13
   artifact: gopass-{version}-linux-amd64.tar.gz
   contents: gopass
-  updatecli:
-    yamlpath: $.gopass.version
 tfsummarize:
   repo: dineshba/tf-summarize
   version: v0.3.10
   artifact: tf-summarize_linux_amd64.tar.gz
   contents: tf-summarize
-  updatecli:
-    yamlpath: $.tfsummarize.version
 starship:
   repo: starship/starship
   version: v1.18.2
   artifact: starship-x86_64-unknown-linux-gnu.tar.gz
   contents: starship
-  updatecli:
-    yamlpath: $.starship.version
 shellcheck:
   repo: koalaman/shellcheck
   version: v0.10.0
   artifact: shellcheck-{tag}.linux.x86_64.tar.xz
   contents: shellcheck-{tag}/shellcheck:shellcheck
-  updatecli:
-    yamlpath: $.shellcheck.version
 shfmt:
   repo: mvdan/sh
   version: v3.8.0
   artifact: shfmt_{tag}_linux_amd64
   contents: :shfmt
-  updatecli:
-    yamlpath: $.shfmt.version
 hcledit:
   repo: minamijoyo/hcledit
   version: v0.2.11
   artifact: hcledit_{version}_linux_amd64.tar.gz
   contents: hcledit
-  updatecli:
-    yamlpath: $.hcledit.version
 tfupdate:
   repo: minamijoyo/tfupdate
   version: v0.8.2
   artifact: tfupdate_{version}_linux_amd64.tar.gz
   contents: tfupdate
-  updatecli:
-    yamlpath: $.tfupdate.version
 gron:
   repo: tomnomnom/gron
   version: v0.7.1
   artifact: gron-linux-amd64-{version}.tgz
   contents: gron
-  updatecli:
-    yamlpath: $.gron.version
 git-cliff:
   repo: orhun/git-cliff
   version: v2.2.1
   artifact: git-cliff-{version}-x86_64-unknown-linux-gnu.tar.gz
   contents: git-cliff-{version}/git-cliff:git-cliff
-  updatecli:
-    yamlpath: $.git-cliff.version
 git-absorb:
   repo: tummychow/git-absorb
   version: 0.6.13
   artifact: git-absorb-{version}-x86_64-unknown-linux-musl.tar.gz
   contents: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb:git-absorb
-  updatecli:
-    yamlpath: $.git-absorb.version
-    # trim_prefix: v
 committed:
   repo: crate-ci/committed
   version: v1.0.20
   artifact: committed-{tag}-x86_64-unknown-linux-musl.tar.gz
   contents: ./committed:committed
-  updatecli:
-    yamlpath: $.committed.version
 actionlint:
   repo: rhysd/actionlint
   version: v1.6.27
   artifact: actionlint_{version}_linux_amd64.tar.gz
   contents: actionlint
-  updatecli:
-    yamlpath: $.actionlint.version
 mikefarah-yq:
   repo: mikefarah/yq
   version: v4.43.1
   artifact: yq_linux_amd64
   contents: :yq
-  updatecli:
-    yamlpath: $.mikefarah-yq.version
 mutagen:
   repo: mutagen-io/mutagen
   version: v0.17.5
   artifact: mutagen_linux_amd64_{tag}.tar.gz
   contents: mutagen
-  updatecli:
-    yamlpath: $.mutagen.version
 lazygit:
   repo: jesseduffield/lazygit
   version: v0.41.0
   artifact: lazygit_{version}_Linux_x86_64.tar.gz
   contents: lazygit
-  updatecli:
-    yamlpath: $.lazygit.version
 goenv:
   repo: ankitcharolia/goenv
   version: 1.1.8
   artifact: goenv-linux-amd64.tar.gz
   contents: goenv
-  updatecli:
-    yamlpath: $.goenv.version
 difftastic:
   repo: wilfred/difftastic
   version: 0.57.0
   artifact: difft-x86_64-unknown-linux-gnu.tar.gz
   contents: difft
-  updatecli:
-    yamlpath: $.difftastic.version
 gitsemver:
   repo: psanetra/git-semver
   version: v1.1.1
   artifact: git-semver_{version}_linux_amd64.tar.gz
   contents: git-semver
-  updatecli:
-    yamlpath: $.gitsemver.version
 iamlive:
   repo: iann0036/iamlive
   version: v1.1.8
   artifact: iamlive-{tag}-linux-amd64.tar.gz
   contents: iamlive
-  updatecli:
-    yamlpath: $.iamlive.version
 qv:
   repo: timvw/qv
   version: v0.8.4
   artifact: qv-{version}-x86_64-unknown-linux-musl-generic.tar.gz
   contents: qv
   updatecli:
+    # pattern: v0.8.4
+    # consider pinning because 0.9.6 has no downloadable binaries
     yamlpath: $.qv.version
 gitleaks:
   repo: gitleaks/gitleaks
   version: v8.18.2
   artifact: gitleaks_{version}_linux_x64.tar.gz
   contents: gitleaks
-  updatecli:
-    yamlpath: $.gitleaks.version
 jf:
   repo: sayanarijit/jf
   version: v0.6.2
   artifact: jf-x86_64-unknown-linux-gnu.tar.gz
   contents: jf
-  updatecli:
-    yamlpath: $.jf.version
 fzf:
   repo: junegunn/fzf
   version: 0.50.0
   artifact: fzf-{version}-linux_amd64.tar.gz
   contents: fzf
-  updatecli:
-    yamlpath: $.fzf.version
 fd:
   repo: sharkdp/fd
   version: v9.0.0
   artifact: fd-{tag}-x86_64-unknown-linux-gnu.tar.gz
   contents: fd-{tag}-x86_64-unknown-linux-gnu/fd:fd
-  updatecli:
-    yamlpath: $.fd.version
 bat:
   repo: sharkdp/bat
   version: v0.24.0
   artifact: bat-{tag}-x86_64-unknown-linux-gnu.tar.gz
   contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
-  updatecli:
-    yamlpath: $.bat.version
 snyk:
   repo: snyk/cli
   version: v1.1290.0
   artifact: snyk-linux
   contents: :snyk
-  updatecli:
-    yamlpath: $.snyk.version
