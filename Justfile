@@ -369,7 +369,7 @@ install_repos:
     if [[ "$repo" != "null" ]]; then
       if [[ ! -d "{{ LOCAL_SHARE }}/$repo" ]]; then
         echo "[+] $repo (attempt install)"
-        cd "{{ LOCAL_SHARE }}" && git clone "https://github.com/$repo" "$repo"
+        cd "{{ LOCAL_SHARE }}" && git clone --quiet "https://github.com/$repo" "$repo" > /dev/null
       else
         pushd "{{ LOCAL_SHARE }}/$repo" > /dev/null
 
