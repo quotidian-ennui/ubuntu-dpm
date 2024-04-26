@@ -52,9 +52,9 @@ update: apt_update tools
 
   set -eo pipefail
   # update fzf-git if we need to
-  if [[ -d "{{ LOCAL_SHARE }}/fzf-git.sh" ]]; then
+  if [[ -d "{{ LOCAL_SHARE }}/junegunn/fzf-git.sh" ]]; then
     echo ">>> updating fzf-git"
-    cd "{{ LOCAL_SHARE }}/fzf-git.sh" && git pull --rebase
+    cd "{{ LOCAL_SHARE }}/junegunn/fzf-git.sh" && git pull --rebase
   fi
 
 # initialise to install tools
