@@ -79,7 +79,7 @@ just sdk help
 
 Various environment variables control behaviour.
 
-- `SKIP_DOCKER` set to any value if you don't want docker to be installed.
+- `SKIP_DOCKER` | `DPM_SKIP_DOCKER` set to any value if you don't want docker to be installed.
 - `DPM_TOOLS_YAML` can be set to your custom tools build path.
 - `DPM_SKIP_GHCLI_CONFIG` - set to any value if you want to skip github-cli configuration (and authentication etc.).
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
