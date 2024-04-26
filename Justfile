@@ -295,7 +295,6 @@ install_tools:
 
   declare -A installed
   read_installed
-  snap_apt=""
   # shellcheck disable=SC2002
   tools=$(cat "{{ TOOL_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
   for line in $tools
@@ -321,10 +320,6 @@ install_tools:
         # shellcheck disable=SC2086
         gh-release-install "$repo" "$artifact" "{{ LOCAL_BIN }}/$binary" --version "$version" $extract_cmdline
         installed[$binary]="$version"
-        case "$binary" in
-          just | yq) snap_apt="true";;
-          *) ;;
-        esac
       else
         echo "[=] $binary@$version from $repo (already installed)"
         continue
@@ -332,13 +327,6 @@ install_tools:
     fi
   done
   write_installed
-  # Cleanup Just (mpr has it at 1.14)
-  if [[ -n "$snap_apt" ]]; then
-    sudo apt remove -y just 1>/dev/null 2>&1 || true
-    echo ">>> casey/just installed at $(which just)"
-    echo ">>> mikefarah/yq installed at $(which yq)"
-    echo "You might want to 'hash -r' to clear the bash hash cache."
-  fi
 
 [private]
 install_repos:
