@@ -2,6 +2,7 @@ set positional-arguments := true
 OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 
 TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
+REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
 
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
@@ -47,15 +48,7 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # Update apt + tools
-update: apt_update tools
-  #!/usr/bin/env bash
-
-  set -eo pipefail
-  # update fzf-git if we need to
-  if [[ -d "{{ LOCAL_SHARE }}/junegunn/fzf-git.sh" ]]; then
-    echo ">>> updating fzf-git"
-    cd "{{ LOCAL_SHARE }}/junegunn/fzf-git.sh" && git pull --rebase
-  fi
+@update: apt_update tools
 
 # initialise to install tools
 init: is_supported configure_ghcli
@@ -65,8 +58,8 @@ init: is_supported configure_ghcli
   mkdir -p ~/.config/direnv && wget -q -O ~/.config/direnv/direnvrc https://raw.githubusercontent.com/direnv/direnv/master/stdlib.sh
   mkdir -p ~/.local/share/direnv/allow
 
-# install binary tools
-@tools: is_supported install_tools
+# install binary tools and checkout repo scripts
+@tools: is_supported install_tools install_repos
 
 # Show help for sdk subcommand
 [private]
@@ -348,6 +341,64 @@ install_tools:
   fi
 
 [private]
+install_repos:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  yq_wrapper() {
+    if ! which yq >/dev/null 2>&1; then
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
+      "$HOME/.local/bin/yq" "$@"
+    else
+      yq "$@"
+    fi
+  }
+
+  mkdir -p "{{ LOCAL_SHARE }}"
+
+  # shellcheck disable=SC2002
+  repos=$(cat "{{ REPO_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
+  for line in $repos; do
+    repo=$(echo "$line" | jq -r ".repo")
+    contents_line=$(echo "$line" | jq -r ".contents")
+    source=$(echo "$contents_line" | cut -f1 -d':')
+    destination=$(echo "$contents_line" | cut -f2 -d':')
+    source=${source:-$destination}
+
+    if [[ "$repo" != "null" ]]; then
+      if [[ ! -d "{{ LOCAL_SHARE }}/$repo" ]]; then
+        echo "[+] $repo (attempt install)"
+        cd "{{ LOCAL_SHARE }}" && git clone --quiet "https://github.com/$repo" "$repo" >/dev/null
+      else
+        pushd "{{ LOCAL_SHARE }}/$repo" >/dev/null
+
+        git fetch --quiet
+        local=$(git rev-parse @)
+        remote=$(git rev-parse '@{u}')
+        base=$(git merge-base @ '@{u}')
+
+        if [ "$local" = "$remote" ]; then
+          echo "[=] $repo (already upto date)"
+        elif [ "$local" = "$base" ]; then
+          echo "[+] $repo (attempt update)"
+          git pull --quiet --rebase
+        else
+          echo "[x] $repo (unexpected state)"
+          exit 1
+        fi
+
+        popd >/dev/null
+      fi
+
+      if [[ "$destination" != "null" ]]; then
+        if [ ! -L "$HOME/.local/bin/$destination" ]; then
+          ln -s "{{ LOCAL_SHARE }}/$repo/$source" "$HOME/.local/bin/$destination"
+        fi
+      fi
+    fi
+  done
+
+[private]
 configure_ghcli:
   #!/usr/bin/env bash
   set -eo pipefail
@@ -391,23 +442,16 @@ is_supported:
   esac
 
 
-# install & use fzf-git with fzf
+# use fzf-git with fzf
 fzf-git:
   #!/usr/bin/env bash
   set -eo pipefail
 
   SUMMARY=""
-  FZF_GIT="junegunn/fzf-git.sh"
   # install fzf-tmux since it's not in the fzf tar.gz
   if [[ ! -f "{{ LOCAL_BIN }}/fzf-tmux" ]]; then
     curl -fSsL https://raw.githubusercontent.com/junegunn/fzf/master/bin/fzf-tmux -o "{{ LOCAL_BIN }}/fzf-tmux"
     chmod +x "{{ LOCAL_BIN }}/fzf-tmux"
-  fi
-  mkdir -p "{{ LOCAL_SHARE }}"
-  if [[ ! -d "{{ LOCAL_SHARE }}/$FZF_GIT" ]]; then
-    cd "{{ LOCAL_SHARE }}" && git clone "https://github.com/$FZF_GIT" "$FZF_GIT"
-  else
-    cd "{{ LOCAL_SHARE }}/$FZF_GIT" && git pull --rebase
   fi
 
   if [[ -z "$DPM_SKIP_FZF_PROFILE" ]]; then

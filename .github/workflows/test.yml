@@ -2,8 +2,12 @@ name: test
 run-name: Run Tests
 on:
   workflow_dispatch: null
-  pull_request: null
-  push: null
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -36,9 +40,14 @@ jobs:
           pip install gh-release-install
           # shellcheck disable=SC2002
           tool_count=$(cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
+          # shellcheck disable=SC2002
+          repo_count=$(cat "${{ github.workspace }}/config/repos.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
+          # shellcheck disable=SC2003
+          # shellcheck disable=SC2086
+          total_count=$(expr $tool_count + $repo_count)
           install_count=$(just tools | grep -c "attempt install")
-          if [[ "$tool_count" != "$install_count" ]]; then
-            echo "::error::mismatch between tools.yml [$tool_count] and installed tools [$install_count]"
+          if [[ "$total_count" != "$install_count" ]]; then
+            echo "::error::mismatch between tools.yml [$total_count] and installed tools [$install_count]"
             exit 1
           fi
   test_rust_install:
