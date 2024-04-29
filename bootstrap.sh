@@ -46,6 +46,10 @@ repo_docker() {
 # trivy.
 # some shenanigans because trivy doesn't always update its repo releases
 # in good time.
+# distro-info is available in ubuntu, but must be explicitly installed in debian
+# probably not worth it, but if we did we could...
+# distro-info --supported | sed -n "/$(lsb_release -sc)/q;p" | tac
+# and iterate.
 repo_trivy() {
   download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
   local trivy_fallback=""
