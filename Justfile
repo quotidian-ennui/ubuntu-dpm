@@ -154,7 +154,9 @@ sdk_install_nvm:
   #shellcheck disable=SC1090
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
-  npm install -g -y wsl-open pin-github-action prettier
+  if [[ -n "$WSL_DISTRO_NAME" ]]; then
+    npm install -g -y wsl-open
+  fi
 
 
 # Install rustup && cargo-binstall (because rust)
