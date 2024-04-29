@@ -107,7 +107,11 @@ sdk_install_java:
   if [[ ! -d "$HOME/.sdkman" ]]; then
     # It does feel that if we already have SDKMAN installed then
     # we could execute sdk selfupdate & sdk upgrade
-    curl -fSsL "https://get.sdkman.io" | bash
+    if [[ -n "$DPM_SKIP_JAVA_PROFILE" ]]; then
+      curl -fSsL "https://get.sdkman.io?rcupdate=false" | bash
+    else
+      curl -fSsL "https://get.sdkman.io" | bash
+    fi
   fi
   # This is a bit of a hack to avoid the interactive prompt but setting
   # it on the commandline doesn't always work.
@@ -142,7 +146,11 @@ sdk_install_nvm:
   set -eo pipefail
 
   nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+  if [[ -n "$DPM_SKIP_NVM_PROFILE" ]]; then
+    curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | PROFILE=/dev/null bash
+  else
+    curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+  fi
   #shellcheck disable=SC1090
   source ~/.nvm/nvm.sh
   nvm install --lts && nvm use --lts
@@ -154,7 +162,17 @@ sdk_install_nvm:
 sdk_install_rust:
   #!/usr/bin/env bash
   set -eo pipefail
+
+  # force rustup to not modify profile
   curl -fSsL --proto '=https' --tlsv1.2 https://sh.rustup.rs | sh -s -- -y --no-modify-path
+  if [[ -z "$DPM_SKIP_RUST_PROFILE" ]]; then
+    if ! grep "\.cargo\/env" "$HOME/.bashrc" >/dev/null 2>&1; then
+      #shellcheck disable=SC2016
+      printf '\n[[ -s "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"\n' >> "$HOME/.bashrc"
+      echo -e "\n>>> DPM automatically added .cargo/env to .bashrc"
+    fi
+  fi
+
   curl -fSsL "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz" | tar xz
   ./cargo-binstall -y --force cargo-binstall >/dev/null 2>&1
   rm -f ./cargo-binstall >/dev/null 2>&1
@@ -166,7 +184,11 @@ sdk_install_rvm:
   set -eo pipefail
 
   gpg --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-  curl -fSsL "https://get.rvm.io" | bash -s stable
+  if [[ -n "$DPM_SKIP_RVM_PROFILE" ]]; then
+    curl -fSsL "https://get.rvm.io" | bash -s stable --ignore-dotfiles
+  else
+    curl -fSsL "https://get.rvm.io" | bash -s stable
+  fi
   #shellcheck disable=SC1090
   source ~/.rvm/scripts/rvm
   ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
