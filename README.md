@@ -94,8 +94,8 @@ Various environment variables control behaviour.
 > The various YAML files should be self explanatory and control
 >
 > - what binary tools are installed (tools.yml)
-> - what sdk tooling is installed (via sdkman|rustup|rvm|nvm etc.).
-> - what github projects are 'cloned' into the local filesystem as supporting tools
+> - what sdk tooling is installed (via sdkman|rustup|rvm|nvm etc.) (sdk.yml)
+> - what github projects are 'cloned' into the local filesystem as supporting tools (repos.yml)
 
 ## Notes
 
