@@ -83,6 +83,10 @@ Various environment variables control behaviour.
 - `DPM_TOOLS_YAML` can be set to your custom tools build path.
 - `DPM_SKIP_GHCLI_CONFIG` - set to any value if you want to skip github-cli configuration (and authentication etc.).
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
+- `DPM_SKIP_JAVA_PROFILE` - set to any value to skip profile modifications by sdkman
+- `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm
+- `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm
+- `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup
 
 ## Notes
 
