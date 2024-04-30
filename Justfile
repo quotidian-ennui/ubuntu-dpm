@@ -121,16 +121,6 @@ sdk_install_java:
   sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
-  # graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  # gradle_latest=$(gh release list -R gradle/gradle --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  # maven_latest=$(gh release list -R apache/maven --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  # jbang_latest=$(gh release list -R jbangdev/jbang --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  # graal_v=${graal_latest#"jdk-"}
-  # mvn_v=${maven_latest#"maven-"}
-  # gradle_v=${gradle_latest#"v"}
-  # # Need to use 8.5 rather than 8.5.0
-  # gradle_v=${gradle_v%".0"}
-  # jbang_v=${jbang_latest#"v"}
 
   graal_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.java")
   maven_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.maven")
