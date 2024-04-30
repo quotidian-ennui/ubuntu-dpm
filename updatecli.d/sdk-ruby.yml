@@ -1,13 +1,12 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
-name: 'opentofu'
+name: "ruby"
 
 # {{ if $scmEnabled }}
 actions:
   pull_request:
     scmid: github
-    title: 'chore(deps): Bump opentofu version to {{ source "latest" }}'
+    title: 'chore(deps): Bump ruby version to {{ source "latest" }}'
     kind: github/pullrequest
-    mergemethod: "squash"
     spec:
       labels:
         - dependencies
@@ -27,32 +26,38 @@ scms:
       commitmessage:
         type: "chore"
         scope: "deps"
-        title: 'Bump opentofu version to {{ source "latest" }}'
+        title: 'Bump ruby version to {{ source "latest" }}'
         hidecredit: true
 # {{ end }}
 
 sources:
   latest:
-    name: Github release for opentofu
+    name: Github release for ruby
     kind: githubrelease
     spec:
-      owner: opentofu
-      repository: opentofu
+      owner: ruby
+      repository: ruby
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      typefilter:
+        latest: true
       versionfilter:
-        kind: semver
+        kind: regex
+        pattern: ^v[0-9]+_[0-9]+_[0-9]+$
     transformers:
       - trimprefix: v
+      - replacer:
+          from: "_"
+          to: "."
 
 targets:
   update_yaml:
     kind: yaml
     sourceid: latest
-    name: 'Bump opentofu version to {{ source "latest" }}'
+    name: 'Bump ruby version to {{ source "latest" }}'
     # {{ if $scmEnabled }}
     scmid: github
     # {{ end }}
     spec:
       files:
-        - ./config/tools.yml
-      key: $.opentofu.version
+        - ./config/sdk.yml
+      key: $.rvm.ruby

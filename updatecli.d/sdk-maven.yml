@@ -1,0 +1,58 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "maven"
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump maven version to {{ source "latest" }}'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump maven version to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for maven
+    kind: githubrelease
+    spec:
+      owner: apache
+      repository: maven
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: regex
+        pattern: ^maven-[0-9]+\.[0-9]+\.[0-9]+$
+    transformers:
+      - trimprefix: maven-
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump maven version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/sdk.yml
+      key: $.sdkman.maven

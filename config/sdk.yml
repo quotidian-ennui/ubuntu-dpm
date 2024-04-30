@@ -1,0 +1,17 @@
+# Should be self evident.
+#
+# terraform probably preserved in aspic now.
+# @see ../updatecli.d/sdk-*.yml
+terraform:
+  version: 1.6.6
+opentofu:
+  version: 1.6.2
+sdkman:
+  java: 21.0.2-graalce
+  gradle: 8.7
+  maven: 3.9.6
+  jbang: 0.116.0
+rvm:
+  ruby: 3.3.1
+nvm:
+  version: v0.39.7
