@@ -85,7 +85,7 @@ sdk_install_help:
 
 # Install all the SDK tooling
 [private]
-sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "terraform") (sdk_install_tvm "opentofu") (sdk_install_aws "update")
+sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
