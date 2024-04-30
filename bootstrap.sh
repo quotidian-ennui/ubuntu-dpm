@@ -43,10 +43,30 @@ repo_docker() {
     sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 }
 
-# trivy
+# trivy.
+# some shenanigans because trivy doesn't always update its repo releases
+# in good time.
+# distro-info is available in ubuntu, but must be explicitly installed in debian
+# probably not worth it, but if we did we could...
+# distro-info --supported | sed -n "/$(lsb_release -sc)/q;p" | tac
+# and iterate.
 repo_trivy() {
   download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
-  echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
+  local trivy_fallback=""
+  local current_release=""
+  current_release=$(lsb_release -sc)
+  if [[ "$1" == "ubuntu" ]]; then
+    # focal -> jammy -> noble
+    trivy_fallback="jammy"
+  else
+    # buster -> bullseye -> bookworm
+    trivy_fallback="bullseye"
+  fi
+  local repo_name="$current_release"
+  if ! curl -fsSL "https://raw.githubusercontent.com/aquasecurity/trivy-repo/main/deb/dists/$current_release/Release" >/dev/null 2>&1; then
+    repo_name="$trivy_fallback"
+  fi
+  echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $repo_name main" | sudo tee /etc/apt/sources.list.d/trivy.list
 }
 
 # kubectl
