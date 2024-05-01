@@ -118,7 +118,7 @@ mikefarah-yq:
   contents: :yq
 mutagen:
   repo: mutagen-io/mutagen
-  version: v0.17.5
+  version: v0.17.6
   artifact: mutagen_linux_amd64_{tag}.tar.gz
   contents: mutagen
 lazygit:
