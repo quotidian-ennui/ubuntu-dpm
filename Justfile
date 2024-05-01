@@ -3,6 +3,7 @@ OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 
 TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
 REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
+SDK_CONFIG:=env_var_or_default("DPM_SDK_YAML", justfile_directory() / "config/sdk.yml")
 
 UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
@@ -51,7 +52,7 @@ updatecli +args='diff':
 @update: apt_update tools
 
 # initialise to install tools
-init: is_supported configure_ghcli
+init: is_supported
   #!/usr/bin/env bash
 
   set -eo pipefail
@@ -84,7 +85,7 @@ sdk_install_help:
 
 # Install all the SDK tooling
 [private]
-sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "terraform") (sdk_install_tvm "opentofu") (sdk_install_aws "update")
+sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
@@ -102,6 +103,8 @@ sdk_install_go:
 [private]
 sdk_install_java:
   #!/usr/bin/env bash
+  #Disable redundant cat throughout the scrsipt.
+  #shellcheck disable=SC2002
   set -eo pipefail
 
   if [[ ! -d "$HOME/.sdkman" ]]; then
@@ -118,25 +121,17 @@ sdk_install_java:
   sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
-  # graal_latest=$(gh release list -R graalvm/graalvm-ce-builds --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  # JDK21 is LTS... so we'll use that
-  graal_latest=jdk-21.0.2
-  gradle_latest=$(gh release list -R gradle/gradle --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  maven_latest=$(gh release list -R apache/maven --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
-  jbang_latest=$(gh release list -R jbangdev/jbang --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
 
-  graal_v=${graal_latest#"jdk-"}
-  mvn_v=${maven_latest#"maven-"}
-  gradle_v=${gradle_latest#"v"}
-  # Need to use 8.5 rather than 8.5.0
-  gradle_v=${gradle_v%".0"}
-  jbang_v=${jbang_latest#"v"}
+  graal_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.java")
+  maven_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.maven")
+  jbang_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.jbang")
+  gradle_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sdkman.gradle")
 
-  sdk install java "$graal_v-graalce"
+  sdk install java "$graal_v"
   sdk install gradle "$gradle_v"
-  sdk install maven "$mvn_v"
+  sdk install maven "$maven_v"
   sdk install jbang "$jbang_v"
-  echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$mvn_v, jbang=$jbang_v"
+  echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
   sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
 
 # Install NVM (because nodejs)
@@ -145,7 +140,9 @@ sdk_install_nvm:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  # nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+  #shellcheck disable=SC2002
+  nvm_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".nvm.version")
   if [[ -n "$DPM_SKIP_NVM_PROFILE" ]]; then
     curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | PROFILE=/dev/null bash
   else
@@ -193,7 +190,10 @@ sdk_install_rvm:
   fi
   #shellcheck disable=SC1090
   source ~/.rvm/scripts/rvm
-  ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
+  # ruby tagname has _ so we don't derive it like the others.
+  # ruby_latest=$(gh release list -R ruby/ruby | grep -i Latest | awk '{print $1}')
+  #shellcheck disable=SC2002
+  ruby_latest=$(cat "{{ SDK_CONFIG }}" | yq -r ".rvm.ruby")
   ruby_v=${ruby_latest#"v"}
   echo "Ruby $ruby_v" && rvm install ruby "$ruby_v" && rvm use "$ruby_v"
 
@@ -232,7 +232,7 @@ sdk_install_tvm variant:
     #shellcheck disable=SC1083
     ln -s "$HOME/$tfenv_base/bin"/* {{ LOCAL_BIN }}
     #shellcheck disable=SC2002
-    tf_v=$(cat "{{ TOOL_CONFIG }}" | yq -r "$tfenv_yamlpath")
+    tf_v=$(cat "{{ SDK_CONFIG }}" | yq -r "$tfenv_yamlpath")
     "$HOME/$tfenv_base/bin/$tfenv_bin" install "$tf_v"
     "$HOME/$tfenv_base/bin/$tfenv_bin" use "$tf_v"
   fi
@@ -410,22 +410,20 @@ install_repos:
     fi
   done
 
-[private]
-configure_ghcli:
+# configure github cli & extensions
+ghcli:
   #!/usr/bin/env bash
   set -eo pipefail
 
-  if [[ -z "$DPM_SKIP_GHCLI_CONFIG" ]]; then
-    if ! gh auth status >/dev/null 2>&1; then
-      gh auth login -h github.com
-    fi
-    gh extension install quotidian-ennui/gh-my || true
-    gh extension install quotidian-ennui/gh-rate-limit || true
-    gh extension install quotidian-ennui/gh-squash-merge || true
-    gh extension install quotidian-ennui/gh-approve-deploy || true
-    gh extension install actions/gh-actions-cache || true
-    gh extension install mcwarman/gh-update-pr || true
+  if ! gh auth status >/dev/null 2>&1; then
+    gh auth login -h github.com
   fi
+  gh extension install quotidian-ennui/gh-my || true
+  gh extension install quotidian-ennui/gh-rate-limit || true
+  gh extension install quotidian-ennui/gh-squash-merge || true
+  gh extension install quotidian-ennui/gh-approve-deploy || true
+  gh extension install actions/gh-actions-cache || true
+  gh extension install mcwarman/gh-update-pr || true
 
 [private]
 @apt_update:

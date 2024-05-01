@@ -1,0 +1,57 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "jbang"
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump jbang version to {{ source "latest" }}'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump jbang version to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for jbang
+    kind: githubrelease
+    spec:
+      owner: jbangdev
+      repository: jbang
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+    transformers:
+      - trimprefix: v
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump jbang version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/sdk.yml
+      key: $.sdkman.jbang

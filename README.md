@@ -69,6 +69,8 @@ echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient
 ./bootstrap.sh baseline
 # Now you will need to know your ghcli token info
 just init
+# If you are one to use the github cli
+# just ghcli
 # Install all the tools
 just tools
 # choose your sdk poison
@@ -80,13 +82,20 @@ just sdk help
 Various environment variables control behaviour.
 
 - `SKIP_DOCKER` | `DPM_SKIP_DOCKER` set to any value if you don't want docker to be installed.
-- `DPM_TOOLS_YAML` can be set to your custom tools build path.
-- `DPM_SKIP_GHCLI_CONFIG` - set to any value if you want to skip github-cli configuration (and authentication etc.).
+- `DPM_TOOLS_YAML` - can be set to your custom tools yaml path.
+- `DPM_REPO_YAML` - can be set to your custom repo yaml path
+- `DPM_SDK_YAML` - can be set to your custom sdk yaml path
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
 - `DPM_SKIP_JAVA_PROFILE` - set to any value to skip profile modifications by sdkman
 - `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm
 - `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm
 - `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup
+
+> The various YAML files should be self explanatory and control
+>
+> - what binary tools are installed (tools.yml)
+> - what sdk tooling is installed (via sdkman|rustup|rvm|nvm etc.) (sdk.yml)
+> - what github projects are 'cloned' into the local filesystem as supporting tools (repos.yml)
 
 ## Notes
 
