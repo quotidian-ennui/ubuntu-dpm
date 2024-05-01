@@ -10,7 +10,7 @@
 terraform:
   version: 1.6.6
 opentofu:
-  version: 1.6.2
+  version: 1.7.0
 just:
   repo: casey/just
   version: 1.25.2
