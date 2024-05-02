@@ -83,7 +83,9 @@ Various environment variables control behaviour.
 
 - `SKIP_DOCKER` | `DPM_SKIP_DOCKER` set to any value if you don't want docker to be installed.
 - `DPM_TOOLS_YAML` - can be set to your custom tools yaml path.
+- `DPM_TOOLS_ADDITIONS_YAML` - can be set to an additional tools yaml path, will be merged base tools.yml
 - `DPM_REPO_YAML` - can be set to your custom repo yaml path
+- `DPM_REPO_ADDITIONS_YAML` - can be set to an additional repos yaml path, will be merged base repos.yml
 - `DPM_SDK_YAML` - can be set to your custom sdk yaml path
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
 - `DPM_SKIP_JAVA_PROFILE` - set to any value to skip profile modifications by sdkman

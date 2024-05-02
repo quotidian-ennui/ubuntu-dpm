@@ -319,8 +319,14 @@ install_tools:
 
   declare -A installed
   read_installed
-  # shellcheck disable=SC2002
-  tools=$(cat "{{ TOOL_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
+
+  files=("{{ TOOL_CONFIG }}")
+  if [[ -n "$DPM_TOOLS_ADDITIONS_YAML" ]]; then
+    files+=("$DPM_TOOLS_ADDITIONS_YAML")
+  fi
+  # shellcheck disable=SC2016
+  tools=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
+
   for line in $tools
   do
     repo=$(echo "$line" | jq -r ".repo")
@@ -368,8 +374,13 @@ install_repos:
 
   mkdir -p "{{ LOCAL_SHARE }}"
 
-  # shellcheck disable=SC2002
-  repos=$(cat "{{ REPO_CONFIG }}" | yq_wrapper -p yaml -o json | jq -c ".[]")
+  files=("{{ REPO_CONFIG }}")
+  if [[ -n "$DPM_REPO_ADDITIONS_YAML" ]]; then
+    files+=("$DPM_REPO_ADDITIONS_YAML")
+  fi
+  # shellcheck disable=SC2016
+  repos=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
+
   for line in $repos; do
     repo=$(echo "$line" | jq -r ".repo")
     contents_line=$(echo "$line" | jq -r ".contents")
