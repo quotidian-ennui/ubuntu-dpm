@@ -31,25 +31,40 @@ jobs:
         uses: taiki-e/install-action@00a67321d66e038602baf558d366a594a7019ea2 # v2.33.9
         with:
           tool: just@${{ env.JUST_VERSION }}
+      - name: configure extras
+        run: |
+          printf 'gitscripts:
+            repo: mcwarman/gitscripts
+          ' | tee -a config/repos-additions.yml
+          printf 'kubeconform:
+            repo: yannh/kubeconform
+            version: v0.6.4
+            artifact: kubeconform-linux-amd64.tar.gz
+            contents: kubeconform
+          ' | tee -a config/tools-additions.yml
       - name: Test Install
         id: install
         # jq + yq are available already in the github runner.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DPM_TOOLS_ADDITIONS_YAML: config/tools-additions.yml
+          DPM_REPO_ADDITIONS_YAML: config/repos-additions.yml
         run: |
           pip install gh-release-install
           # shellcheck disable=SC2002
           tool_count=$(cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # shellcheck disable=SC2002
           repo_count=$(cat "${{ github.workspace }}/config/repos.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
+          # +2 for the additional tools requested in the step above.
           # shellcheck disable=SC2003
           # shellcheck disable=SC2086
-          total_count=$(expr $tool_count + $repo_count)
+          total_count=$(expr $tool_count + $repo_count + 2)
           install_count=$(just tools | grep -c "attempt install")
           if [[ "$total_count" != "$install_count" ]]; then
             echo "::error::mismatch between tools.yml [$total_count] and installed tools [$install_count]"
             exit 1
           fi
+
   test_rust_install:
     runs-on: ubuntu-latest
     name: install-rust
