@@ -67,7 +67,6 @@ echo "$USER ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/lenient
 ./bootstrap.sh repos
 # to install some initial tooling
 ./bootstrap.sh baseline
-# Now you will need to know your ghcli token info
 just init
 # If you are one to use the github cli
 # just ghcli
@@ -88,10 +87,12 @@ Various environment variables control behaviour.
 - `DPM_REPO_ADDITIONS_YAML` - can be set to an additional repos yaml path, will be merged base repos.yml
 - `DPM_SDK_YAML` - can be set to your custom sdk yaml path
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
-- `DPM_SKIP_JAVA_PROFILE` - set to any value to skip profile modifications by sdkman
-- `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm
-- `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm
-- `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup
+- `DPM_SKIP_GO_PROFILE` - set to any value to skip profile modifications by `go-nv/goenv` (via _just sdk goenv_)
+  - if you opt to use `ankitcharolia/goenv` then this always modifies your profile (via _just sdk go_)
+- `DPM_SKIP_JAVA_PROFILE` - set to any value to skip profile modifications by sdkman (via _just sdk java_)
+- `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm (via _just sdk nvm_)
+- `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm (via _just sdk rvm_)
+- `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup (via _just sdk rust_)
 
 > The various YAML files should be self explanatory and control
 >
