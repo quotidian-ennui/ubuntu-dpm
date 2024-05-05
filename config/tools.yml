@@ -122,6 +122,11 @@ lazygit:
   version: v0.41.0
   artifact: lazygit_{version}_Linux_x86_64.tar.gz
   contents: lazygit
+goenv:
+  repo: ankitcharolia/goenv
+  version: 1.1.8
+  artifact: goenv-linux-amd64.tar.gz
+  contents: goenv
 difftastic:
   repo: wilfred/difftastic
   version: 0.57.0

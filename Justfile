@@ -50,7 +50,7 @@ updatecli +args='diff':
   rm -rf "$tmpdir"
 
 # Update apt + tools
-@update: apt_update tools update_goenv
+@update: apt_update tools
 
 # initialise to install tools
 init: is_supported
@@ -84,49 +84,64 @@ sdk_install_help:
 @sdk action='help' *args="": is_supported
   just sdk_install_{{action}} {{args}}
 
-# Install all the SDK tooling
+# Install rust, nvm, sdkman, tofu, aws (but not go).
 [private]
-sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
+sdk_install_all: sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
-# Install goenv (because golang)
+# not entirely sure I like this as a chicken & egg situation since goenv must be installed
+# by 'tools' recipe
+# Install ankitcharolia/goenv to manage golang
 [private]
 sdk_install_go:
   #!/usr/bin/env bash
 
   set -eo pipefail
+  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+  goenv --install "$go_v"
+  goenv --use "$go_v"
+
+
+# Install/Update go-nv/goenv to manage golang ($1=install/update)
+[private]
+sdk_install_goenv action="update":
+  #!/usr/bin/env bash
+  # shellcheck disable=SC2016
+
+  set -eo pipefail
   mkdir -p "{{ LOCAL_BIN }}"
 
-  go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
   rm -f "{{ LOCAL_BIN }}/goenv"
   if [[ -d "{{ GOENV_ROOT }}" ]]; then
-    echo "goenv already installed"
-    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
+    cd "{{ GOENV_ROOT }}" && git pull --rebase
   else
     git clone "https://github.com/go-nv/goenv.git" "{{ GOENV_ROOT }}"
   fi
-  ln -s {{ GOENV_ROOT }}/bin/* {{ LOCAL_BIN }}
-  if [[ -z "$DPM_SKIP_GO_PROFILE" ]]; then
-    if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
-      echo 'export GOENV_ROOT="$HOME/.goenv"' >> ~/.bashrc
-      echo 'eval "$($GOENV_ROOT/bin/goenv init -)"' >> ~/.bashrc
+  #shellcheck disable=SC1083
+  ln -s "{{ GOENV_ROOT }}/bin/"* {{ LOCAL_BIN }}
+  # shellcheck disable=SC2194
+  case "{{ action }}" in
+  install|latest)
+    if [[ -z "$DPM_SKIP_GO_PROFILE" ]]; then
+      if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
+        {
+          printf '\nif [[ -d "$HOME/.goenv" ]]; then'
+          printf '\n  export GOENV_ROOT="$HOME/.goenv"'
+          printf '\n  eval "$($GOENV_ROOT/bin/goenv init -)"'
+          printf '\nfi'
+        } >> ~/.bashrc
+      fi
     fi
-  fi
-  go_v=$(ls -1 "{{ GOENV_ROOT }}/plugins/go-build/share/gobuild" | grep -v -e "beta" -e "rc" | sort -rV | head -n 1)
-  "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
-  "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
-  "{{ GOENV_ROOT }}/bin/goenv" versions
-
-
-# Pulls the goenv repo because it doesn't do --list-remotes
-[private]
-update_goenv:
-  #!/usr/bin/env bash
-  set -eo pipefail
-
-  if [[ -d "{{ GOENV_ROOT }}" ]]; then
-    (cd "{{ GOENV_ROOT }}" && git pull --rebase) >/dev/null 2>&1
-  fi
-
+    # while this warning is certainly true, go-build should only contain version numbers...
+    # shellcheck disable=SC2010
+    go_v=$(ls -1 "{{ GOENV_ROOT }}/plugins/go-build/share/go-build" | grep -v -e "beta" -e "rc" | sort -rV | head -n 1)
+    "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
+    "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
+    "{{ GOENV_ROOT }}/bin/goenv" versions
+    ;;
+  *)
+    echo ">>> goenv updated"
+    ;;
+  esac
 
 # Install SDKMAN (because JVM)
 [private]
