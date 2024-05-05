@@ -94,9 +94,11 @@ sdk_install_all: sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_
 [private]
 sdk_install_go:
   #!/usr/bin/env bash
+  # shellcheck disable=SC2002
 
   set -eo pipefail
-  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+  go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
+  # go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
   goenv --install "$go_v"
   goenv --use "$go_v"
 
@@ -106,6 +108,7 @@ sdk_install_go:
 sdk_install_goenv action="update":
   #!/usr/bin/env bash
   # shellcheck disable=SC2016
+  # shellcheck disable=SC2002
 
   set -eo pipefail
   mkdir -p "{{ LOCAL_BIN }}"
@@ -131,9 +134,7 @@ sdk_install_goenv action="update":
         } >> ~/.bashrc
       fi
     fi
-    # while this warning is certainly true, go-build should only contain version numbers...
-    # shellcheck disable=SC2010
-    go_v=$(ls -1 "{{ GOENV_ROOT }}/plugins/go-build/share/go-build" | grep -v -e "beta" -e "rc" | sort -rV | head -n 1)
+    go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
     "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
     "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
     "{{ GOENV_ROOT }}/bin/goenv" versions
