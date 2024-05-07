@@ -148,7 +148,7 @@ qv:
   artifact: qv-{version}-x86_64-unknown-linux-musl-generic.tar.gz
   contents: qv
   updatecli:
-    # pattern: v0.8.4
+    pattern: v0.8.4
     # consider pinning because 0.9.6 has no downloadable binaries
     yamlpath: $.qv.version
 gitleaks:
