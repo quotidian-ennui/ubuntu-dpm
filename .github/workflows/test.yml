@@ -176,6 +176,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just sdk java
+  test_goenv_install:
+    runs-on: ubuntu-latest
+    name: install-goenv
+    outputs:
+      result: ${{ steps.install.outcome || 'failure' }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+      - name: Install Just
+        uses: taiki-e/install-action@00a67321d66e038602baf558d366a594a7019ea2 # v2.33.9
+        with:
+          tool: just@${{ env.JUST_VERSION }}
+      - name: Test Install
+        id: install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          just sdk goenv install
   test_status:
     name: Assert Tests Passed
     runs-on: ubuntu-latest
@@ -188,6 +206,7 @@ jobs:
       - test_tofuenv_install
       - test_rvm_install
       - test_sdkman_install
+      - test_goenv_install
     steps:
       - name: test status
         id: test_status

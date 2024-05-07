@@ -9,6 +9,7 @@ UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
 LOCAL_BIN:= env_var('HOME') / ".local/bin"
 LOCAL_SHARE:= env_var('HOME') / ".local/share/ubuntu-dpm"
+GOENV_ROOT:= env_var('HOME') / ".goenv"
 INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 
 alias prepare:=init
@@ -83,21 +84,65 @@ sdk_install_help:
 @sdk action='help' *args="": is_supported
   just sdk_install_{{action}} {{args}}
 
-# Install all the SDK tooling
+# Install rust, nvm, sdkman, tofu, aws (but not go).
 [private]
-sdk_install_all: sdk_install_go sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
+sdk_install_all: sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
 
 # not entirely sure I like this as a chicken & egg situation since goenv must be installed
 # by 'tools' recipe
-# Install goenv (because golang)
+# Install ankitcharolia/goenv to manage golang
 [private]
 sdk_install_go:
   #!/usr/bin/env bash
+  # shellcheck disable=SC2002
 
   set -eo pipefail
-  go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+  go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
+  # go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
   goenv --install "$go_v"
   goenv --use "$go_v"
+
+
+# Install/Update go-nv/goenv to manage golang ($1=install/update)
+[private]
+sdk_install_goenv action="update":
+  #!/usr/bin/env bash
+  # shellcheck disable=SC2016
+  # shellcheck disable=SC2002
+
+  set -eo pipefail
+  mkdir -p "{{ LOCAL_BIN }}"
+
+  rm -f "{{ LOCAL_BIN }}/goenv"
+  if [[ -d "{{ GOENV_ROOT }}" ]]; then
+    cd "{{ GOENV_ROOT }}" && git pull --rebase
+  else
+    git clone "https://github.com/go-nv/goenv.git" "{{ GOENV_ROOT }}"
+  fi
+  #shellcheck disable=SC1083
+  ln -s "{{ GOENV_ROOT }}/bin/"* {{ LOCAL_BIN }}
+  # shellcheck disable=SC2194
+  case "{{ action }}" in
+  install|latest)
+    if [[ -z "$DPM_SKIP_GO_PROFILE" ]]; then
+      if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
+        {
+          printf '\nif [[ -d "$HOME/.goenv" ]]; then'
+          printf '\n  export GOENV_ROOT="$HOME/.goenv"'
+          printf '\n  eval "$($GOENV_ROOT/bin/goenv init -)"'
+          printf '\nfi'
+        } >> ~/.bashrc
+      fi
+    fi
+    go_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".golang.version")
+    "{{ GOENV_ROOT }}/bin/goenv" install -s "$go_v"
+    "{{ GOENV_ROOT }}/bin/goenv" global "$go_v"
+    "{{ GOENV_ROOT }}/bin/goenv" versions
+    ;;
+  *)
+    echo ">>> goenv updated"
+    ;;
+  esac
 
 # Install SDKMAN (because JVM)
 [private]
