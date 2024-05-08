@@ -533,3 +533,26 @@ fzf-git:
     fi
   fi
   echo -e "$SUMMARY"
+
+#install jsonschema2pojo
+jsonschema2pojo:
+  #!/usr/bin/env bash
+  set -eo pipefail
+
+  local_share="{{ LOCAL_SHARE }}"
+  local_bin="{{ LOCAL_BIN }}"
+
+  mkdir -p "$local_bin"
+
+  share_output_dir="$local_share/jsonschema2pojo"
+  rm -rf "${share_output_dir}"
+  mkdir -p "${share_output_dir}"
+
+  tmpdir=$(mktemp -d -t jsonschema2pojo.XXXXXX)
+  curl -fSsL "https://github.com/joelittlejohn/jsonschema2pojo/releases/download/jsonschema2pojo-1.2.1/jsonschema2pojo-1.2.1.tar.gz" -o "$tmpdir/jsonschema2pojo.tar.gz"
+  tar -xzf "$tmpdir/jsonschema2pojo.tar.gz" --directory "$tmpdir"
+  mv "$tmpdir/jsonschema2pojo-1.2.1/lib/" "${share_output_dir}/"
+  mv "$tmpdir/jsonschema2pojo-1.2.1/bin/" "${share_output_dir}/"
+
+  ln -sf "${share_output_dir}/bin/jsonschema2pojo" "$local_bin/jsonschema2pojo"
+  rm -rf "$tmpdir"
