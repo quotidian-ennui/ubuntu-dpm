@@ -16,4 +16,4 @@ rvm:
 nvm:
   version: v0.39.7
 golang:
-  version: 1.22.2
+  version: 1.22.3
