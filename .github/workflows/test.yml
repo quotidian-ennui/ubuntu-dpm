@@ -15,7 +15,7 @@ permissions:
   contents: read
   pull-requests: write
 env:
-  JUST_VERSION: 1.25.2
+  JUST_VERSION: 1.26.0
 jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
@@ -64,7 +64,6 @@ jobs:
             echo "::error::mismatch between tools.yml [$total_count] and installed tools [$install_count]"
             exit 1
           fi
-
   test_rust_install:
     runs-on: ubuntu-latest
     name: install-rust
