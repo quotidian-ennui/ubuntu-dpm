@@ -327,6 +327,7 @@ sdk_install_sonar-scanner:
   set -eo pipefail
 
   mkdir -p "{{ LOCAL_SHARE }}"
+  mkdir -p "{{ LOCAL_BIN }}"
 
   sonar_v=$(cat "{{ SDK_CONFIG }}" | yq -r ".sonar-scanner.version")
 
@@ -336,8 +337,8 @@ sdk_install_sonar-scanner:
   rm -rf "{{ LOCAL_SHARE }}/sonar-scanner/"
   mv "$tmpdir/sonar-scanner-${sonar_v}/" "{{ LOCAL_SHARE }}/sonar-scanner/"
   rm -rf "$tmpdir"
-  if [ ! -L "$HOME/.local/bin/sonar-scanner" ]; then
-    ln -s "{{ LOCAL_SHARE }}/sonar-scanner/bin/sonar-scanner" "$HOME/.local/bin/sonar-scanner"
+  if [ ! -L "{{ LOCAL_BIN }}/sonar-scanner" ]; then
+    ln -s "{{ LOCAL_SHARE }}/sonar-scanner/bin/sonar-scanner" "{{ LOCAL_BIN }}/sonar-scanner"
   fi
 
 [private]
