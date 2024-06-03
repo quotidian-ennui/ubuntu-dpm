@@ -29,7 +29,7 @@ k9s:
   contents: k9s
 terraform-docs:
   repo: terraform-docs/terraform-docs
-  version: v0.17.0
+  version: v0.18.0
   artifact: terraform-docs-{tag}-linux-amd64.tar.gz
   contents: terraform-docs
 nova:
