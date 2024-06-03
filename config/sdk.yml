@@ -17,3 +17,5 @@ nvm:
   version: v0.39.7
 golang:
   version: 1.22.3
+sonar-scanner:
+  version: 5.0.1.3006

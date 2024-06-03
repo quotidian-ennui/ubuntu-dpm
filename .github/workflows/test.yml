@@ -193,6 +193,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just sdk goenv install
+  test_sonar_scanner_install:
+    runs-on: ubuntu-latest
+    name: install-sonar-scanner
+    outputs:
+      result: ${{ steps.install.outcome || 'failure' }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - name: Setup Java
+        uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
+        with:
+          distribution: "adopt"
+          java-version: "21"
+      - name: Install Just
+        uses: taiki-e/install-action@60784cb1f434ce8a3cc04670ea753e1c8868e17e # v2.33.34
+        with:
+          tool: just@${{ env.JUST_VERSION }}
+      - name: Test Install
+        id: install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          just sdk sonar-scanner
+      - name: Test Command
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sonar-scanner --version
   test_status:
     name: Assert Tests Passed
     runs-on: ubuntu-latest
@@ -206,6 +233,7 @@ jobs:
       - test_rvm_install
       - test_sdkman_install
       - test_goenv_install
+      - test_sonar_scanner_install
     steps:
       - name: test status
         id: test_status

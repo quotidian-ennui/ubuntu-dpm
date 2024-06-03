@@ -1,0 +1,56 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "sonar-scanner"
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump opentofu version to {{ source "latest" }}'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump sonar-scanner version to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for sonar-scanner
+    kind: githubrelease
+    spec:
+      owner: SonarSource
+      repository: sonar-scanner-cli
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: regex
+        pattern: ^5\.[0-9]+\.[0-9]+\.[0-9]+$
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump sonar-scanner version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/sdk.yml
+      key: $.sonar-scanner.version
