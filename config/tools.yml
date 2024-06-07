@@ -163,7 +163,7 @@ jf:
   contents: jf
 fzf:
   repo: junegunn/fzf
-  version: 0.52.1
+  version: 0.53.0
   artifact: fzf-{version}-linux_amd64.tar.gz
   contents: fzf
 fd:
