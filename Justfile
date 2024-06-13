@@ -356,8 +356,8 @@ install_tools:
 
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
-      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
-      "$HOME/.local/bin/yq" "$@"
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "{{ LOCAL_BIN }}" --version v4.43.1
+      "{{ LOCAL_BIN }}/yq" "$@"
     else
       yq "$@"
     fi
@@ -431,8 +431,8 @@ install_repos:
 
   yq_wrapper() {
     if ! which yq >/dev/null 2>&1; then
-      gh-release-install "mikefarah/yq" "yq_linux_amd64" "$HOME/.local/bin/yq" --version v4.43.1
-      "$HOME/.local/bin/yq" "$@"
+      gh-release-install "mikefarah/yq" "yq_linux_amd64" "{{ LOCAL_BIN }}/yq" --version v4.43.1
+      "{{ LOCAL_BIN }}/yq" "$@"
     else
       yq "$@"
     fi
@@ -480,8 +480,8 @@ install_repos:
       fi
 
       if [[ "$destination" != "null" ]]; then
-        if [ ! -L "$HOME/.local/bin/$destination" ]; then
-          ln -s "{{ LOCAL_SHARE }}/$repo/$source" "$HOME/.local/bin/$destination"
+        if [ ! -L "{{ LOCAL_BIN }}/$destination" ]; then
+          ln -s "{{ LOCAL_SHARE }}/$repo/$source" "{{ LOCAL_BIN }}/$destination"
         fi
       fi
     fi
