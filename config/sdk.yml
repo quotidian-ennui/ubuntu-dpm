@@ -9,7 +9,7 @@ opentofu:
 sdkman:
   java: 21.0.2-graalce
   gradle: 8.8
-  maven: 3.9.7
+  maven: 3.9.8
   jbang: 0.116.0
 rvm:
   ruby: 3.3.3
