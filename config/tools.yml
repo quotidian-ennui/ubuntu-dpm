@@ -183,7 +183,7 @@ snyk:
   contents: :snyk
 drivel:
   repo: hgrsd/drivel
-  version: v0.2.1
+  version: v0.2.2
   artifact: drivel-x86_64-unknown-linux-gnu.tar.xz
   contents: drivel-x86_64-unknown-linux-gnu/drivel:drivel
 dive:
