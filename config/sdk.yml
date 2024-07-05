@@ -16,6 +16,6 @@ rvm:
 nvm:
   version: v0.39.7
 golang:
-  version: 1.22.4
+  version: 1.22.5
 sonar-scanner:
   version: 5.0.1.3006
