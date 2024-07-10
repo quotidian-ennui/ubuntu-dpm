@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+source "$(dirname "$0")/common.sh"
+
+# nvm_v=$(gh release list -R nvm-sh/nvm --json "tagName,isPrerelease,isLatest" -q '.[] | select (.isPrerelease == false) |  select (.isLatest == true) | .tagName')
+#shellcheck disable=SC2002
+nvm_v=$(cat "$SDK_CONFIG" | yq -r ".nvm.version")
+if [[ -n "$DPM_SKIP_NVM_PROFILE" ]]; then
+  curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | PROFILE=/dev/null bash
+else
+  curl -fSsL "https://raw.githubusercontent.com/nvm-sh/nvm/$nvm_v/install.sh" | bash
+fi
+#shellcheck disable=SC1090
+source ~/.nvm/nvm.sh
+nvm install --lts && nvm use --lts
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  npm install -g -y wsl-open
+fi
