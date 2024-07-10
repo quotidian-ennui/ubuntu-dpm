@@ -3,7 +3,6 @@
 # $2 = the prefix (for filtering tasks in the just file
 
 set -eo pipefail
-source "$(dirname "$0")/common.sh"
 
 module=$1
 filter=$2

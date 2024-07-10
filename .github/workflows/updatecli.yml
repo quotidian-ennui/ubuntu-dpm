@@ -47,4 +47,5 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           UPDATECLI_GH_ACTION: true
           TOOL_CONFIG: ${{ github.workspace }}/config/tools.yml
-          UPDATECLI_TEMPLATE: ${{ github.workspace }}/config/updatecli.yml
+          REPO_CONFIG: ${{ github.workspace }}/config/repo.yml
+          SDK_CONFIG: ${{ github.workspace }}/config/sdk.yml

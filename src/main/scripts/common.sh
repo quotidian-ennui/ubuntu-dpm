@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
 ROOT=$(git rev-parse --show-toplevel)
+
+SDK_CONFIG=${SDK_CONFIG:-$ROOT/config/sdk.yml}
+TOOL_CONFIG=${TOOL_CONFIG:-$ROOT/config/tools.yml}
+REPO_CONFIG=${REPO_CONFIG:-$ROOT/config/repos.yml}
+
 LOCAL_CONFIG=${LOCAL_CONFIG:-$HOME/.config/ubuntu-dpm}
 LOCAL_SHARE=${LOCAL_SHARE:-$HOME/.local/share/ubuntu-dpm}
 LOCAL_BIN=${LOCAL_BIN:-$HOME/.local/bin}
 INSTALLED_VERSIONS=${INSTALLED_VERSIONS:-$LOCAL_CONFIG/installed-versions}
-SDK_CONFIG=${SDK_CONFIG:-$ROOT/config/sdk.yml}
-TOOL_CONFIG=${TOOL_CONFIG:-$ROOT/config/tools.yml}
 UPDATECLI_TEMPLATE=${UPDATECLI_TEMPLATE:-$ROOT/config/updatecli.yml}
-REPO_CONFIG=${REPO_CONFIG:-$ROOT/config/repos.yml}
 GOENV_ROOT=${GOENV_ROOT:-$HOME/.goenv}
 
 mkdir -p "$LOCAL_SHARE"

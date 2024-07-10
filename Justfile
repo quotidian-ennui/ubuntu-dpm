@@ -1,18 +1,9 @@
 set positional-arguments := true
-OS_NAME:=`uname -o | tr '[:upper:]' '[:lower:]'`
 
 TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
 REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
 SDK_CONFIG:=env_var_or_default("DPM_SDK_YAML", justfile_directory() / "config/sdk.yml")
-
-UPDATECLI_TEMPLATE:=justfile_directory() / "config/updatecli.yml"
 SCRIPTS_DIR:=justfile_directory() / "src/main/scripts"
-
-LOCAL_CONFIG:= env_var('HOME') / ".config/ubuntu-dpm"
-LOCAL_BIN:= env_var('HOME') / ".local/bin"
-LOCAL_SHARE:= env_var('HOME') / ".local/share/ubuntu-dpm"
-GOENV_ROOT:= env_var('HOME') / ".goenv"
-INSTALLED_VERSIONS:= LOCAL_CONFIG / "installed-versions"
 
 alias prepare:=init
 
@@ -25,14 +16,14 @@ alias prepare:=init
 
 # run updatecli with args e.g. just updatecli diff
 @updatecli +args='diff':
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" UPDATECLI_TEMPLATE="{{ UPDATECLI_TEMPLATE }}" "{{ SCRIPTS_DIR }}/updatecli.sh" "$@"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" "$@"
 
 # Update apt + tools
 @update: apt_update tools
 
 # initialise to install tools
 @init: is_supported
-  "{{ SCRIPTS_DIR }}/init_direnv.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/init_direnv.sh"
 
 # install binary tools and checkout repo scripts
 @tools: is_supported install_tools install_repos
@@ -57,59 +48,59 @@ sdk_install_all: sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_
 # Install ankitcharolia/goenv to manage golang
 [private]
 sdk_install_go:
-  SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_go.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install_go.sh"
 
 # Install/Update go-nv/goenv to manage golang ($1=install/update)
 [private]
 @sdk_install_goenv action="update":
-  LOCAL_BIN="{{ LOCAL_BIN }}" GOENV_ROOT="{{ GOENV_ROOT }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_goenv.sh" "$@"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_goenv.sh" "$@"
 
 # Install SDKMAN (because JVM)
 [private]
 @sdk_install_java:
-  SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_java.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_java.sh"
 
 # Install NVM (because nodejs)
 [private]
 @sdk_install_nvm:
-  SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_nvm.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_nvm.sh"
 
 # Install rustup && cargo-binstall (because rust)
 [private]
 @sdk_install_rust:
-  "{{ SCRIPTS_DIR }}/sdk_install_rust.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_rust.sh"
 
 # Install RVM (because ruby)
 [private]
 sdk_install_rvm:
-  SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_rvm.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_rvm.sh"
 
 # Install one of the terraform env managers ($1=terraform/opentofu)
 [private]
 @sdk_install_tvm variant:
-  LOCAL_BIN="{{ LOCAL_BIN }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_tvm.sh" "$@"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_tvm.sh" "$@"
 
 # Install aws-cli ($1=update/install/uninstall)
 [private]
 @sdk_install_aws action="update":
-  "{{ SCRIPTS_DIR }}/sdk_install_aws.sh" "$@"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_aws.sh" "$@"
 
 # Install sonar-scanner cli
 [private]
 @sdk_install_sonar-scanner:
-  LOCAL_BIN="{{ LOCAL_BIN }}" LOCAL_SHARE="{{ LOCAL_SHARE }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_sonar_scanner.sh" "$@"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_sonar_scanner.sh" "$@"
 
 [private]
 @install_tools:
-  LOCAL_CONFIG="{{ LOCAL_CONFIG }}" INSTALLED_VERSIONS="{{ INSTALLED_VERSIONS }}" LOCAL_BIN="{{ LOCAL_BIN }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/install_tools.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/install_tools.sh"
 
 [private]
 @install_repos:
-  LOCAL_SHARE="{{ LOCAL_SHARE }}" REPO_CONFIG="{{ REPO_CONFIG }}" "{{ SCRIPTS_DIR }}/install_repos.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/install_repos.sh"
 
 # configure github cli & extensions
 @ghcli:
-  "{{ SCRIPTS_DIR }}/configure_ghcli.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/configure_ghcli.sh"
 
 [private]
 @apt_update:
@@ -120,8 +111,8 @@ sdk_install_rvm:
 [no-cd]
 [no-exit-message]
 @is_supported:
-  "{{ SCRIPTS_DIR }}/is_supported.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/is_supported.sh"
 
 # use fzf-git with fzf
 @fzf-git:
-  LOCAL_BIN="{{ LOCAL_BIN }}" "{{ SCRIPTS_DIR }}/fzf-git.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/fzf-git.sh"

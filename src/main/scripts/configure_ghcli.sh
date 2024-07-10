@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-source "$(dirname "$0")/common.sh"
-
 if ! gh auth status >/dev/null 2>&1; then
   gh auth login -h github.com
 fi
