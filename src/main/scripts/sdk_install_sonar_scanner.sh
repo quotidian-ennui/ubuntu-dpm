@@ -12,6 +12,6 @@ unzip -q -d "$tmpdir" "$tmpdir/sonar-scanner-cli.zip"
 rm -rf "$LOCAL_SHARE/sonar-scanner/"
 mv "$tmpdir/sonar-scanner-${sonar_v}/" "$LOCAL_SHARE/sonar-scanner/"
 rm -rf "$tmpdir"
-if [ ! -L "$LOCAL_SHARE/sonar-scanner" ]; then
-  ln -s "$LOCAL_SHARE/sonar-scanner/bin/sonar-scanner" "$LOCAL_SHARE/sonar-scanner"
+if [ ! -L "$LOCAL_BIN/sonar-scanner" ]; then
+  ln -s "$LOCAL_SHARE/sonar-scanner/bin/sonar-scanner" "$LOCAL_BIN/sonar-scanner"
 fi
