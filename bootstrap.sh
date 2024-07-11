@@ -71,8 +71,8 @@ repo_trivy() {
 
 # kubectl
 repo_kubectl() {
-  download_keyrings https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key "kubernetes"
-  echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  download_keyrings https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key "kubernetes"
+  echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 }
 
 # helm
