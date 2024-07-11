@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 name: updatecli
 on:
   workflow_dispatch: null
@@ -20,6 +21,8 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
       - name: "Setup updatecli"
         uses: updatecli/updatecli-action@eb158f6fd9e425b940a6750d6318f98e050ac390 # v2.61.0
         with:
@@ -34,27 +37,7 @@ jobs:
           repositories: "${{ github.event.repository.name}}"
       - name: "UpdateCLI"
         run: |
-          set -eo pipefail
-          JQ_FILTER='
-            {
-              "repo": .value.repo,
-              "yamlpath": (if .value.updatecli.yamlpath == null then "$.\(.key).version" else .value.updatecli.yamlpath end),
-              "pattern": (if .value.updatecli.pattern == null then "*" else .value.updatecli.pattern end),
-              "kind": (if .value.updatecli.kind == null then "semver" else .value.updatecli.kind end),
-              "trim_prefix": .value.updatecli.trim_prefix
-            }
-            | with_entries(if .value == null then empty else . end)
-          '
-          # shellcheck disable=SC2002
-          cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c "to_entries | .[]" | while read -r line; do
-            values=$(mktemp --tmpdir="${RUNNER_TEMP}" updatecli-values.XXXXXX.yml)
-            hasRepo=$(echo "$line" | jq -r ".value.repo")
-            if [[ "$hasRepo" != "null" ]]; then
-              echo "$line" | jq "$JQ_FILTER" | yq -P -o yaml > "$values"
-              updatecli apply --values "$values" -c "${{ github.workspace }}/config/updatecli.yml"
-            fi
-          done
-          updatecli apply
+          "${{ github.workspace }}/src/main/scripts/updatecli.sh" apply
         env:
           UPDATECLI_GITHUB_USER: ${{ env.UPDATECLI_GITHUB_USER }}
           UPDATECLI_GITHUB_EMAIL: ${{ env.UPDATECLI_GITHUB_EMAIL }}
@@ -63,3 +46,6 @@ jobs:
           GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           UPDATECLI_GH_ACTION: true
+          TOOL_CONFIG: ${{ github.workspace }}/config/tools.yml
+          REPO_CONFIG: ${{ github.workspace }}/config/repo.yml
+          SDK_CONFIG: ${{ github.workspace }}/config/sdk.yml

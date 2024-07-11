@@ -21,5 +21,6 @@ jobs:
           reporter: github-pr-review
           pattern: |
             bootstrap.sh
+            src/main/scripts/*.sh
           fail_on_error: true
           github_token: ${{ secrets.github_token }}
