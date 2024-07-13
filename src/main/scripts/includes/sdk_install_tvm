@@ -27,6 +27,7 @@ sdk_install_tvm() {
     exit 1
     ;;
   esac
+
   if [[ -d "$HOME/$tfenv_base" ]]; then
     echo "$1 env manager already installed"
     (cd "$HOME/$tfenv_base" && git pull --rebase)
@@ -35,8 +36,8 @@ sdk_install_tvm() {
     (cd "$HOME" && git clone "$tfenv_github" "$tfenv_base")
     #shellcheck disable=SC1083
     ln -s "$HOME/$tfenv_base/bin"/* "$LOCAL_BIN"
-    #shellcheck disable=SC2002
   fi
+  #shellcheck disable=SC2002
   tf_v=$(cat "$SDK_CONFIG" | yq -r "$tfenv_yamlpath")
   "$HOME/$tfenv_base/bin/$tfenv_bin" install "$tf_v"
   "$HOME/$tfenv_base/bin/$tfenv_bin" use "$tf_v"

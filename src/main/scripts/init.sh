@@ -2,6 +2,7 @@
 set -eo pipefail
 
 BASEDIR=$(dirname "$0")
+#shellcheck disable=SC1091
 source "$BASEDIR/common.sh"
 ACTION_LIST=()
 
@@ -15,6 +16,6 @@ source_actions() {
 }
 
 source_actions
-for action in $ACTION_LIST; do
+for action in "${ACTION_LIST[@]}"; do
   "${action}"
 done

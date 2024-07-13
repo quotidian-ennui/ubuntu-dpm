@@ -2,6 +2,7 @@
 set -eo pipefail
 
 BASEDIR=$(dirname "$0")
+#shellcheck disable=SC1091
 source "$BASEDIR/common.sh"
 ACTION_LIST=""
 
