@@ -36,59 +36,8 @@ alias prepare:=init
   "{{ SCRIPTS_DIR }}/just_help.sh" "sdk" "sdk_install_"
 
 # install your preferred set of SDKs
-@sdk action='help' *args="": is_supported
-  just sdk_install_{{action}} {{args}}
-
-# Install rust, nvm, sdkman, tofu, aws (but not go).
-[private]
-sdk_install_all: sdk_install_rust sdk_install_nvm sdk_install_java (sdk_install_tvm "opentofu") (sdk_install_aws "update")
-
-# not entirely sure I like this as a chicken & egg situation since goenv must be installed
-# by 'tools' recipe
-# Install ankitcharolia/goenv to manage golang
-[private]
-sdk_install_go:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install_go.sh"
-
-# Install/Update go-nv/goenv to manage golang ($1=install/update)
-[private]
-@sdk_install_goenv action="update":
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_goenv.sh" "$@"
-
-# Install SDKMAN (because JVM)
-[private]
-@sdk_install_java:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_java.sh"
-
-# Install NVM (because nodejs)
-[private]
-@sdk_install_nvm:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_nvm.sh"
-
-# Install rustup && cargo-binstall (because rust)
-[private]
-@sdk_install_rust:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_rust.sh"
-
-# Install RVM (because ruby)
-[private]
-sdk_install_rvm:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_rvm.sh"
-
-# Install one of the terraform env managers ($1=terraform/opentofu)
-[private]
-@sdk_install_tvm variant:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_tvm.sh" "$@"
-
-# Install aws-cli ($1=update/install/uninstall)
-[private]
-@sdk_install_aws action="update":
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_aws.sh" "$@"
-
-# Install sonar-scanner cli
-[private]
-@sdk_install_sonar-scanner:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/sdk_install_sonar_scanner.sh" "$@"
+@sdk *args="help": is_supported
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install.sh" "$@"
 
 [private]
 @install_tools:

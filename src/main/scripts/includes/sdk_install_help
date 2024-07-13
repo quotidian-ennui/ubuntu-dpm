@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+sdk_install_help() {
+  cat <<EOF
+
+Usage: just sdk [$ACTION_LIST] [params]
+  all            Install rust, nvm, sdkman, tofu, aws (but not go).
+  aws            Install/Update aws-cli
+  go             Use ankitcharolia/goenv to manage golang
+  goenv          Install/Update go-nv/goenv to manage golang
+  help           Show help for sdk subcommand
+  java           Install SDKMAN (because JVM) + java, gradle, maven, jbang
+  nvm            Install NVM (because nodejs) + wsl-open
+  rust           Install rustup + rust + cargo-binstall (because rust)
+  rvm            Install RVM +ruby
+  sonar-scanner  Install sonar-scanner cli
+  tvm            Install one of the terraform env managers
+
+Some things have additional paramters as listed here
+'aws'
+  install         : Install the AWS CLI
+  update|upgrade  : Update the AWS CLI
+  uinstall|rm     : Remove the AWS CLI (but not ~/.aws)
+'goenv'
+  install|latest  : Install goenv
+  update          : Update goenv
+'tvm'
+  terraform|tf    : install hashicorp/terraform
+  opentofu|tofu   : Install opentofu
+EOF
+  exit 0
+}
