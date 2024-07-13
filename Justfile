@@ -23,7 +23,7 @@ alias prepare:=init
 
 # initialise to install tools
 @init: is_supported
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/init_direnv.sh"
+  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/init.sh"
 
 # install binary tools and checkout repo scripts
 @tools: is_supported install_tools install_repos
