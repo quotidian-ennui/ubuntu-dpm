@@ -19,8 +19,6 @@ jobs:
         uses: reviewdog/action-shellcheck@628ce8561be20bfbfb6173cf88c7475ddab95f22 # v1.24.0
         with:
           reporter: github-pr-review
-          pattern: |
-            bootstrap.sh
-            src/main/scripts/*.sh
+          check_all_files_with_shebangs: true
           fail_on_error: true
           github_token: ${{ secrets.github_token }}

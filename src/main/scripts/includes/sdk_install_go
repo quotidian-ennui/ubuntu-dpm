@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+# shellcheck disable=SC2002
+sdk_install_go() {
+  if [[ -f "$LOCAL_BIN/goenv" ]]; then
+    go_v=$(cat "$SDK_CONFIG" | yq -r ".golang.version")
+    # go_v=$(goenv --list-remote | grep -v -e "beta" -e "rc[0-9]*" | sort -rV | head -n 1)
+    goenv --install "$go_v"
+    goenv --use "$go_v"
+  else
+    echo "ankitcharolia/goenv  is not installed. Requires 'just tools'?"
+  fi
+}
