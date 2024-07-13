@@ -28,13 +28,6 @@ alias prepare:=init
 # install binary tools and checkout repo scripts
 @tools: is_supported install_tools install_repos
 
-# Show help for sdk subcommand
-[private]
-[no-exit-message]
-[no-cd]
-@sdk_install_help:
-  "{{ SCRIPTS_DIR }}/just_help.sh" "sdk" "sdk_install_"
-
 # install your preferred set of SDKs
 @sdk *args="help": is_supported
   TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install.sh" "$@"
