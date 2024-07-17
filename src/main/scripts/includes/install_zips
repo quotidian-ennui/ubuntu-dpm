@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+_zips_check_prereqs() {
+  if ! which bsdtar >/dev/null; then
+    echo "No bsdtar -> apt install libarchive-tools"
+    exit 1
+  fi
+  if ! gh auth status >/dev/null 2>&1; then
+    gh auth login -h github.com
+  fi
+}
+
+# shellcheck disable=SC2016
+_zips_add_path() {
+  path_to_add=$1
+  if [[ -z "$DPM_SKIP_ZIPS_PROFILE" ]]; then
+    if ! grep "$path_to_add" "$HOME/.bashrc" >/dev/null 2>&1; then
+      printf 'PATH=$PATH:%s\n' "$path_to_add" >>"$HOME/.bashrc"
+    fi
+  fi
+}
+
+# shellcheck disable=SC2016
+install_zips() {
+  local tmpdir
+  local repos
+  local files=("$ZIP_CONFIG")
+
+  local repo
+  local tag
+  local stripPrefix
+  local artifact
+  local path_in_zip
+  local version
+  local stripComponentCount
+  local path_bin
+  tmpdir=$(mktemp -d -t appzip.XXXXXX)
+  _zips_check_prereqs
+  if [[ -n "$DPM_ZIP_ADDITIONS_YAML" ]]; then
+    files+=("$DPM_ZIP_ADDITIONS_YAML")
+  fi
+  repos=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
+  for line in $repos; do
+    repo=$(echo "$line" | jq -r ".repo")
+    tag=$(echo "$line" | jq -r ".version.github_tag")
+    stripPrefix=$(echo "$line" | jq -r '.version | (if .strip_prefix == null then empty else . end) | .strip_prefix')
+    artifact=$(echo "$line" | jq -r ".artifact")
+    path_in_zip=$(echo "$line" | jq -r ". | (if .path_in_zip == null then empty else . end) | .path_in_zip")
+    path_bin=$(echo "$line" | jq -r ". | (if .path_bin == null then empty else . end) | .path_bin")
+    version=${tag#"$stripPrefix"}
+    artifact=${artifact/"{version}"/"$version"}
+    artifact=${artifact/"{tag}"/"$tag"}
+    stripComponentCount=0
+
+    if [[ -n "$path_in_zip" ]]; then
+      path_in_zip=${path_in_zip/"{version}"/"$version"}
+      path_in_zip=${path_in_zip/"{tag}"/"$tag"}
+      stripComponentCount=$(echo "$path_in_zip" | awk -F'/' '{print NF}')
+    fi
+
+    if [[ "$repo" != "null" ]]; then
+      if [[ "${installed[$repo]}" != "$version" || ! -d "$LOCAL_SHARE/$repo" ]]; then
+        # Check the tag exists
+        if gh release list -R "$repo" --json "tagName" -q '.[] | .tagName' | grep "$tag" >/dev/null 2>&1; then
+          echo "[+] $repo (attempt install)"
+          pushd "$tmpdir" >/dev/null
+          gh release download "$tag" -R "$repo" --pattern "$artifact"
+          mkdir -p "$LOCAL_SHARE/$repo"
+          bsdtar -xf "$tmpdir/$artifact" --directory "$LOCAL_SHARE/$repo" --strip-components "$stripComponentCount"
+          if [[ -n "$path_bin" ]]; then
+            _zips_add_path "$LOCAL_SHARE/$repo/$path_bin"
+          else
+            _zips_add_path "$LOCAL_SHARE/$repo"
+          fi
+          popd >/dev/null
+          # shellcheck disable=SC2004
+          installed[$repo]="$version"
+        else
+          echo "[!] $repo ($tag does not exist)"
+        fi
+      else
+        echo "[=] $repo (already installed)"
+      fi
+    fi
+  done
+  if [[ -d "$tmpdir" ]]; then
+    rm -rf "$tmpdir"
+  fi
+}

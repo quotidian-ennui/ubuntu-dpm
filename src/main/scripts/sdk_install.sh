@@ -15,7 +15,7 @@ source_actions() {
   done
   ACTION_LIST=${ACTION_LIST%?}
 }
-
+_init_dirs
 source_actions
 ACTION=$1 || true
 ACTION=${ACTION:="help"}

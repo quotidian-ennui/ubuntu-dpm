@@ -57,7 +57,7 @@ jobs:
           # shellcheck disable=SC2002
           repo_count=$(cat "${{ github.workspace }}/config/repos.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # shellcheck disable=SC2002
-          app_count=$(cat "${{ github.workspace }}/config/appzip.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
+          app_count=$(cat "${{ github.workspace }}/config/zips.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # +2 for the additional tools requested in the step above.
           # shellcheck disable=SC2003
           # shellcheck disable=SC2086
