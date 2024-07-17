@@ -43,7 +43,7 @@ repos=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)
 for line in $repos; do
   repo=$(echo "$line" | jq -r ".repo")
   tag=$(echo "$line" | jq -r ".version.github_tag")
-  stripPrefix=$(echo "$line" | jq -r ".version.strip_prefix")
+  stripPrefix=$(echo "$line" | jq -r "select( .version.strip_prefix != null ) | .version.strip_prefix")
   artifact=$(echo "$line" | jq -r ".artifact")
   path_in_zip=$(echo "$line" | jq -r "select( .path_in_zip != null ) | .path_in_zip")
   version=${tag#"$stripPrefix"}

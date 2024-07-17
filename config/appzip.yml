@@ -21,3 +21,8 @@ jsonschema2pojo:
     strip_prefix: jsonschema2pojo-
   artifact: "jsonschema2pojo-{version}.zip"
   path_in_zip: "{tag}"
+parquet-cli-wrapper:
+  repo: quotidian-ennui/parquet-cli-wrapper
+  version:
+    github_tag: 1.14.1
+  artifact: "parquet-cli.tar.gz"
