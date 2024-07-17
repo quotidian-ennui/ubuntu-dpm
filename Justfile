@@ -3,6 +3,7 @@ set positional-arguments := true
 TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
 REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
 SDK_CONFIG:=env_var_or_default("DPM_SDK_YAML", justfile_directory() / "config/sdk.yml")
+APPZIP_CONFIG:=env_var_or_default("DPM_APPZIP_YAML", justfile_directory() / "config/appzip.yml")
 SCRIPTS_DIR:=justfile_directory() / "src/main/scripts"
 
 alias prepare:=init
@@ -26,19 +27,23 @@ alias prepare:=init
   TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/init.sh"
 
 # install binary tools and checkout repo scripts
-@tools: is_supported install_tools install_repos
+@tools: is_supported install_tools install_repos install_apps
 
 # install your preferred set of SDKs
 @sdk *args="help": is_supported
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install.sh" "$@"
+  APPZIP_CONFIG="{{ APPZIP_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}"  "{{ SCRIPTS_DIR }}/sdk_install.sh" "$@"
 
 [private]
 @install_tools:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/install_tools.sh"
+  APPZIP_CONFIG="{{ APPZIP_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/install_tools.sh"
 
 [private]
 @install_repos:
-  TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/install_repos.sh"
+  APPZIP_CONFIG="{{ APPZIP_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/install_repos.sh"
+
+[private]
+@install_apps:
+  APPZIP_CONFIG="{{ APPZIP_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/install_apps.sh"
 
 # configure github cli & extensions
 @ghcli:

@@ -1,0 +1,23 @@
+# Notes:
+# Uses gh release download <tag>
+# so
+# github_tag is the tag... # gh release list -R "liquibase/liquibase" --json "tagName" -q '.[] | .tagName' ...
+# strip_prefix is what we strip so that we can replace {version} as required
+# artifact=the artifact to download
+# path_in_zip=/path/in/zip/to/strip/off
+#
+# Note that 'path_in_zip' -> awk -F'/' '{print NF}' for a --strip-components, so it potentially
+# doesn't matter.
+liquibase:
+  repo: liquibase/liquibase
+  version:
+    github_tag: v4.28.0
+    strip_prefix: v
+  artifact: liquibase-{version}.zip
+jsonschema2pojo:
+  repo: joelittlejohn/jsonschema2pojo
+  version:
+    github_tag: jsonschema2pojo-1.2.1
+    strip_prefix: jsonschema2pojo-
+  artifact: "jsonschema2pojo-{version}.zip"
+  path_in_zip: "{tag}"
