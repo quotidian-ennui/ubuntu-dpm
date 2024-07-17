@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2034
 ROOT=$(git rev-parse --show-toplevel)
 
 SDK_CONFIG=${SDK_CONFIG:-$ROOT/config/sdk.yml}

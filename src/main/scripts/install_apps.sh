@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
+# shellcheck disable=SC1091
 source "$(dirname "$0")/common.sh"
 
 write_installed() {
