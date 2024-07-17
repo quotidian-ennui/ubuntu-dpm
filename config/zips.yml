@@ -8,12 +8,6 @@
 # path_bin=subdir to add to the path (so jsonschema2pojo/bin is added)
 # Note that 'path_in_zip' -> awk -F'/' '{print NF}' for a --strip-components, so it potentially
 # doesn't matter.
-liquibase:
-  repo: liquibase/liquibase
-  version:
-    github_tag: v4.28.0
-    strip_prefix: v
-  artifact: liquibase-{version}.zip
 jsonschema2pojo:
   repo: joelittlejohn/jsonschema2pojo
   version:
