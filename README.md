@@ -74,6 +74,9 @@ just init
 just tools
 # choose your sdk poison
 just sdk help
+# Install tooling distributed as archives
+# Not done by default, because requires github token configuration
+just install archives
 ```
 
 ### Fine control over behaviour
@@ -84,9 +87,9 @@ Various environment variables control behaviour.
 - `DPM_TOOLS_YAML` - can be set to your custom tools yaml path.
 - `DPM_TOOLS_ADDITIONS_YAML` - can be set to an additional tools yaml path, will be merged with base tools.yml
 - `DPM_REPO_YAML` - can be set to your custom repo yaml path
-- `DPM_ZIP_YAML` - can be set to your custom zip yaml path
+- `DPM_ARCHIVES_YAML` - can be set to your custom zip yaml path
 - `DPM_REPO_ADDITIONS_YAML` - can be set to an additional repos yaml path, will be merged with base repos.yml
-- `DPM_ZIP_ADDITIONS_YAML` - can be set to an additional zip yaml path, will be merged with base zips.yml
+- `DPM_ARCHIVE_ADDITIONS_YAML` - can be set to an additional zip yaml path, will be merged with base archives.yml
 - `DPM_SDK_YAML` - can be set to your custom sdk yaml path
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
 - `DPM_SKIP_GO_PROFILE` - set to any value to skip profile modifications by `go-nv/goenv` (via _just sdk goenv_)
@@ -102,7 +105,7 @@ Various environment variables control behaviour.
 > - what binary tools are installed (tools.yml)
 > - what sdk tooling is installed (via sdkman|rustup|rvm|nvm etc.) (sdk.yml)
 > - what github projects are 'cloned' into the local filesystem as supporting tools (repos.yml)
-> - what github distribution zips are downloaded and extracted (zips.yml)
+> - what github distribution zips are downloaded and extracted (archives.yml)
 
 ## Notes
 

@@ -4,10 +4,11 @@ install_help() {
   cat <<EOF
 
 Usage: just install [$ACTION_LIST]
-  tools  Install binary tools from $TOOL_CONFIG
-  repos  Install/Update git repos from $REPO_CONFIG
-  zips   Install/Update zipfiles from $ZIP_CONFIG
-  help   Show this help
+  all       convenience wrapper for toos+repos+archives
+  tools     Install binary tools from $TOOL_CONFIG
+  repos     Install/Update git repos from $REPO_CONFIG
+  archives  Install/Update archives from $ARCHIVE_CONFIG
+  help      Show this help
 EOF
   exit 0
 }

@@ -6,7 +6,7 @@ ROOT=$(git rev-parse --show-toplevel)
 SDK_CONFIG=${SDK_CONFIG:-$ROOT/config/sdk.yml}
 TOOL_CONFIG=${TOOL_CONFIG:-$ROOT/config/tools.yml}
 REPO_CONFIG=${REPO_CONFIG:-$ROOT/config/repos.yml}
-ZIP_CONFIG=${APPDIR_CONFIG:-$ROOT/config/zips.yml}
+ARCHIVE_CONFIG=${APPDIR_CONFIG:-$ROOT/config/archives.yml}
 
 LOCAL_CONFIG=${LOCAL_CONFIG:-$HOME/.config/ubuntu-dpm}
 LOCAL_SHARE=${LOCAL_SHARE:-$HOME/.local/share/ubuntu-dpm}

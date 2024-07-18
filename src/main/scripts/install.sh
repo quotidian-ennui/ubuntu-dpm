@@ -4,7 +4,7 @@ set -eo pipefail
 BASEDIR=$(dirname "$0")
 #shellcheck disable=SC1091
 source "$BASEDIR/common.sh"
-ACTION_LIST=""
+ACTION_LIST="all|"
 
 source_actions() {
   for f in "$BASEDIR"/includes/install_*; do
@@ -31,6 +31,12 @@ read_installed() {
       installed[$key]=$value
     done <"$INSTALLED_VERSIONS"
   fi
+}
+
+install_all() {
+  install_tools
+  install_repos
+  install_archives
 }
 
 declare -A installed
