@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+_archives_check_prereqs() {
+  if ! which bsdtar >/dev/null; then
+    echo "No bsdtar -> apt install libarchive-tools"
+    exit 1
+  fi
+  if ! gh auth status >/dev/null 2>&1; then
+    gh auth login -h github.com
+  fi
+}
+
+# shellcheck disable=SC2016
+_zips_add_path() {
+  path_to_add=$1
+  if [[ -z "$DPM_SKIP_ARCHIVES_PROFILE" ]]; then
+    if ! grep "$path_to_add" "$HOME/.bashrc" >/dev/null 2>&1; then
+      printf 'PATH=$PATH:%s\n' "$path_to_add" >>"$HOME/.bashrc"
+      echo "[~] $path_to_add added to ~/.bashrc"
+    fi
+  fi
+}
+
+_archives_create_symlink() {
+  local linkSource=$1
+  local linkTarget
+  linkTarget="$LOCAL_BIN/$(basename "$linkSource")"
+
+  if [ ! -L "$linkTarget" ]; then
+    ln -s "$linkSource" "$linkTarget"
+    echo "[~] $linkSource symlinked to $linkTarget"
+  fi
+}
+
+# shellcheck disable=SC2016
+install_archives() {
+  local tmpdir
+  local repos
+  local files=("$ARCHIVE_CONFIG")
+  local repo
+  local tag
+  local stripPrefix
+  local artifact
+  local path_in_zip
+  local version
+  local stripComponentCount
+  local path_additions
+  local symlinks
+  local install_dir
+
+  tmpdir=$(mktemp -d -t appzip.XXXXXX)
+  _archives_check_prereqs
+  if [[ -n "$DPM_ARCHIVES_ADDITIONS_YAML" ]]; then
+    files+=("$DPM_ARCHIVES_ADDITIONS_YAML")
+  fi
+  repos=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
+  pushd "$tmpdir" >/dev/null
+  for line in $repos; do
+    repo=$(echo "$line" | jq -r ".repo")
+    tag=$(echo "$line" | jq -r ".version.github_tag")
+    stripPrefix=$(echo "$line" | jq -r '.version | (if .strip_prefix == null then empty else . end) | .strip_prefix')
+    version=${tag#"$stripPrefix"}
+
+    artifact=$(echo "$line" | jq -r ".artifact")
+    artifact=${artifact/"{version}"/"$version"}
+    artifact=${artifact/"{tag}"/"$tag"}
+
+    stripComponentCount=0
+    path_in_zip=$(echo "$line" | jq -r ". | (if .extract == null then empty else . end) | .extract")
+    if [[ -n "$path_in_zip" ]]; then
+      path_in_zip=${path_in_zip/"{version}"/"$version"}
+      path_in_zip=${path_in_zip/"{tag}"/"$tag"}
+      stripComponentCount=$(echo "$path_in_zip" | awk -F'/' '{print NF}')
+    fi
+
+    path_additions=$(echo "$line" | jq -r '. | select (.runtime != null) | .runtime | select (.path_addition != null) | .path_addition | .[]')
+    symlinks=$(echo "$line" | jq -r '. | select (.runtime != null) | .runtime | select (.symlinks != null) | .symlinks | .[]')
+
+    if [[ "$repo" != "null" ]]; then
+      if [[ "${installed[$repo]}" != "$version" || ! -d "$LOCAL_SHARE/$repo" ]]; then
+        # Check the tag exists
+        install_dir="$LOCAL_SHARE/$repo"
+        if gh release list -R "$repo" --json "tagName" -q '.[] | .tagName' | grep "$tag" >/dev/null 2>&1; then
+          echo "[+] $repo (attempt install)"
+          gh release download "$tag" -R "$repo" --pattern "$artifact"
+          mkdir -p "$install_dir"
+          bsdtar -xf "$tmpdir/$artifact" --directory "$install_dir" --strip-components "$stripComponentCount"
+          for addition in $path_additions; do
+            addition=${addition/"{root}"/"$install_dir"}
+            _zips_add_path "$addition"
+          done
+          for symlink in $symlinks; do
+            symlink=${symlink/"{root}"/"$install_dir"}
+            _archives_create_symlink "$symlink"
+          done
+          # shellcheck disable=SC2004
+          installed[$repo]="$version"
+        else
+          echo "[!] $repo ($tag does not exist)"
+        fi
+      else
+        echo "[=] $repo (already installed)"
+      fi
+    fi
+  done
+  popd >/dev/null
+  if [[ -d "$tmpdir" ]]; then
+    rm -rf "$tmpdir"
+  fi
+}

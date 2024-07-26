@@ -33,6 +33,7 @@ jobs:
           tool: just@${{ env.JUST_VERSION }}
       - name: configure extras
         run: |
+          sudo apt install -y -qq libarchive-tools
           printf 'gitscripts:
             repo: mcwarman/gitscripts
           ' | tee -a config/repos-additions.yml
@@ -55,11 +56,13 @@ jobs:
           tool_count=$(cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # shellcheck disable=SC2002
           repo_count=$(cat "${{ github.workspace }}/config/repos.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
+          # shellcheck disable=SC2002
+          archive_count=$(cat "${{ github.workspace }}/config/archives.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # +2 for the additional tools requested in the step above.
           # shellcheck disable=SC2003
           # shellcheck disable=SC2086
-          total_count=$(expr $tool_count + $repo_count + 2)
-          install_count=$(just tools | grep -c "attempt install")
+          total_count=$(expr $tool_count + $repo_count + $archive_count + 2)
+          install_count=$(just install all | grep -c "attempt install")
           if [[ "$total_count" != "$install_count" ]]; then
             echo "::error::mismatch between tools.yml [$total_count] and installed tools [$install_count]"
             exit 1

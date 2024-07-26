@@ -1,0 +1,55 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "parquet-cli-wrapper"
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump parquet-cli-wrapper version to {{ source "latest" }}'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump parquet-cli-wrapper to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for parquet-cli-wrapper
+    kind: githubrelease
+    spec:
+      owner: quotidian-ennui
+      repository: parquet-cli-wrapper
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump parquet-cli-wrapper version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/archives.yml
+      key: $.parquet-cli-wrapper.version.github_tag

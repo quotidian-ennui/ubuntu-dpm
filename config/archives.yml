@@ -1,0 +1,37 @@
+# Notes:
+# Uses gh release download <tag>
+# so
+# version.github_tag is the tag...
+# Find the tag using
+# gh release list -R "liquibase/liquibase" --json "tagName" -q '.[] | .tagName' ...
+#
+# version.strip_prefix is what we strip so that we can figure out what {version} might be
+# artifact=the artifact to download
+# extract=/path/in/zip/to/strip/off
+# runtime.symlinks=what to symlink into ~/.local/bin
+# runtime.path_additions=what to add to your ~/.bashrc
+# Magic Values
+# {tag}     is basically version.github_tag
+# {version} is ${github_tag#"$strip_prefix"} (i.e. just the number...)
+# {root}    is ~/.local/share/ubuntu-dpm/$repo
+# Note that 'extract' -> awk -F'/' '{print NF}' for a --strip-components, so it potentially
+# doesn't matter what you put in here, since it just becomes a number, just need the
+# right number of /...
+jsonschema2pojo:
+  repo: joelittlejohn/jsonschema2pojo
+  version:
+    github_tag: jsonschema2pojo-1.2.1
+    strip_prefix: jsonschema2pojo-
+  artifact: "jsonschema2pojo-{version}.zip"
+  extract: "{tag}"
+  runtime:
+    symlinks:
+      - "{root}/bin/jsonschema2pojo"
+parquet-cli-wrapper:
+  repo: quotidian-ennui/parquet-cli-wrapper
+  version:
+    github_tag: 1.14.1
+  artifact: "parquet-cli.tar.gz"
+  runtime:
+    path_addition:
+      - "{root}"

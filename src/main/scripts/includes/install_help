@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+install_help() {
+  cat <<EOF
+
+Usage: just install [$ACTION_LIST]
+  all       convenience wrapper for toos+repos+archives
+  tools     Install binary tools from $TOOL_CONFIG
+  repos     Install/Update git repos from $REPO_CONFIG
+  archives  Install/Update archives from $ARCHIVE_CONFIG
+  help      Show this help
+EOF
+  exit 0
+}

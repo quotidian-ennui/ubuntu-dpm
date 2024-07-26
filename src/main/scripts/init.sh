@@ -15,6 +15,7 @@ source_actions() {
   done
 }
 
+_init_dirs
 source_actions
 for action in "${ACTION_LIST[@]}"; do
   "${action}"
