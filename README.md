@@ -98,7 +98,7 @@ Various environment variables control behaviour.
 - `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm (via _just sdk nvm_)
 - `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm (via _just sdk rvm_)
 - `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup (via _just sdk rust_)
-- `DPM_SKIP_ZIPS_PROFILE` - set to any value to skip profile modifications by zips (via _just install zips_)
+- `DPM_SKIP_ARCHIVES_PROFILE` - set to any value to skip profile modifications by archives (via _just install archives_)
 
 > The various YAML files should be self explanatory and control
 >
