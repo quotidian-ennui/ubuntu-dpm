@@ -15,13 +15,14 @@ sdk_install_goenv() {
   case "$1" in
   install | latest)
     if [[ -z "$DPM_SKIP_GO_PROFILE" ]]; then
-      if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' ~/.bashrc 2>/dev/null; then
+      if ! grep -q 'export GOENV_ROOT="$HOME/.goenv"' "$DPM_BASH_PROFILE_FILE" 2>/dev/null; then
         {
           printf '\nif [[ -d "$HOME/.goenv" ]]; then'
           printf '\n  export GOENV_ROOT="$HOME/.goenv"'
           printf '\n  eval "$($GOENV_ROOT/bin/goenv init -)"'
           printf '\nfi'
-        } >>~/.bashrc
+        } >>"$DPM_BASH_PROFILE_FILE"
+        echo ">>> DPM automatically added goenv to $DPM_BASH_PROFILE_FILE"
       fi
     fi
     go_v=$(cat "$SDK_CONFIG" | yq -r ".golang.version")

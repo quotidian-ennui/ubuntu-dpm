@@ -6,7 +6,7 @@ ROOT=$(git rev-parse --show-toplevel)
 SDK_CONFIG=${SDK_CONFIG:-$ROOT/config/sdk.yml}
 TOOL_CONFIG=${TOOL_CONFIG:-$ROOT/config/tools.yml}
 REPO_CONFIG=${REPO_CONFIG:-$ROOT/config/repos.yml}
-ARCHIVE_CONFIG=${APPDIR_CONFIG:-$ROOT/config/archives.yml}
+ARCHIVE_CONFIG=${ARCHIVE_CONFIG:-$ROOT/config/archives.yml}
 
 LOCAL_CONFIG=${LOCAL_CONFIG:-$HOME/.config/ubuntu-dpm}
 LOCAL_SHARE=${LOCAL_SHARE:-$HOME/.local/share/ubuntu-dpm}
@@ -14,6 +14,7 @@ LOCAL_BIN=${LOCAL_BIN:-$HOME/.local/bin}
 INSTALLED_VERSIONS=${INSTALLED_VERSIONS:-$LOCAL_CONFIG/installed-versions}
 UPDATECLI_TEMPLATE=${UPDATECLI_TEMPLATE:-$ROOT/config/updatecli.yml}
 GOENV_ROOT=${GOENV_ROOT:-$HOME/.goenv}
+DPM_BASH_PROFILE_FILE=${DPM_BASH_PROFILE_FILE:-$HOME/.bashrc}
 
 _init_dirs() {
   mkdir -p "$LOCAL_SHARE"

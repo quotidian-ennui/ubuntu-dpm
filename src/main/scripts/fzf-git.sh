@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
+#shellcheck disable=SC1091
 source "$(dirname "$0")/common.sh"
 
 SUMMARY=""
@@ -10,15 +11,15 @@ if [[ ! -f "$LOCAL_BIN/fzf-tmux" ]]; then
 fi
 
 if [[ -z "$DPM_SKIP_FZF_PROFILE" ]]; then
-  if ! grep "fzf --bash" "$HOME/.bashrc" >/dev/null 2>&1; then
+  if ! grep "fzf --bash" "$DPM_BASH_PROFILE_FILE" >/dev/null 2>&1; then
     #shellcheck disable=SC2016
-    printf '\n[[ -s "$HOME/.local/bin/fzf" ]] && eval $($HOME/.local/bin/fzf --bash)\n' >>"$HOME/.bashrc"
-    SUMMARY+="\n>>> Added fzf --bash to .bashrc"
+    printf '\n[[ -s "$HOME/.local/bin/fzf" ]] && eval $($HOME/.local/bin/fzf --bash)\n' >>"$DPM_BASH_PROFILE_FILE"
+    SUMMARY+="\n>>> Added fzf --bash to $DPM_BASH_PROFILE_FILE"
   fi
-  if ! grep "fzf-git" "$HOME/.bashrc" >/dev/null 2>&1; then
+  if ! grep "fzf-git" "$DPM_BASH_PROFILE_FILE" >/dev/null 2>&1; then
     #shellcheck disable=SC2016
     printf '\n[[ -s "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh" ]] && source "$HOME/.local/share/ubuntu-dpm/junegunn/fzf-git.sh/fzf-git.sh"\n' >>"$HOME/.bashrc"
-    SUMMARY+="\n>>> Added fzf-git.sh to .bashrc"
+    SUMMARY+="\n>>> Added fzf-git.sh to $DPM_BASH_PROFILE_FILE"
   fi
 fi
 echo -e "$SUMMARY"
