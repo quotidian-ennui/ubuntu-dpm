@@ -59,7 +59,7 @@ tfsummarize:
   contents: tf-summarize
 starship:
   repo: starship/starship
-  version: v1.19.0
+  version: v1.20.1
   artifact: starship-x86_64-unknown-linux-gnu.tar.gz
   contents: starship
 shellcheck:
