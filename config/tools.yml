@@ -79,7 +79,7 @@ hcledit:
   contents: hcledit
 tfupdate:
   repo: minamijoyo/tfupdate
-  version: v0.8.4
+  version: v0.8.5
   artifact: tfupdate_{version}_linux_amd64.tar.gz
   contents: tfupdate
 gron:
