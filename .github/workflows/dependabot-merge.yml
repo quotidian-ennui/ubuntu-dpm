@@ -3,7 +3,7 @@ run-name: Assess PR (${{ github.event.client_payload.detail.pull_request }})
 on:
   repository_dispatch:
     types:
-      - pr-trigger
+      - test-complete-trigger
 
 permissions:
   contents: write

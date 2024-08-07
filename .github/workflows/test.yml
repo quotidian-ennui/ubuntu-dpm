@@ -273,3 +273,26 @@ jobs:
             echo "test_status=:thumbsdown:" >> "$GITHUB_OUTPUT"
             echo ":thumbsdown:" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  tests_complete:
+    name: Testing completed
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    if: success()
+    needs:
+      - test_tool_install
+      - test_rust_install
+      - test_nvm_install
+      - test_tfenv_install
+      - test_tofuenv_install
+      - test_rvm_install
+      - test_sdkman_install
+      - test_goenv_install
+      - test_sonar_scanner_install
+    steps:
+      - name: test_complete
+        uses: quotidian-ennui/actions-olio/pr-trigger@main
+        with:
+          event_type: test-complete-trigger
