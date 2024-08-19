@@ -44,7 +44,7 @@ updatecli:
   contents: updatecli
 tflint:
   repo: terraform-linters/tflint
-  version: v0.52.0
+  version: v0.53.0
   artifact: tflint_linux_amd64.zip
   contents: tflint
 gopass:
