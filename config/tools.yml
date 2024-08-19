@@ -69,7 +69,7 @@ shellcheck:
   contents: shellcheck-{tag}/shellcheck:shellcheck
 shfmt:
   repo: mvdan/sh
-  version: v3.8.0
+  version: v3.9.0
   artifact: shfmt_{tag}_linux_amd64
   contents: :shfmt
 hcledit:
