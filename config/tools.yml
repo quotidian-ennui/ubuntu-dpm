@@ -177,3 +177,8 @@ dive:
   version: v0.12.0
   artifact: dive_{version}_linux_amd64.tar.gz
   contents: dive
+lnav:
+  repo: tstack/lnav
+  version: v0.12.2
+  artifact: lnav-{version}-linux-musl-x86_64.zip
+  contents: lnav-{version}/lnav:lnav
