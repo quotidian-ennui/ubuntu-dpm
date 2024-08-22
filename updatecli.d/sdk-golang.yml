@@ -44,6 +44,20 @@ sources:
     transformers:
       - trimprefix: go
 
+conditions:
+  check_exists:
+    name: Check exists in goenv github
+    kind: shell
+    disablesourceinput: true
+    spec:
+      shell: bash
+      environments:
+        - name: PATH
+      command: |
+        if curl -fSsL "https://raw.githubusercontent.com/go-nv/goenv/master/plugins/go-build/share/go-build/{{ source "latest"}}" >/dev/null; then
+          echo "Found {{ source "latest" }} in goenv git repo"
+        fi
+
 targets:
   update_yaml:
     kind: yaml
