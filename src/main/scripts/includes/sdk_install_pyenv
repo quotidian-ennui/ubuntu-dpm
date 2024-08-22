@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2016
+# shellcheck disable=SC2002
+set -eo pipefail
+
+sdk_install_pyenv() {
+  rm -f "$LOCAL_BIN/pyenv"
+  if [[ -d "$PYENV_ROOT" ]]; then
+    cd "$PYENV_ROOT" && git pull --rebase
+  else
+    git clone "https://github.com/pyenv/pyenv.git" "$PYENV_ROOT"
+  fi
+  #shellcheck disable=SC1083
+  ln -s "$PYENV_ROOT/bin/pyenv" "$LOCAL_BIN/pyenv"
+  case "$1" in
+  install | latest)
+    if [[ -z "$DPM_SKIP_PYENV_PROFILE" ]]; then
+      if ! grep -q 'export PYENV_ROOT="$HOME/.pyenv"' "$DPM_BASH_PROFILE_FILE" 2>/dev/null; then
+        {
+          printf '\nif [[ -d "$HOME/.pyenv" ]]; then'
+          printf '\n  export PYENV_ROOT="$HOME/.pyenv"'
+          printf '\n  eval "$($PYENV_ROOT/bin/pyenv init -)"'
+          printf '\nfi'
+        } >>"$DPM_BASH_PROFILE_FILE"
+        echo ">>> DPM automatically added pyenv to $DPM_BASH_PROFILE_FILE"
+      fi
+    fi
+    python_v=$(cat "$SDK_CONFIG" | yq -r ".python.version")
+    "$PYENV_ROOT/bin/pyenv" install -s "$python_v"
+    "$PYENV_ROOT/bin/pyenv" global "$python_v"
+    "$PYENV_ROOT/bin/pyenv" versions
+    ;;
+  *)
+    echo ">>> pyenv updated"
+    ;;
+  esac
+}

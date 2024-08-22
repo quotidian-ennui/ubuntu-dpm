@@ -19,3 +19,5 @@ golang:
   version: 1.23.0
 sonar-scanner:
   version: 5.0.1.3006
+python:
+  version: 3.11.7

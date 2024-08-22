@@ -12,6 +12,7 @@ Usage: just sdk [$ACTION_LIST] [params]
   nvm            Install NVM (because nodejs) + wsl-open
   rust           Install rustup + rust + cargo-binstall (because rust)
   rvm            Install RVM +ruby
+  pyenv          Install PYENV + python (because pandas)
   sonar-scanner  Install sonar-scanner cli
   tvm            Install one of the terraform env managers
 
@@ -20,9 +21,9 @@ Some things have additional paramters as listed here
   install         : Install the AWS CLI
   update|upgrade  : Update the AWS CLI
   uinstall|rm     : Remove the AWS CLI (but not ~/.aws)
-'goenv'
-  install|latest  : Install goenv
-  update          : Update goenv
+'goenv' | 'pyenv'
+  install|latest  : Install it
+  update          : Update the git repo that provides it
 'tvm'
   terraform|tf    : install hashicorp/terraform
   opentofu|tofu   : Install opentofu

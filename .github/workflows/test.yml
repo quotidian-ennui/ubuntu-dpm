@@ -196,6 +196,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just sdk goenv install
+  test_pyenv_install:
+    runs-on: ubuntu-latest
+    name: install-pyenv
+    outputs:
+      result: ${{ steps.install.outcome || 'failure' }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - name: Install Just
+        uses: taiki-e/install-action@0593da407881e996340c22f60617ba9d95f2b995 # v2.42.27
+        with:
+          tool: just@${{ env.JUST_VERSION }}
+      - name: Test Install
+        id: install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          just sdk pyenv install
   test_sonar_scanner_install:
     runs-on: ubuntu-latest
     name: install-sonar-scanner
@@ -237,6 +255,7 @@ jobs:
       - test_sdkman_install
       - test_goenv_install
       - test_sonar_scanner_install
+      - test_pyenv_install
     steps:
       - name: test status
         id: test_status
@@ -265,6 +284,9 @@ jobs:
             "${{ needs.test_tofuenv_install.outputs.result || 'failure'}}" \
             "${{ needs.test_rvm_install.outputs.result || 'failure'}}" \
             "${{ needs.test_sdkman_install.outputs.result || 'failure'}}" \
+            "${{ needs.test_goenv_install.outputs.result || 'failure'}}" \
+            "${{ needs.test_pyenv_install.outputs.result || 'failure'}}" \
+            "${{ needs.test_sonar_scanner_install.outputs.result || 'failure'}}" \
             "${{ needs.test_tool_install.outputs.result || 'failure'}}";
           then
             echo "test_status=:thumbsup:" >> "$GITHUB_OUTPUT"
@@ -290,6 +312,7 @@ jobs:
       - test_rvm_install
       - test_sdkman_install
       - test_goenv_install
+      - test_pyenv_install
       - test_sonar_scanner_install
     steps:
       - name: test_complete

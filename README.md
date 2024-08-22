@@ -98,6 +98,7 @@ Various environment variables control behaviour.
 - `DPM_SKIP_NVM_PROFILE` - set to any value to skip profile modifications by nvm (via _just sdk nvm_)
 - `DPM_SKIP_RVM_PROFILE` - set to any value to skip profile modifications by rvm (via _just sdk rvm_)
 - `DPM_SKIP_RUST_PROFILE` - set to any value to skip profile modifications by rustup (via _just sdk rust_)
+- `DPM_SKIP_PYENV_PROFILE` - set to any value to skip profile modifications by pyenv (via _just sdk pyenv_)
 - `DPM_SKIP_ARCHIVES_PROFILE` - set to any value to skip profile modifications by archives (via _just install archives_)
 - `DPM_BASH_PROFILE_FILE` - defaults to $HOME/.bashrc but can be set to a different value for '_sdk goenv, sdk rust, install archives, fzf-git_)
 
