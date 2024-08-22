@@ -12,6 +12,7 @@ Usage: just sdk [$ACTION_LIST] [params]
   nvm            Install NVM (because nodejs) + wsl-open
   rust           Install rustup + rust + cargo-binstall (because rust)
   rvm            Install RVM +ruby
+  pyenv          Install PYENV + python (because pandas)
   sonar-scanner  Install sonar-scanner cli
   tvm            Install one of the terraform env managers
 
