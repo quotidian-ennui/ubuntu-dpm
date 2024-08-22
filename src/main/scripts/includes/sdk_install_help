@@ -21,9 +21,9 @@ Some things have additional paramters as listed here
   install         : Install the AWS CLI
   update|upgrade  : Update the AWS CLI
   uinstall|rm     : Remove the AWS CLI (but not ~/.aws)
-'goenv'
-  install|latest  : Install goenv
-  update          : Update goenv
+'goenv' | 'pyenv'
+  install|latest  : Install it
+  update          : Update the git repo that provides it
 'tvm'
   terraform|tf    : install hashicorp/terraform
   opentofu|tofu   : Install opentofu
