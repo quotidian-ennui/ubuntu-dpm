@@ -28,7 +28,7 @@ sdk_install_pyenv() {
     python_v=$(cat "$SDK_CONFIG" | yq -r ".python.version")
     "$PYENV_ROOT/bin/pyenv" install -s "$python_v"
     "$PYENV_ROOT/bin/pyenv" global "$python_v"
-    "$PYENV_ROOT/bin/pyenv" version
+    "$PYENV_ROOT/bin/pyenv" versions
     ;;
   *)
     echo ">>> pyenv updated"
