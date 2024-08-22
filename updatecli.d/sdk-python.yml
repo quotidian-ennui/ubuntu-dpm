@@ -1,0 +1,71 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "python"
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump python version to {{ source "latest" }}'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump python to {{ source "latest" }}'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for python
+    kind: githubrelease
+    spec:
+      owner: python
+      repository: cpython
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      versionfilter:
+        kind: semver
+    transformers:
+      - trimprefix: v
+
+conditions:
+  check_exists:
+    name: Check exists in pyenv github
+    kind: shell
+    disablesourceinput: true
+    spec:
+      shell: bash
+      environments:
+        - name: PATH
+      command: |
+        if curl -fSsL "https://raw.githubusercontent.com/pyenv/pyenv/master/plugins/python-build/share/python-build/{{ source "latest"}}" >/dev/null; then
+          echo "Found {{ source "latest" }} in pyenv git repo"
+        fi
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump python version to {{ source "latest" }}'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/sdk.yml
+      key: $.python.version
