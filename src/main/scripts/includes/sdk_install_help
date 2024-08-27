@@ -4,7 +4,7 @@ sdk_install_help() {
   cat <<EOF
 
 Usage: just sdk [$ACTION_LIST] [params]
-  all            Install rust, nvm, sdkman, tofu, aws (but not go).
+  all            Install rust, nvm, sdkman, python, goenv, tofu, aws.
   aws            Install/Update aws-cli
   goenv          Install/Update go-nv/goenv to manage golang
   help           Show help for sdk subcommand
