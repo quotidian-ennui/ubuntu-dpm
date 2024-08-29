@@ -4,6 +4,8 @@ sdk_install_all() {
   sdk_install_rust
   sdk_install_nvm
   sdk_install_java
+  sdk_install_pyenv "install"
+  sdk_install_goenv "install"
   sdk_install_tvm "opentofu"
   sdk_install_aws "update"
 }
