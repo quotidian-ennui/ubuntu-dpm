@@ -15,7 +15,7 @@ permissions:
   contents: read
   pull-requests: write
 env:
-  JUST_VERSION: 1.34.0
+  JUST_VERSION: 1.35.0
 jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
@@ -295,7 +295,6 @@ jobs:
             echo "test_status=:thumbsdown:" >> "$GITHUB_OUTPUT"
             echo ":thumbsdown:" >> "$GITHUB_STEP_SUMMARY"
           fi
-
   tests_complete:
     name: Testing completed
     runs-on: ubuntu-latest
