@@ -14,7 +14,7 @@ sdkman:
 rvm:
   ruby: 3.3.4
 nvm:
-  version: v0.40.0
+  version: v0.40.1
 golang:
   version: 1.23.0
 sonar-scanner:
