@@ -55,6 +55,9 @@ conditions:
       command: |
         if curl -fSsL "https://raw.githubusercontent.com/pyenv/pyenv/master/plugins/python-build/share/python-build/{{ source "latest"}}" >/dev/null; then
           echo "Found {{ source "latest" }} in pyenv git repo"
+          exit 0
+        else
+          exit 1
         fi
 
 targets:

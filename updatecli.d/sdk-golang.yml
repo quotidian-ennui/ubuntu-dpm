@@ -56,6 +56,9 @@ conditions:
       command: |
         if curl -fSsL "https://raw.githubusercontent.com/go-nv/goenv/master/plugins/go-build/share/go-build/{{ source "latest"}}" >/dev/null; then
           echo "Found {{ source "latest" }} in goenv git repo"
+          exit 0
+        else
+          exit 1
         fi
 
 targets:
