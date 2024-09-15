@@ -16,8 +16,8 @@ alias prepare:=init
   echo "Generally, you'll just use 'just tools' to update the binary tools"
 
 # run updatecli with args e.g. just updatecli diff
-@updatecli +args='diff':
-  ARCHIVE_CONFIG="{{ ARCHIVE_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" "$@"
+@updatecli type='personal' +args='diff':
+  UPDATE_TYPE="{{ type }}" ARCHIVE_CONFIG="{{ ARCHIVE_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args}}
 
 # Update apt + tools
 @update: apt_update tools
