@@ -40,7 +40,6 @@ if [[ -z "$GITHUB_TOKEN" ]]; then
 fi
 
 tmpdir=$(mktemp -d -t updatecli.XXXXXX)
-echo "$@"
 case "$UPDATE_TYPE" in
 additions | local | personal)
   exec_updatecli "$DPM_TOOLS_ADDITIONS_YAML" "$tmpdir" "$@"
