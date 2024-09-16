@@ -1,5 +1,5 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
-name: '{{ .repo }}'
+name: "{{ .repo }}"
 
 # {{ if $scmEnabled }}
 actions:
@@ -40,11 +40,11 @@ sources:
       repository: '{{ (split "/" .repo)._1 }}'
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
-        kind: '{{ .kind }}'
-        pattern: '{{ .pattern }}'
+        kind: "{{ .kind }}"
+        pattern: "{{ .pattern }}"
     # {{ if .trim_prefix }}
     transformers:
-      - trimprefix: '{{ .trim_prefix }}'
+      - trimprefix: "{{ .trim_prefix }}"
     # {{ end }}
 
 targets:
@@ -57,5 +57,5 @@ targets:
     # {{ end }}
     spec:
       files:
-        - ./config/tools.yml
-      key: '{{ .yamlpath }}'
+        - "{{ .config_file }}"
+      key: "{{ .yamlpath }}"
