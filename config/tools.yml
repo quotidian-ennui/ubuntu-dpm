@@ -139,7 +139,7 @@ iamlive:
   contents: iamlive
 gitleaks:
   repo: gitleaks/gitleaks
-  version: v8.19.1
+  version: v8.19.3
   artifact: gitleaks_{version}_linux_x64.tar.gz
   contents: gitleaks
 jf:
