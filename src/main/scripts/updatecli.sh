@@ -40,12 +40,10 @@ if [[ -z "$GITHUB_TOKEN" ]]; then
 fi
 
 tmpdir=$(mktemp -d -t updatecli.XXXXXX)
+exec_updatecli "$TOOL_CONFIG" "$tmpdir" "$@"
 case "$UPDATE_TYPE" in
-additions | local | personal)
-  exec_updatecli "$DPM_TOOLS_ADDITIONS_YAML" "$tmpdir" "$@"
-  ;;
+additions | local | personal) ;;
 *)
-  exec_updatecli "$TOOL_CONFIG" "$tmpdir" "$@"
   GITHUB_TOKEN=$GITHUB_TOKEN updatecli "$@"
   ;;
 esac

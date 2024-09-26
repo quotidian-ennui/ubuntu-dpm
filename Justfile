@@ -4,8 +4,8 @@ TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config
 REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
 SDK_CONFIG:=env_var_or_default("DPM_SDK_YAML", justfile_directory() / "config/sdk.yml")
 ARCHIVE_CONFIG:=env_var_or_default("DPM_ARCHIVES_YAML", justfile_directory() / "config/archives.yml")
+LOCAL_UPDATECLI:=justfile_directory() / "src/main/resources/local-updatecli.yml"
 SCRIPTS_DIR:=justfile_directory() / "src/main/scripts"
-
 alias prepare:=init
 
 # show recipes
@@ -16,8 +16,17 @@ alias prepare:=init
   echo "Generally, you'll just use 'just tools' to update the binary tools"
 
 # run updatecli with args e.g. just updatecli diff
-@updatecli type='personal' +args='diff':
-  UPDATE_TYPE="{{ type }}" ARCHIVE_CONFIG="{{ ARCHIVE_CONFIG }}" TOOL_CONFIG="{{ TOOL_CONFIG }}" REPO_CONFIG="{{ REPO_CONFIG }}" SDK_CONFIG="{{ SDK_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args}}
+updatecli type='personal' +args='diff':
+  #!/usr/bin/env bash
+
+  case "{{ type }}" in
+  additions | local | personal)
+    UPDATE_TYPE="{{ type }}" UPDATECLI_TEMPLATE="{{ LOCAL_UPDATECLI }}" TOOL_CONFIG="$DPM_TOOLS_ADDITIONS_YAML" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}
+    ;;
+  *)
+    TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}
+    ;;
+  esac
 
 # Update apt + tools
 @update: apt_update tools

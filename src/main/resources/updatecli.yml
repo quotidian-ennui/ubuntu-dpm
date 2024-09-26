@@ -57,5 +57,5 @@ targets:
     # {{ end }}
     spec:
       files:
-        - "{{ .config_file }}"
+        - ./config/tools.yml
       key: "{{ .yamlpath }}"
