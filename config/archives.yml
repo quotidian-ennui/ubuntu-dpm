@@ -20,7 +20,7 @@
 jsonschema2pojo:
   repo: joelittlejohn/jsonschema2pojo
   version:
-    github_tag: jsonschema2pojo-1.2.1
+    github_tag: jsonschema2pojo-1.2.2
     strip_prefix: jsonschema2pojo-
   artifact: "jsonschema2pojo-{version}.zip"
   extract: "{tag}"
