@@ -89,7 +89,7 @@ gron:
   contents: gron
 git-cliff:
   repo: orhun/git-cliff
-  version: v2.5.0
+  version: v2.6.0
   artifact: git-cliff-{version}-x86_64-unknown-linux-gnu.tar.gz
   contents: git-cliff-{version}/git-cliff:git-cliff
 git-absorb:
