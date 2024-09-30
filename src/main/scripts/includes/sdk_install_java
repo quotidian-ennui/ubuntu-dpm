@@ -3,17 +3,36 @@
 #shellcheck disable=SC2002
 set -eo pipefail
 
+MY_SDKMAN_CONFIG="$HOME/.sdkman/etc/config"
+
+__sdkman_mode() {
+  if grep "sdkman_auto_answer=false" "$MY_SDKMAN_CONFIG"; then
+    echo "interactive"
+  else
+    echo "batch"
+  fi
+}
+
 __sdkman_batch_mode() {
-  # This is a bit of a hack to avoid the interactive prompt but setting
-  # it on the commandline doesn't always work.
-  sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
+  local mode=$1
+
+  if [[ "$mode" != "batch" ]]; then
+    # This is a bit of a hack to avoid the interactive prompt but setting
+    # it on the commandline doesn't always work.
+    sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i "$MY_SDKMAN_CONFIG"
+  fi
 }
 
 __sdkman_interactive_mode() {
-  sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
+  local mode=$1
+
+  if [[ "$mode" != "batch" ]]; then
+    sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i "$MY_SDKMAN_CONFIG"
+  fi
 }
 
 __sdkman_base() {
+  local sdkman_mode
   local graal_v
   local maven_v
   local jbang_v
@@ -28,7 +47,9 @@ __sdkman_base() {
       curl -fSsL "https://get.sdkman.io" | bash
     fi
   fi
-  __sdkman_batch_mode
+  sdkman_mode=$(__sdkman_mode)
+  __sdkman_batch_mode "$sdkman_mode"
+
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
 
@@ -42,13 +63,16 @@ __sdkman_base() {
   sdk install maven "$maven_v"
   sdk install jbang "$jbang_v"
   echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
-  __sdkman_interactive_mode
+  __sdkman_interactive_mode "$sdkman_mode"
 }
 
 __sdkman_upgrade() {
   local existing_version
   local candidate="$1"
-  __sdkman_batch_mode
+  local sdkman_mode
+
+  sdkman_mode=$(__sdkman_mode)
+  __sdkman_batch_mode "$sdkman_mode"
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
   sdk selfupdate
@@ -56,7 +80,7 @@ __sdkman_upgrade() {
   existing_version=$(sdk current "$candidate" | grep -Po "([0-9\.]+)")
   sdk upgrade "$candidate"
   sdk uninstall "$candidate" "$existing_version"
-  __sdkman_interactive_mode
+  __sdkman_interactive_mode "$sdkman_mode"
 }
 
 sdk_install_java() {
