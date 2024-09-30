@@ -18,15 +18,24 @@ Usage: just sdk [$ACTION_LIST] [params]
 
 Some things have additional paramters as listed here
 'aws'
-  install         : Install the AWS CLI
-  update|upgrade  : Update the AWS CLI
-  uinstall|rm     : Remove the AWS CLI (but not ~/.aws)
+  install             : Install the AWS CLI
+  update|upgrade      : Update the AWS CLI
+  uninstall|rm         : Remove the AWS CLI (but not ~/.aws)
 'goenv' | 'pyenv'
-  install|latest  : Install it
-  update          : Update the git repo that provides it
+  install|latest      : Install it (goenv or pyenv)
+  update              : Update the git repo that provides it
 'tvm'
-  terraform|tf    : install hashicorp/terraform
-  opentofu|tofu   : Install opentofu
+  terraform|tf        : install hashicorp/terraform
+  opentofu|tofu       : Install opentofu
+'java'
+  install             : install baseline java tools (java/gradle/maven/jbang)
+                        For backwards compatibility, this is the default behaviour.
+  upgrade [candidate] : upgrade an sdkman candidate (e.g. gradle) to its latest version
+                        and delete the current version.
+
+                        This behaviour is largely because sdkman leaves previous versions
+                        dangling, and for some tools you never want to use a previous
+                        version.
 EOF
   exit 0
 }
