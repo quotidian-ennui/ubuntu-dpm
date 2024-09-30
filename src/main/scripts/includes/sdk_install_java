@@ -3,7 +3,17 @@
 #shellcheck disable=SC2002
 set -eo pipefail
 
-sdk_install_java() {
+__sdkman_batch_mode() {
+  # This is a bit of a hack to avoid the interactive prompt but setting
+  # it on the commandline doesn't always work.
+  sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
+}
+
+__sdkman_interactive_mode() {
+  sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
+}
+
+__sdkman_base() {
   local graal_v
   local maven_v
   local jbang_v
@@ -18,9 +28,7 @@ sdk_install_java() {
       curl -fSsL "https://get.sdkman.io" | bash
     fi
   fi
-  # This is a bit of a hack to avoid the interactive prompt but setting
-  # it on the commandline doesn't always work.
-  sed -e "s|sdkman_auto_answer=false|sdkman_auto_answer=true|g" -i ~/.sdkman/etc/config
+  __sdkman_batch_mode
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
 
@@ -34,5 +42,32 @@ sdk_install_java() {
   sdk install maven "$maven_v"
   sdk install jbang "$jbang_v"
   echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
-  sed -e "s|sdkman_auto_answer=true|sdkman_auto_answer=false|g" -i ~/.sdkman/etc/config
+  __sdkman_interactive_mode
+}
+
+__sdkman_upgrade() {
+  local existing_version
+  local candidate="$1"
+  __sdkman_batch_mode
+  #shellcheck disable=SC1090
+  source ~/.sdkman/bin/sdkman-init.sh
+  sdk selfupdate
+  sdk update
+  existing_version=$(sdk current "$candidate" | grep -Po "([0-9\.]+)")
+  sdk upgrade "$candidate"
+  sdk uninstall "$candidate" "$existing_version"
+  __sdkman_interactive_mode
+}
+
+sdk_install_java() {
+  case "$1" in
+  upgrade)
+    shift
+    __sdkman_upgrade "$@"
+    sdk current
+    ;;
+  *)
+    __sdkman_base
+    ;;
+  esac
 }
