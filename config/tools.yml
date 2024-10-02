@@ -182,3 +182,8 @@ lnav:
   version: v0.12.2
   artifact: lnav-{version}-linux-musl-x86_64.zip
   contents: lnav-{version}/lnav:lnav
+xc:
+  repo: joerdav/xc
+  version: v0.8.0
+  artifact: xc_{version}_linux_amd64
+  contents: :xc
