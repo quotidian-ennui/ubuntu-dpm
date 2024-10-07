@@ -30,7 +30,7 @@ jsonschema2pojo:
 parquet-cli-wrapper:
   repo: quotidian-ennui/parquet-cli-wrapper
   version:
-    github_tag: 1.14.2
+    github_tag: 1.14.3
   artifact: "parquet-cli.tar.gz"
   runtime:
     path_addition:
