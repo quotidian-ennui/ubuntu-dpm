@@ -5,6 +5,7 @@ sdk_install_aws() {
   case "$1" in
   install)
     aws_download_and_run_installer
+    aws_download_docker_credential_ecr_login
     aws --version
     ;;
   uninstall | rm)
@@ -15,6 +16,7 @@ sdk_install_aws() {
     ;;
   update | upgrade)
     aws_download_and_run_installer --update
+    aws_download_docker_credential_ecr_login
     aws --version
     ;;
   *)
@@ -31,4 +33,13 @@ aws_download_and_run_installer() {
   unzip -q -d "$tmpdir" "$tmpdir/awscliv2.zip"
   (cd "$tmpdir" && sudo ./aws/install "$@")
   rm -rf "$tmpdir"
+}
+
+aws_download_docker_credential_ecr_login() {
+  mkdir -p "$LOCAL_BIN"
+  version=$(yq -r ".amazon-ecr-credential-helper.version" "$SDK_CONFIG")
+  curl -fSsL "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/${version}/linux-amd64/docker-credential-ecr-login" -o "$LOCAL_BIN/docker-credential-ecr-login"
+  chmod +x "$LOCAL_BIN/docker-credential-ecr-login"
+  echo "Consider adding the following to ~/.docker/config.json"
+  printf '{\n  "credHelpers": {\n    "public.ecr.aws": "ecr-login",\n    "<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"\n  }\n}\n'
 }
