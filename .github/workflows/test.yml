@@ -51,7 +51,7 @@ jobs:
           DPM_TOOLS_ADDITIONS_YAML: config/tools-additions.yml
           DPM_REPO_ADDITIONS_YAML: config/repos-additions.yml
         run: |
-          pip install gh-release-install
+          pipx install gh-release-install
           # shellcheck disable=SC2002
           tool_count=$(cat "${{ github.workspace }}/config/tools.yml" | yq -p yaml -o json | jq -c '.[] | (if .repo == null then empty else . end ) | .repo' | wc -l)
           # shellcheck disable=SC2002
