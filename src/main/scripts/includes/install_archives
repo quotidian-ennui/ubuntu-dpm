@@ -16,7 +16,7 @@ _zips_add_path() {
   path_to_add=$1
   if [[ -z "$DPM_SKIP_ARCHIVES_PROFILE" ]]; then
     if ! grep "$path_to_add" "$DPM_BASH_PROFILE_FILE" >/dev/null 2>&1; then
-      printf 'PATH=$PATH:%s\n' "$path_to_add" >>"$DPM_BASH_PROFILE_FILE"
+      printf '\nPATH=$PATH:%s\n' "$path_to_add" >>"$DPM_BASH_PROFILE_FILE"
       echo "[~] $path_to_add added to $DPM_BASH_PROFILE_FILE"
     fi
   fi

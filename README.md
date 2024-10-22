@@ -89,7 +89,7 @@ Various environment variables control behaviour.
 - `DPM_REPO_YAML` - can be set to your custom repo yaml path
 - `DPM_ARCHIVES_YAML` - can be set to your custom zip yaml path
 - `DPM_REPO_ADDITIONS_YAML` - can be set to an additional repos yaml path, will be merged with base repos.yml
-- `DPM_ARCHIVE_ADDITIONS_YAML` - can be set to an additional zip yaml path, will be merged with base archives.yml
+- `DPM_ARCHIVES_ADDITIONS_YAML` - can be set to an additional zip yaml path, will be merged with base archives.yml
 - `DPM_SDK_YAML` - can be set to your custom sdk yaml path
 - `DPM_SKIP_FZF_PROFILE` - set to any value to skip bashrc shenanigans by `fzf-git`
 - `DPM_SKIP_GO_PROFILE` - set to any value to skip profile modifications by `go-nv/goenv` (via _just sdk goenv_)
