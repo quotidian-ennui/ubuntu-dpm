@@ -94,7 +94,7 @@ git-cliff:
   contents: git-cliff-{version}/git-cliff:git-cliff
 git-absorb:
   repo: tummychow/git-absorb
-  version: 0.6.15
+  version: 0.6.16
   artifact: git-absorb-{version}-x86_64-unknown-linux-musl.tar.gz
   contents: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb:git-absorb
 committed:
