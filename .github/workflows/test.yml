@@ -20,7 +20,7 @@ jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
   test_tool_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-tools
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -71,7 +71,7 @@ jobs:
             exit 1
           fi
   test_rust_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-rust
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -92,7 +92,7 @@ jobs:
           just sdk rust
           cargo binstall -V
   test_nvm_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-nvm
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -112,7 +112,7 @@ jobs:
         run: |
           just sdk nvm
   test_tfenv_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-terraform
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -133,7 +133,7 @@ jobs:
           just sdk tvm terraform
           "$HOME/.local/bin/terraform" -version
   test_tofuenv_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-opentofu
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -154,7 +154,7 @@ jobs:
           just sdk tvm opentofu
           "$HOME/.local/bin/tofu" -version
   test_rvm_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-rvm
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -174,7 +174,7 @@ jobs:
         run: |
           just sdk rvm
   test_sdkman_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-sdkman
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -194,7 +194,7 @@ jobs:
         run: |
           just sdk java
   test_goenv_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-goenv
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -214,7 +214,7 @@ jobs:
         run: |
           just sdk goenv install
   test_pyenv_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-pyenv
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -234,7 +234,7 @@ jobs:
         run: |
           just sdk pyenv install
   test_sonar_scanner_install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: install-sonar-scanner
     outputs:
       result: ${{ steps.install.outcome || 'failure' }}
@@ -264,7 +264,7 @@ jobs:
           sonar-scanner --version
   test_status:
     name: Assert Tests Passed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: always()
     needs:
       - test_tool_install
@@ -318,7 +318,7 @@ jobs:
           fi
   tests_complete:
     name: Testing completed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
