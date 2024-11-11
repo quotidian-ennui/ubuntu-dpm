@@ -35,3 +35,13 @@ parquet-cli-wrapper:
   runtime:
     path_addition:
       - "{root}"
+tenv:
+  repo: tofuutils/tenv
+  version:
+    github_tag: v3.2.10
+    strip_prefix: v
+  artifact: "tenv_{tag}_Linux_x86_64.tar.gz"
+  extract: ""
+  runtime:
+    path_addition:
+      - "{root}"
