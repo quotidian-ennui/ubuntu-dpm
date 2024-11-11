@@ -4,7 +4,7 @@ sdk_install_help() {
   cat <<EOF
 
 Usage: just sdk [$ACTION_LIST] [params]
-  all            Install rust, nvm, sdkman, python, goenv, tofu, aws.
+  all            Install rust, nvm, sdkman, python, goenv, aws.
   aws            Install/Update aws-cli
   goenv          Install/Update go-nv/goenv to manage golang
   help           Show help for sdk subcommand
@@ -28,6 +28,8 @@ Some things have additional paramters as listed here
   terraform|tf        : install hashicorp/terraform via tfenv
   opentofu|tofu       : Install opentofu via tofuenv
   tenv                : install hashicorp/terraform and opentofu via tenv
+                        Since tenv also supports atmos and terragrunt this is
+                        probably preferred.
 'java'
   install             : install baseline java tools (java/gradle/maven/jbang)
                         For backwards compatibility, this is the default behaviour.
