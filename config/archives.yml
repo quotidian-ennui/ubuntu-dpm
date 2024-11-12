@@ -27,6 +27,14 @@ jsonschema2pojo:
   runtime:
     symlinks:
       - "{root}/bin/jsonschema2pojo"
+qsv:
+  repo: jqnatividad/qsv
+  version:
+    github_tag: 0.138.0
+  artifact: "qsv-{version}-x86_64-unknown-linux-musl.zip"
+  runtime:
+    path_addition:
+      - "{root}"
 parquet-cli-wrapper:
   repo: quotidian-ennui/parquet-cli-wrapper
   version:
