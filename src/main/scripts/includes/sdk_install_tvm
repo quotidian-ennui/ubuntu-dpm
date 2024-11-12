@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+#shellcheck disable=SC2002
+__configure_tenv() {
+  tf_v=$(cat "$SDK_CONFIG" | yq -r ".terraform.version")
+  tofu_v=$(cat "$SDK_CONFIG" | yq -r ".opentofu.version")
+  tenv terraform install "$tf_v"
+  tenv terraform use "$tf_v"
+  tenv tofu install "$tofu_v"
+  tenv tofu use "$tofu_v"
+}
+
 sdk_install_tvm() {
   local tfenv_base=""
   local tfenv_github=""
   local tfenv_yamlpath=""
   local tfenv_bin=""
   local tf_v
+  local legacy_tvm="false"
 
   case "$1" in
   terraform | tf)
@@ -14,31 +25,44 @@ sdk_install_tvm() {
     tfenv_github="https://github.com/tfutils/tfenv"
     tfenv_yamlpath=".terraform.version"
     tfenv_bin="tfenv"
+    legacy_tvm="true"
     ;;
   opentofu | tofu)
     tfenv_base=".tofuenv"
     tfenv_github="https://github.com/tofuutils/tofuenv"
     tfenv_yamlpath=".opentofu.version"
     tfenv_bin="tofuenv"
+    legacy_tvm="true"
+    ;;
+  tenv)
+    if which tenv >/dev/null; then
+      __configure_tenv
+    else
+      echo -e "\n>>> Install tenv via 'just install archives' first"
+      exit 2
+    fi
     ;;
   *)
     echo "Unknown variant: $1"
     sdk_install_help
-    exit 1
+    exit 2
     ;;
   esac
 
-  if [[ -d "$HOME/$tfenv_base" ]]; then
-    echo "$1 env manager already installed"
-    (cd "$HOME/$tfenv_base" && git pull --rebase)
-  else
-    mkdir -p "$LOCAL_BIN"
-    (cd "$HOME" && git clone "$tfenv_github" "$tfenv_base")
-    #shellcheck disable=SC1083
-    ln -s "$HOME/$tfenv_base/bin"/* "$LOCAL_BIN"
+  if [[ "$legacy_tvm" == "true" ]]; then
+    echo -e "\n>>> Legacy terraform env manager '$1'"
+    if [[ -d "$HOME/$tfenv_base" ]]; then
+      echo "$1 env manager already installed"
+      (cd "$HOME/$tfenv_base" && git pull --rebase)
+    else
+      mkdir -p "$LOCAL_BIN"
+      (cd "$HOME" && git clone "$tfenv_github" "$tfenv_base")
+      #shellcheck disable=SC1083
+      ln -s "$HOME/$tfenv_base/bin"/* "$LOCAL_BIN"
+    fi
+    #shellcheck disable=SC2002
+    tf_v=$(cat "$SDK_CONFIG" | yq -r "$tfenv_yamlpath")
+    "$HOME/$tfenv_base/bin/$tfenv_bin" install "$tf_v"
+    "$HOME/$tfenv_base/bin/$tfenv_bin" use "$tf_v"
   fi
-  #shellcheck disable=SC2002
-  tf_v=$(cat "$SDK_CONFIG" | yq -r "$tfenv_yamlpath")
-  "$HOME/$tfenv_base/bin/$tfenv_bin" install "$tf_v"
-  "$HOME/$tfenv_base/bin/$tfenv_bin" use "$tf_v"
 }
