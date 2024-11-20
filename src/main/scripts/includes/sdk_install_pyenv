@@ -26,6 +26,15 @@ sdk_install_pyenv() {
       fi
     fi
     python_v=$(cat "$SDK_CONFIG" | yq -r ".python.version")
+    # g++ is part of build-essential which should provide enough of a C compiler for us to do it.
+    if ! builtin command -v g++ >/dev/null; then
+      echo ">>> No C compiler, so lets install one"
+      # Install all the things from https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+      # not getting tk-dev because of all the X11 things.
+      sudo apt -y install build-essential libssl-dev zlib1g-dev \
+        libbz2-dev libreadline-dev libsqlite3-dev \
+        libncursesw5-dev xz-utils libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+    fi
     "$PYENV_ROOT/bin/pyenv" install -s "$python_v"
     "$PYENV_ROOT/bin/pyenv" global "$python_v"
     "$PYENV_ROOT/bin/pyenv" versions
