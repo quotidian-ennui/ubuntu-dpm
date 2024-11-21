@@ -21,8 +21,12 @@ Some things have additional paramters as listed here
   install             : Install the AWS CLI
   update|upgrade      : Update the AWS CLI
   uninstall|rm         : Remove the AWS CLI (but not ~/.aws)
-'goenv' | 'pyenv'
-  install|latest      : Install it (goenv or pyenv)
+'goenv'
+  install|latest      : Install goenv itself and golang
+  update              : Update the git repo that provides it
+'pyenv'
+  install|latest      : Install pyenv itself and a python
+  prepare             : Install the sane dev environment as recommended by pyenv
   update              : Update the git repo that provides it
 'tvm'
   terraform|tf        : install hashicorp/terraform via tfenv

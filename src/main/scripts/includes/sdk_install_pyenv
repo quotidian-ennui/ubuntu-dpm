@@ -3,6 +3,14 @@
 # shellcheck disable=SC2002
 set -eo pipefail
 
+# Install all the things from https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+# including tk-dev even though that means all the X11 things.
+__pyenv_prepare() {
+  sudo apt -y install build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev \
+    libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+}
+
 sdk_install_pyenv() {
   rm -f "$LOCAL_BIN/pyenv"
   if [[ -d "$PYENV_ROOT" ]]; then
@@ -26,9 +34,18 @@ sdk_install_pyenv() {
       fi
     fi
     python_v=$(cat "$SDK_CONFIG" | yq -r ".python.version")
+    # g++ is part of build-essential which provides c++ compiler
+    # gcc would what provides a C compiler this could effectively
+    # be a check if ! sudo apt list --installed | grep build-essential; then
+    if ! builtin command -v g++ >/dev/null; then
+      __pyenv_prepare
+    fi
     "$PYENV_ROOT/bin/pyenv" install -s "$python_v"
     "$PYENV_ROOT/bin/pyenv" global "$python_v"
     "$PYENV_ROOT/bin/pyenv" versions
+    ;;
+  prepare)
+    __pyenv_prepare
     ;;
   *)
     echo ">>> pyenv updated"
