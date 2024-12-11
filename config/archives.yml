@@ -38,7 +38,7 @@ qsv:
 parquet-cli-wrapper:
   repo: quotidian-ennui/parquet-cli-wrapper
   version:
-    github_tag: 1.14.4
+    github_tag: 1.15.0
   artifact: "parquet-cli.tar.gz"
   runtime:
     path_addition:
