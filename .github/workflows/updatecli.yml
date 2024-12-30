@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: "Setup updatecli"
-        uses: updatecli/updatecli-action@1e7fcb1c5df159bca56c24c5335a050d611fbfdd # v2.74.0
+        uses: updatecli/updatecli-action@4aca518a70708e38063453d8de9c551af7f48ac3 # v2.75.0
         with:
           version: ${{ env.UPDATECLI_VERSION }}
       - name: "Create Token"
