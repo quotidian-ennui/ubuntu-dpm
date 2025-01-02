@@ -1,0 +1,60 @@
+# {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
+name: "java/corretto"
+version: 0.91.0
+
+# {{ if $scmEnabled }}
+actions:
+  pull_request:
+    scmid: github
+    title: 'chore(deps): Bump java/corretto version to {{ source "latest" }}-amzn'
+    kind: github/pullrequest
+    spec:
+      labels:
+        - dependencies
+
+scms:
+  github:
+    disabled: false
+    kind: github
+    spec:
+      branch: main
+      owner: '{{ requiredEnv "GITHUB_REPOSITORY_OWNER" }}'
+      repository: '{{ requiredEnv "GITHUB_REPOSITORY_NAME" }}'
+      user: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      email: '{{ requiredEnv "UPDATECLI_GITHUB_EMAIL" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_USER" }}'
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      commitmessage:
+        type: "chore"
+        scope: "deps"
+        title: 'Bump java/corretto version to {{ source "latest" }}-amzn'
+        hidecredit: true
+# {{ end }}
+
+sources:
+  latest:
+    name: Github release for java/corretto
+    kind: githubrelease
+    spec:
+      owner: corretto
+      repository: corretto-21
+      token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      # comes through as 21.0.5.11.1 or similar so we need to strip out the .11.1 before
+      # semver-ing.
+      versionfilter:
+        kind: regex/semver
+        regex: "^(\\d*\\.\\d*\\.\\d*).*$"
+
+targets:
+  update_yaml:
+    kind: yaml
+    sourceid: latest
+    name: 'Bump java/corretto version to {{ source "latest" }}-amzn'
+    # {{ if $scmEnabled }}
+    scmid: github
+    # {{ end }}
+    spec:
+      files:
+        - ./config/sdk.yml
+      key: $.sdkman.java
+      value: '{{ source "latest" }}-amzn'

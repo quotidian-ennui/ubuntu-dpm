@@ -33,7 +33,7 @@ __sdkman_interactive_mode() {
 
 __sdkman_base() {
   local sdkman_mode
-  local graal_v
+  local java_v
   local maven_v
   local jbang_v
   local gradle_v
@@ -53,16 +53,16 @@ __sdkman_base() {
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
 
-  graal_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.java")
+  java_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.java")
   maven_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.maven")
   jbang_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.jbang")
   gradle_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.gradle")
 
-  sdk install java "$graal_v"
+  sdk install java "$java_v"
   sdk install gradle "$gradle_v"
   sdk install maven "$maven_v"
   sdk install jbang "$jbang_v"
-  echo "[+] GraalVM=$graal_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
+  echo "[+] Java=$java_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
   __sdkman_interactive_mode "$sdkman_mode"
 }
 
