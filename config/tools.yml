@@ -34,7 +34,7 @@ terraform-docs:
   contents: terraform-docs
 nova:
   repo: fairwindsops/nova
-  version: v3.11.1
+  version: v3.11.2
   artifact: nova_{version}_linux_amd64.tar.gz
   contents: nova
 updatecli:
