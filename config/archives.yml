@@ -31,7 +31,7 @@ jsonschema2pojo:
     kind: regex
     pattern: 'jsonschema2pojo-[0-9]+\\.[0-9]+\\.[0-9]+$'
 qsv:
-  repo: jqnatividad/qsv
+  repo: dathere/qsv
   version:
     github_tag: 0.138.0
   artifact: "qsv-{version}-x86_64-unknown-linux-musl.zip"
