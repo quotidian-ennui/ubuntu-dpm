@@ -24,7 +24,7 @@ updatecli type='personal' +args='diff':
     UPDATE_TYPE="{{ type }}" UPDATECLI_TEMPLATE="{{ LOCAL_UPDATECLI }}" TOOL_CONFIG="$DPM_TOOLS_ADDITIONS_YAML" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}
     ;;
   *)
-    TOOL_CONFIG="{{ TOOL_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}
+    TOOL_CONFIG="{{ TOOL_CONFIG }}" ARCHIVE_CONFIG="{{ ARCHIVE_CONFIG }}" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}
     ;;
   esac
 

@@ -27,6 +27,9 @@ jsonschema2pojo:
   runtime:
     symlinks:
       - "{root}/bin/jsonschema2pojo"
+  updatecli:
+    kind: regex
+    pattern: 'jsonschema2pojo-[0-9]+\\.[0-9]+\\.[0-9]+$'
 qsv:
   repo: jqnatividad/qsv
   version:
