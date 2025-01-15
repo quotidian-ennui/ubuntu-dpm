@@ -1,6 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: "java/corretto"
-version: 0.91.0
+version: 0.92.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -44,6 +44,10 @@ sources:
       versionfilter:
         kind: regex/semver
         regex: "^(\\d*\\.\\d*\\.\\d*).*$"
+    transformers:
+      - findsubmatch:
+          pattern: "^(\\d*\\.\\d*\\.\\d*).*$"
+          captureindex: 1
 
 targets:
   update_yaml:
