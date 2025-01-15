@@ -179,6 +179,7 @@ jobs:
       - name: Test Install
         id: install
         env:
+          TENV_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just sdk tvm tenv
