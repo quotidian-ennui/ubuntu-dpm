@@ -1,12 +1,13 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
-name: "tofuutils-tenv"
+name: "{{ .repo }}"
 
 # {{ if $scmEnabled }}
 actions:
   pull_request:
     scmid: github
-    title: 'chore(deps): Bump tofuutils/tenv version to {{ source "latest" }}'
+    title: 'chore(deps): Bump {{ .repo }} version to {{ source "latest" }}'
     kind: github/pullrequest
+    mergemethod: "rebase"
     spec:
       labels:
         - dependencies
@@ -26,30 +27,36 @@ scms:
       commitmessage:
         type: "chore"
         scope: "deps"
-        title: 'Bump tofuutils/tenv to {{ source "latest" }}'
+        title: 'Bump {{ .repo }} version to {{ source "latest" }}'
         hidecredit: true
 # {{ end }}
 
 sources:
   latest:
-    name: Github release for tofuutils/tenv
+    name: Github release for {{ .repo }}
     kind: githubrelease
     spec:
-      owner: tofuutils
-      repository: tenv
+      owner: '{{ (split "/" .repo)._0 }}'
+      repository: '{{ (split "/" .repo)._1 }}'
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
-        kind: semver
+        kind: "{{ .kind }}"
+        pattern: "{{ .pattern }}"
+    # {{ if .trim_prefix }}
+    transformers:
+      - trimprefix: "{{ .trim_prefix }}"
+    # {{ end }}
 
 targets:
   update_yaml:
     kind: yaml
     sourceid: latest
-    name: 'Bump tofuutils/tenv version to {{ source "latest" }}'
+    name: 'Update {{ .repo }} version to {{ source "latest" }}'
     # {{ if $scmEnabled }}
     scmid: github
     # {{ end }}
     spec:
       files:
         - ./config/archives.yml
-      key: $.tenv.version.github_tag
+      key: "{{ .yamlpath }}"
+      value: '{{ if .trim_prefix }}{{ .trim_prefix }}{{ end }}{{ source "latest" }}'
