@@ -104,7 +104,7 @@ committed:
   contents: ./committed:committed
 actionlint:
   repo: rhysd/actionlint
-  version: v1.7.6
+  version: v1.7.7
   artifact: actionlint_{version}_linux_amd64.tar.gz
   contents: actionlint
 mikefarah-yq:
