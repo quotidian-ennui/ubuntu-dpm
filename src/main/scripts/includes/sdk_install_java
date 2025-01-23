@@ -4,6 +4,7 @@
 set -eo pipefail
 
 MY_SDKMAN_CONFIG="$HOME/.sdkman/etc/config"
+JAVA_TOOLING="java gradle maven jbang"
 
 __sdkman_mode() {
   if grep "sdkman_auto_answer=false" "$MY_SDKMAN_CONFIG"; then
@@ -31,12 +32,43 @@ __sdkman_interactive_mode() {
   fi
 }
 
+__sdkman_selfupdate() {
+  local sdkman_mode
+  #shellcheck disable=SC1090
+  source ~/.sdkman/bin/sdkman-init.sh
+  sdk selfupdate >/dev/null 2>&1
+  sdk update >/dev/null 2>&1
+}
+
+__sdkman_reset() {
+  local existing_version
+  local configured_version
+  local candidate="$1"
+  local sdkman_mode
+
+  __sdkman_selfupdate
+  sdkman_mode=$(__sdkman_mode)
+  __sdkman_batch_mode "$sdkman_mode"
+  if [[ -z "$candidate" ]]; then
+    echo "No candidate specified"
+    return 1
+  fi
+  existing_version=$(sdk current "$candidate" | grep -Po "([0-9\.]+.*)")
+  configured_version=$(cat "$SDK_CONFIG" | yq -r ".sdkman.$candidate")
+  if [[ "$existing_version" != "$configured_version" ]]; then
+    sdk install "$candidate" "$configured_version"
+    if [[ -n "$existing_version" ]]; then
+      sdk uninstall "$candidate" "$existing_version"
+    fi
+  else
+    echo "No change in $candidate version ($existing_version)"
+  fi
+  __sdkman_interactive_mode "$sdkman_mode"
+}
+
 __sdkman_base() {
   local sdkman_mode
-  local java_v
-  local maven_v
-  local jbang_v
-  local gradle_v
+  local install_v
 
   if [[ ! -d "$HOME/.sdkman" ]]; then
     # It does feel that if we already have SDKMAN installed then
@@ -53,16 +85,10 @@ __sdkman_base() {
   #shellcheck disable=SC1090
   source ~/.sdkman/bin/sdkman-init.sh
 
-  java_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.java")
-  maven_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.maven")
-  jbang_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.jbang")
-  gradle_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.gradle")
-
-  sdk install java "$java_v"
-  sdk install gradle "$gradle_v"
-  sdk install maven "$maven_v"
-  sdk install jbang "$jbang_v"
-  echo "[+] Java=$java_v, Gradle=$gradle_v, Maven=$maven_v, jbang=$jbang_v"
+  for tool in $JAVA_TOOLING; do
+    install_v=$(cat "$SDK_CONFIG" | yq -r ".sdkman.$tool")
+    sdk install "$tool" "$install_v"
+  done
   __sdkman_interactive_mode "$sdkman_mode"
 }
 
@@ -71,15 +97,18 @@ __sdkman_upgrade() {
   local candidate="$1"
   local sdkman_mode
 
+  __sdkman_selfupdate
   sdkman_mode=$(__sdkman_mode)
   __sdkman_batch_mode "$sdkman_mode"
-  #shellcheck disable=SC1090
-  source ~/.sdkman/bin/sdkman-init.sh
-  sdk selfupdate
-  sdk update
-  existing_version=$(sdk current "$candidate" | grep -Po "([0-9\.]+)")
+  if [[ -z "$candidate" ]]; then
+    echo "No candidate specified"
+    return 1
+  fi
+  existing_version=$(sdk current "$candidate" | grep -Po "([0-9\.]+.*)")
   sdk upgrade "$candidate"
-  sdk uninstall "$candidate" "$existing_version"
+  if [[ -n "$existing_version" ]]; then
+    sdk uninstall "$candidate" "$existing_version"
+  fi
   __sdkman_interactive_mode "$sdkman_mode"
 }
 
@@ -88,10 +117,14 @@ sdk_install_java() {
   upgrade)
     shift
     __sdkman_upgrade "$@"
-    sdk current
+    ;;
+  rebase | reset)
+    shift
+    __sdkman_reset "$@"
     ;;
   *)
     __sdkman_base
     ;;
   esac
+  sdk current
 }

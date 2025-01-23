@@ -37,6 +37,8 @@ Some things have additional paramters as listed here
 'java'
   install             : install baseline java tools (java/gradle/maven/jbang)
                         For backwards compatibility, this is the default behaviour.
+  reset [candidate]   : reset the version of the candidate to what is configured in the
+                        SDK_CONFIG file.
   upgrade [candidate] : upgrade an sdkman candidate (e.g. gradle) to its latest version
                         and delete the current version.
 
