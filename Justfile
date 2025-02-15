@@ -55,6 +55,7 @@ updatecli type='personal' +args='diff':
 @apt_update:
   sudo apt -y update
   sudo apt -y upgrade
+  sudo apt -y autoremove
 
 [private]
 [no-cd]

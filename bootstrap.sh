@@ -95,9 +95,12 @@ repo_wslutilities() {
 
 install_vscode() {
   if [[ -z "$WSL_DISTRO_NAME" && -n "${XDG_CURRENT_DESKTOP}" ]]; then
-    vscode_deb=$(mktemp --tmpdir vscode.XXXXX.deb)
-    wget -q -O "$vscode_deb" "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
-    sudo apt -y install "$vscode_deb"
+    download_keyrings "https://packages.microsoft.com/keys/microsoft.asc" "packages.microsoft"
+    echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+    sudo apt -y update
+    sudo apt -y install code
+  else
+    append_with_newline JOB_SUMMARY ">>> vscode skipped because WSL_DISTRO_NAME=$WSL_DISTRO_NAME or not XDG_CURRENT_DESKTOP"
   fi
 }
 
@@ -121,7 +124,13 @@ install_docker() {
         append_with_newline JOB_SUMMARY ">>> /etc/wsl.conf modified, you need to restart WSL"
       fi
     fi
+  else
+    append_with_newline JOB_SUMMARY ">>> docker skipped because SKIP_DOCKER=$SKIP_DOCKER or DPM_SKIP_DOCKER=$DPM_SKIP_DOCKER"
   fi
+}
+
+action_desktop() {
+  install_vscode
 }
 
 action_help() {
@@ -132,6 +141,7 @@ New Ubuntu Machine bootstrap; some attention required
 Usage: $(basename "$0") repos | baseline | help
   repos      : First things first
   baseline   : Setup baseline tools required
+  desktop    : It's a full desktop env, not WSL2
   # After this there's 'just xxx'
   help       : Show this help
 
@@ -215,7 +225,7 @@ esac
 ACTION=$1 || true
 ACTION=${ACTION:-"help"}
 case $ACTION in
-repos | baseline | help) ;;
+repos | baseline | desktop | help) ;;
 *)
   ACTION="help"
   ;;
