@@ -129,7 +129,7 @@ difftastic:
   contents: difft
 gitsemver:
   repo: psanetra/git-semver
-  version: v1.1.1
+  version: v1.1.2
   artifact: git-semver_{version}_linux_amd64.tar.gz
   contents: git-semver
 iamlive:
