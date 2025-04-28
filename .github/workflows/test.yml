@@ -30,7 +30,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: configure extras
@@ -81,7 +81,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -102,7 +102,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -122,7 +122,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -143,7 +143,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -164,7 +164,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test bootstrap
@@ -196,7 +196,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -216,7 +216,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -236,7 +236,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -256,7 +256,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
@@ -281,7 +281,7 @@ jobs:
           distribution: "adopt"
           java-version: "21"
       - name: Install Just
-        uses: taiki-e/install-action@09dc018eee06ae1c9e0409786563f534210ceb83 # v2.49.50
+        uses: taiki-e/install-action@ab3728c7ba6948b9b429627f4d55a68842b27f18 # v2.50.3
         with:
           tool: just@${{ env.JUST_VERSION }}
       - name: Test Install
