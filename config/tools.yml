@@ -24,7 +24,7 @@ kubectx:
   contents: kubectx
 k9s:
   repo: derailed/k9s
-  version: v0.50.5
+  version: v0.50.6
   artifact: k9s_Linux_amd64.tar.gz
   contents: k9s
 terraform-docs:
