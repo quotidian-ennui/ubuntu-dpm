@@ -17,19 +17,6 @@
 # Note that 'extract' -> awk -F'/' '{print NF}' for a --strip-components, so it potentially
 # doesn't matter what you put in here, since it just becomes a number, just need the
 # right number of /...
-jsonschema2pojo:
-  repo: joelittlejohn/jsonschema2pojo
-  version:
-    github_tag: jsonschema2pojo-1.2.2
-    strip_prefix: jsonschema2pojo-
-  artifact: "jsonschema2pojo-{version}.zip"
-  extract: "{tag}"
-  runtime:
-    symlinks:
-      - "{root}/bin/jsonschema2pojo"
-  updatecli:
-    kind: regex
-    pattern: 'jsonschema2pojo-[0-9]+\\.[0-9]+\\.[0-9]+$'
 qsv:
   repo: dathere/qsv
   version:
@@ -38,14 +25,16 @@ qsv:
   runtime:
     path_addition:
       - "{root}"
+  updatecli:
+    kind: semver
 parquet-cli-wrapper:
   repo: quotidian-ennui/parquet-cli-wrapper
   version:
     github_tag: 1.15.2
   artifact: "parquet-cli.tar.gz"
   runtime:
-    path_addition:
-      - "{root}"
+    symlinks:
+      - "{root}/parquet"
 tenv:
   repo: tofuutils/tenv
   version:
