@@ -1,4 +1,6 @@
 set positional-arguments := true
+set unstable := true
+set script-interpreter := ['/usr/bin/env', 'bash']
 
 TOOL_CONFIG:=env_var_or_default("DPM_TOOLS_YAML", justfile_directory() / "config/tools.yml")
 REPO_CONFIG:=env_var_or_default("DPM_REPOS_YAML", justfile_directory() / "config/repos.yml")
@@ -17,9 +19,9 @@ alias prepare:=init
   echo "Generally, you'll just use 'just tools' to update the binary tools"
 
 # run updatecli with args e.g. just updatecli diff
+[script]
 updatecli type='personal' +args='diff':
-  #!/usr/bin/env bash
-
+  # comment to avoid syntax-highlight issues
   case "{{ type }}" in
   additions | local | personal)
     UPDATE_TYPE="{{ type }}" UPDATECLI_ARCHIVE_TEMPLATE="{{ LOCAL_UPDATECLI_ARCHIVE }}" UPDATECLI_TEMPLATE="{{ LOCAL_UPDATECLI }}" ARCHIVE_CONFIG="$DPM_ARCHIVES_ADDITIONS_YAML" TOOL_CONFIG="$DPM_TOOLS_ADDITIONS_YAML" "{{ SCRIPTS_DIR }}/updatecli.sh" {{ args }}

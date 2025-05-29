@@ -174,7 +174,7 @@ action_baseline() {
   pipx install gh-release-install
   if ! which just >/dev/null 2>&1; then
     # Oneshot install that we know works for us.
-    "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.25.2-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --version "1.25.2" --extract just
+    "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.40.0-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --version "1.40.0" --extract just
   fi
   install_vscode "$distro_name"
   install_docker "$distro_name"
