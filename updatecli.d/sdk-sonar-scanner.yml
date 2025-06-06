@@ -5,7 +5,7 @@ name: "sonar-scanner"
 actions:
   pull_request:
     scmid: github
-    title: 'chore(deps): Bump opentofu version to {{ source "latest" }}'
+    title: 'chore(deps): Bump sonar-scanner version to {{ source "latest" }}'
     kind: github/pullrequest
     spec:
       labels:
@@ -40,7 +40,7 @@ sources:
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
         kind: regex
-        pattern: ^5\.[0-9]+\.[0-9]+\.[0-9]+$
+        pattern: ^7\.[0-9]+\.[0-9]+\.[0-9]+$
 
 targets:
   update_yaml:
