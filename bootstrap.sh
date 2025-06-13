@@ -87,10 +87,20 @@ repo_ghcli() {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
 }
 
-# wsl utilities
-repo_wslutilities() {
-  download_keyrings https://pkg.wslutiliti.es/public.key "wslutilities"
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/wslutilities.gpg] https://pkg.wslutiliti.es/debian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/wslutilities.list
+# Install WSLU from source, because it is a archived project and no longer any repo entries.
+# https://github.com/wslutilities/wslu/discussions/329
+#
+install_wslu() {
+  local tmpdir
+  local github_src_url="https://github.com/wslutilities/wslu/archive/refs/tags/v4.1.3.tar.gz"
+  tmpdir=$(mktemp -d -t wslu.XXXXXX)
+  pushd "$tmpdir" >/dev/null 2>&1
+  wget -O wslu.tar.gz "$github_src_url"
+  tar -xzf wslu.tar.gz
+  cd wslu-4.1.3
+  make all
+  sudo make install
+  popd >/dev/null
 }
 
 install_vscode() {
@@ -161,9 +171,6 @@ action_repos() {
   if [[ "$distro_name" == "ubuntu" ]]; then
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
-  if [[ -n "$WSL_DISTRO_NAME" && "$distro_name" == "debian" ]]; then
-    repo_wslutilities
-  fi
   sudo apt update
 }
 
@@ -179,7 +186,7 @@ action_baseline() {
   install_vscode "$distro_name"
   install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
-    sudo apt install -y wslu
+    install_wslu
     # Having wslview in debian & ubuntu can cause trouble with binfmt
     # stop systemctl from starting binfmt.
     # c.f. : https://github.com/microsoft/WSL/issues/8843
