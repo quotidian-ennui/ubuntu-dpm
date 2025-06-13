@@ -39,8 +39,9 @@ sources:
       repository: sonar-scanner-cli
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
       versionfilter:
-        kind: regex
-        pattern: ^7\.[0-9]+\.[0-9]+\.[0-9]+$
+        kind: regex/semver
+        regex: "^(\\d*\\.\\d*\\.\\d*).*$"
+        pattern: "*"
 
 targets:
   update_yaml:
