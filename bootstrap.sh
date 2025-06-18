@@ -100,6 +100,8 @@ install_wslu() {
   cd wslu-4.1.3
   make all
   sudo make install
+  sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/wslview 1
+  sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/wslview 1
   popd >/dev/null
 }
 
