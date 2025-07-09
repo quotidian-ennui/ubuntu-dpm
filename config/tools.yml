@@ -189,7 +189,7 @@ xc:
   contents: :xc
 jaq:
   repo: 01mf02/jaq
-  version: v2.2.0
+  version: v2.3.0
   artifact: jaq-x86_64-unknown-linux-gnu
   contents: :jaq
 bkt:
