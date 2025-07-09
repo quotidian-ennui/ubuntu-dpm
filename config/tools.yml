@@ -39,7 +39,7 @@ nova:
   contents: nova
 updatecli:
   repo: updatecli/updatecli
-  version: v0.102.0
+  version: v0.103.1
   artifact: updatecli_Linux_x86_64.tar.gz
   contents: updatecli
 tflint:
