@@ -15,7 +15,7 @@ permissions:
   contents: read
   pull-requests: write
 env:
-  JUST_VERSION: 1.42.0
+  JUST_VERSION: 1.42.2
 jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
