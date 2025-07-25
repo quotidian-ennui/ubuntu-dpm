@@ -9,7 +9,7 @@
 # updatecli.trim_prefix == defaults to ''
 just:
   repo: casey/just
-  version: 1.42.3
+  version: 1.42.4
   artifact: just-{version}-x86_64-unknown-linux-musl.tar.gz
   contents: just
   updatecli:
