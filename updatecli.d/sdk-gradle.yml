@@ -42,7 +42,6 @@ sources:
         kind: semver
     transformers:
       - trimprefix: v
-      - trimsuffix: ".0"
 
 targets:
   update_yaml:
