@@ -163,6 +163,7 @@ EOF
 
 action_repos() {
   local distro_name="$1"
+  echo 'Apt::Cmd::Disable-Script-Warning "true";' | sudo tee /etc/apt/apt.conf.d/99disable-script-warning
   # shellcheck disable=SC2086
   sudo apt install -y $PRE_REQ_TOOLS
   repo_kubectl "$distro_name"
