@@ -63,9 +63,9 @@ repo_trivy() {
     # buster -> bullseye -> bookworm -> trixie
     current_version=$(lsb_release -sr)
     case "$current_version" in
-    12) trivy_fallback="bullseye";;
-    13) trivy_fallback="bookworm";;
-    *)  trivy_fallback="buster";;
+    12) trivy_fallback="bullseye" ;;
+    13) trivy_fallback="bookworm" ;;
+    *) trivy_fallback="buster" ;;
     esac
   fi
   local repo_name="$current_release"
@@ -178,6 +178,7 @@ action_repos() {
   repo_docker "$distro_name"
   repo_trivy "$distro_name"
   if [[ "$distro_name" == "ubuntu" ]]; then
+    sudo apt install -y software-properties-common
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
   sudo apt update
