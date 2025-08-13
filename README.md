@@ -84,6 +84,7 @@ just install archives
 Various environment variables control behaviour.
 
 - `SKIP_DOCKER` | `DPM_SKIP_DOCKER` set to any value if you don't want docker to be installed.
+- `DPM_K8S` - set to any value if you want to enable the kubectl & helm apt repositories.
 - `DPM_TOOLS_YAML` - can be set to your custom tools yaml path.
 - `DPM_TOOLS_ADDITIONS_YAML` - can be set to an additional tools yaml path, will be merged with base tools.yml
 - `DPM_REPO_YAML` - can be set to your custom repo yaml path
