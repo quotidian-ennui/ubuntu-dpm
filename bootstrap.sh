@@ -188,10 +188,6 @@ action_baseline() {
   # shellcheck disable=SC2086
   sudo apt install -y $BASELINE_TOOL_LIST
   pipx install gh-release-install
-  if ! which just >/dev/null 2>&1; then
-    # Oneshot install that we know works for us.
-    "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.40.0-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --version "1.40.0" --extract just
-  fi
   install_vscode "$distro_name"
   install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -212,6 +208,11 @@ action_baseline() {
   if [[ "$distro_name" == "debian" ]]; then
     sudo apt install -y bsdextrautils
   fi
+  # Oneshot install that we know works for us.
+  "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.40.0-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just.bootstrap" --version "1.40.0" --extract just
+  "$HOME/.local/bin/just.bootstrap" init
+  "$HOME/.local/bin/just.bootstrap" tools
+  rm -f "$HOME/.local/bin/just.bootstrap"
 }
 
 distro_name() {
