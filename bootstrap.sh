@@ -5,7 +5,7 @@
 
 set -eo pipefail
 
-PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-properties-common"
+PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget lsb-release make man-db"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip libarchive-tools"
 JOB_SUMMARY=""
