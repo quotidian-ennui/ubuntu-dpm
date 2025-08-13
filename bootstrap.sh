@@ -54,13 +54,19 @@ repo_trivy() {
   download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
   local trivy_fallback=""
   local current_release=""
+  local current_version=""
   current_release=$(lsb_release -sc)
   if [[ "$1" == "ubuntu" ]]; then
     # focal -> jammy -> noble
     trivy_fallback="jammy"
   else
-    # buster -> bullseye -> bookworm
-    trivy_fallback="bullseye"
+    # buster -> bullseye -> bookworm -> trixie
+    current_version=$(lsb_release -sr)
+    case "$current_version" in
+    12) trivy_fallback="bullseye";;
+    13) trivy_fallback="bookworm";;
+    *)  trivy_fallback="buster";;
+    esac
   fi
   local repo_name="$current_release"
   if ! curl -fsSL "https://raw.githubusercontent.com/aquasecurity/trivy-repo/main/deb/dists/$current_release/Release" >/dev/null 2>&1; then
