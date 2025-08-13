@@ -65,7 +65,7 @@ repo_trivy() {
     case "$current_version" in
     12) trivy_fallback="bullseye" ;;
     13) trivy_fallback="bookworm" ;;
-    *) trivy_fallback="buster" ;;
+    *) trivy_fallback="bookworm" ;;
     esac
   fi
   local repo_name="$current_release"
