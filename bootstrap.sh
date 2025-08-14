@@ -5,7 +5,7 @@
 
 set -eo pipefail
 
-PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget software-properties-common"
+PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget lsb-release make man-db"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip libarchive-tools"
 JOB_SUMMARY=""
@@ -54,13 +54,19 @@ repo_trivy() {
   download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
   local trivy_fallback=""
   local current_release=""
+  local current_version=""
   current_release=$(lsb_release -sc)
   if [[ "$1" == "ubuntu" ]]; then
     # focal -> jammy -> noble
     trivy_fallback="jammy"
   else
-    # buster -> bullseye -> bookworm
-    trivy_fallback="bullseye"
+    # buster -> bullseye -> bookworm -> trixie
+    current_version=$(lsb_release -sr)
+    case "$current_version" in
+    12) trivy_fallback="bullseye" ;;
+    13) trivy_fallback="bookworm" ;;
+    *) trivy_fallback="bookworm" ;;
+    esac
   fi
   local repo_name="$current_release"
   if ! curl -fsSL "https://raw.githubusercontent.com/aquasecurity/trivy-repo/main/deb/dists/$current_release/Release" >/dev/null 2>&1; then
@@ -172,6 +178,7 @@ action_repos() {
   repo_docker "$distro_name"
   repo_trivy "$distro_name"
   if [[ "$distro_name" == "ubuntu" ]]; then
+    sudo apt install -y software-properties-common
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
   sudo apt update
@@ -182,10 +189,6 @@ action_baseline() {
   # shellcheck disable=SC2086
   sudo apt install -y $BASELINE_TOOL_LIST
   pipx install gh-release-install
-  if ! which just >/dev/null 2>&1; then
-    # Oneshot install that we know works for us.
-    "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.40.0-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just" --version "1.40.0" --extract just
-  fi
   install_vscode "$distro_name"
   install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -206,6 +209,11 @@ action_baseline() {
   if [[ "$distro_name" == "debian" ]]; then
     sudo apt install -y bsdextrautils
   fi
+  # Oneshot install that we know works for us.
+  "$HOME/.local/bin/gh-release-install" "casey/just" "just-1.40.0-x86_64-unknown-linux-musl.tar.gz" "$HOME/.local/bin/just.bootstrap" --version "1.40.0" --extract just
+  "$HOME/.local/bin/just.bootstrap" init
+  "$HOME/.local/bin/just.bootstrap" tools
+  rm -f "$HOME/.local/bin/just.bootstrap"
 }
 
 distro_name() {
