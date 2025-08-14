@@ -7,7 +7,7 @@ set -eo pipefail
 
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget lsb-release make man-db"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy kubectl helm gh jq pipx trivy net-tools zip unzip libarchive-tools"
+BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy gh pipx trivy net-tools zip unzip libarchive-tools"
 JOB_SUMMARY=""
 
 # shellcheck disable=SC2089
@@ -77,14 +77,18 @@ repo_trivy() {
 
 # kubectl
 repo_kubectl() {
-  download_keyrings https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key "kubernetes"
-  echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  if [[ -n "$DPM_K8S" ]]; then
+    download_keyrings https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key "kubernetes"
+    echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  fi
 }
 
 # helm
 repo_helm() {
-  download_keyrings https://baltocdn.com/helm/signing.asc "helm"
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+  if [[ -n "$DPM_K8S" ]]; then
+    download_keyrings https://baltocdn.com/helm/signing.asc "helm"
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+  fi
 }
 
 # gh cli
@@ -154,7 +158,7 @@ action_desktop() {
 action_help() {
   cat <<EOF
 
-New Ubuntu Machine bootstrap; some attention required
+New APT based machine bootstrap; some attention required
 
 Usage: $(basename "$0") repos | baseline | help
   repos      : First things first
@@ -163,6 +167,27 @@ Usage: $(basename "$0") repos | baseline | help
   # After this there's 'just xxx'
   help       : Show this help
 
+env-var control
+  WSL_DISTRO_NAME               : [$WSL_DISTRO_NAME]
+  XDG_CURRENT_DESKTOP           : [$XDG_CURRENT_DESKTOP]
+  DPM_K8S                       : (install kubectl/helm) [$DPM_K8S]
+  DPM_SKIP_DOCKER               : (skip docker) [$DPM_SKIP_DOCKER]
+  DPM_TOOLS_YAML                : (tools yaml override) [$DPM_TOOLS_YAML]
+  DPM_TOOLS_ADDITIONS_YAML      : (additional tools) [$DPM_TOOLS_ADDITIONS_YAML]
+  DPM_REPO_YAML                 : (repo yaml override) [$DPM_REPO_YAML]
+  DPM_REPO_ADDITIONS_YAML       : (additional repos) [$DPM_REPO_ADDITIONS_YAML]
+  DPM_ARCHIVES_YAML             : (archives yaml override) [$DPM_ARCHIVES_YAML]
+  DPM_ARCHIVES_ADDITIONS_YAML   : (additional archives) [$DPM_ARCHIVES_ADDITIONS_YAML]
+  DPM_SDK_YAML                  : (sdk yaml override) [$DPM_SDK_YAML]
+  DPM_SKIP_FZF_PROFILE          : (skip fzf profile updates) [$DPM_SKIP_FZF_PROFILE]
+  DPM_SKIP_GO_PROFILE           : (skip go profile updates) [$DPM_SKIP_GO_PROFILE]
+  DPM_SKIP_JAVA_PROFILE         : (skip java/sdkman profile updates) [$DPM_SKIP_JAVA_PROFILE]
+  DPM_SKIP_NVM_PROFILE          : (skip nvm profile updates) [$DPM_SKIP_NVM_PROFILE]
+  DPM_SKIP_RVM_PROFILE          : (skip rvm profile updates) [$DPM_SKIP_RVM_PROFILE]
+  DPM_SKIP_RUST_PROFILE         : (skip rust profile updates) [$DPM_SKIP_RUST_PROFILE]
+  DPM_SKIP_PYENV_PROFILE        : (skip pyenv profile updates) [$DPM_SKIP_PYENV_PROFILE]
+  DPM_SKIP_ARCHIVES_PROFILE     : (skip profile updates from archives) [$DPM_SKIP_ARCHIVES_PROFILE]
+  DPM_BASH_PROFILE_FILE         : (override bash profile) [$DPM_BASH_PROFILE_FILE]
 EOF
   exit 1
 }
@@ -188,6 +213,9 @@ action_baseline() {
   local distro_name="$1"
   # shellcheck disable=SC2086
   sudo apt install -y $BASELINE_TOOL_LIST
+  if [[ -n "$DPM_K8S" ]]; then
+    sudo apt install -y kubectl helm
+  fi
   pipx install gh-release-install
   install_vscode "$distro_name"
   install_docker "$distro_name"
