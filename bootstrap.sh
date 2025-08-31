@@ -203,7 +203,7 @@ action_repos() {
   repo_docker "$distro_name"
   repo_trivy "$distro_name"
   if [[ "$distro_name" == "ubuntu" ]]; then
-    sudo apt install -y software-properties-common
+    sudo apt install -y software-properties-common language-pack-en
     sudo add-apt-repository -y ppa:git-core/ppa
   fi
   sudo apt update
