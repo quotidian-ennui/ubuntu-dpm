@@ -44,7 +44,7 @@ install_tools() {
         echo "[+] $binary@$version from $repo (attempt install)"
         # since extract_cmdline needs to be expanded.
         # shellcheck disable=SC2086
-        gh-release-install "$repo" "$artifact" "$LOCAL_BIN/$binary" --version "$version" $extract_cmdline
+        gh_release_install "$repo" "$artifact" "$LOCAL_BIN/$binary" --version "$version" $extract_cmdline
         # shellcheck disable=SC2004
         installed[$binary]="$version"
       else

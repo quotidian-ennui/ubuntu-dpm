@@ -26,9 +26,17 @@ _init_dirs() {
 
 yq_wrapper() {
   if ! which yq >/dev/null 2>&1; then
-    gh-release-install "mikefarah/yq" "yq_linux_amd64" "$LOCAL_BIN/yq" --version v4.43.1
+    gh_release_install "mikefarah/yq" "yq_linux_amd64" "$LOCAL_BIN/yq" --version v4.43.1
     "$LOCAL_BIN/yq" "$@"
   else
     yq "$@"
+  fi
+}
+
+gh_release_install() {
+  if ! which yq >/dev/null 2>&1; then
+    "$LOCAL_BIN/gh-release-install" "$@"
+  else
+    gh-release-install "$@"
   fi
 }
