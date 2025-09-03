@@ -86,8 +86,8 @@ repo_kubectl() {
 # helm
 repo_helm() {
   if [[ -n "$DPM_K8S" ]]; then
-    download_keyrings https://baltocdn.com/helm/signing.asc "helm"
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+    download_keyrings https://packages.buildkite.com/helm-linux/helm-debian/gpgkey "helm"
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
   fi
 }
 
