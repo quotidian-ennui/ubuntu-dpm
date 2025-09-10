@@ -109,7 +109,7 @@ actionlint:
   contents: actionlint
 mikefarah-yq:
   repo: mikefarah/yq
-  version: v4.47.1
+  version: v4.47.2
   artifact: yq_linux_amd64
   contents: :yq
 mutagen:
