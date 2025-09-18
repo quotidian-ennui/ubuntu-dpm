@@ -49,9 +49,13 @@ tflint:
   contents: tflint
 gopass:
   repo: gopasspw/gopass
-  version: v1.15.17
+  version: v1.15.16
   artifact: gopass-{version}-linux-amd64.tar.gz
   contents: gopass
+  updatecli:
+    yamlpath: $.gopass.version
+    kind: semver
+    pattern: "v1.15.16"
 tfsummarize:
   repo: dineshba/tf-summarize
   version: v0.3.14
