@@ -183,7 +183,7 @@ dive:
   contents: dive
 lnav:
   repo: tstack/lnav
-  version: v0.13.1
+  version: v0.13.2
   artifact: lnav-{version}-linux-musl-x86_64.zip
   contents: lnav-{version}/lnav:lnav
 xc:
