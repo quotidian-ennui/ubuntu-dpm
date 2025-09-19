@@ -123,7 +123,7 @@ mutagen:
   contents: mutagen
 lazygit:
   repo: jesseduffield/lazygit
-  version: v0.55.0
+  version: v0.55.1
   artifact: lazygit_{version}_Linux_x86_64.tar.gz
   contents: lazygit
 difftastic:
