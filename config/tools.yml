@@ -55,7 +55,6 @@ gopass:
   updatecli:
     yamlpath: $.gopass.version
     kind: semver
-    pattern: "v1.15.16"
 tfsummarize:
   repo: dineshba/tf-summarize
   version: v0.3.14
