@@ -20,7 +20,7 @@
 qsv:
   repo: dathere/qsv
   version:
-    github_tag: 8.1.0
+    github_tag: 8.1.1
   artifact: "qsv-{version}-x86_64-unknown-linux-musl.zip"
   runtime:
     path_addition:
