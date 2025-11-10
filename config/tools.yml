@@ -137,7 +137,7 @@ gitsemver:
   contents: git-semver
 iamlive:
   repo: iann0036/iamlive
-  version: v1.1.26
+  version: v1.1.27
   artifact: iamlive-{tag}-linux-amd64.tar.gz
   contents: iamlive
 gitleaks:
