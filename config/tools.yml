@@ -142,7 +142,7 @@ iamlive:
   contents: iamlive
 gitleaks:
   repo: gitleaks/gitleaks
-  version: v8.29.1
+  version: v8.30.0
   artifact: gitleaks_{version}_linux_x64.tar.gz
   contents: gitleaks
 jf:
