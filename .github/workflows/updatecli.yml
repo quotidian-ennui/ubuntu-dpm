@@ -8,7 +8,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 env:
-  UPDATECLI_VERSION: v0.110.3
+  UPDATECLI_VERSION: v0.111.0
   UPDATECLI_GITHUB_USER: qe-repo-updater[bot]
   UPDATECLI_GITHUB_EMAIL: 152897211+qe-repo-updater[bot]@users.noreply.github.com
 jobs:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
-          persist-credentials: false              
+          persist-credentials: false
       - name: "Setup updatecli"
         uses: updatecli/updatecli-action@5ca36367fadc6ad94d590984fd9c696e783ec635 # v2.96.0
         with:
