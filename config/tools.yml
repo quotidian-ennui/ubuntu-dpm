@@ -162,7 +162,7 @@ fd:
   contents: fd-{tag}-x86_64-unknown-linux-gnu/fd:fd
 bat:
   repo: sharkdp/bat
-  version: v0.26.0
+  version: v0.26.1
   artifact: bat-{tag}-x86_64-unknown-linux-gnu.tar.gz
   contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
 snyk:
