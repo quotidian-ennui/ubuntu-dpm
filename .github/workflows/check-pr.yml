@@ -1,0 +1,25 @@
+name: Check PR
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+jobs:
+  # Check the PR title conforms to 'conventional'
+  pr-title:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          regexp="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|deps)(\(.+\))?(!)?: ?.+"
+          if [[ ! $PR_TITLE =~ $regexp ]]; then
+            echo "PR Title is not 'conventional' matching $regexp" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
