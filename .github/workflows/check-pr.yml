@@ -18,7 +18,7 @@ jobs:
       - env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          regexp="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|deps)(\(.+\))?(!)?: ?.+"
+          regexp="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|deps)(\(.+\))?(!)?: "
           if [[ ! $PR_TITLE =~ $regexp ]]; then
             echo "PR Title is not 'conventional' matching $regexp" >> "$GITHUB_STEP_SUMMARY"
             exit 1
