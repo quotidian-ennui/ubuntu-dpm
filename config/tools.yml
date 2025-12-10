@@ -167,7 +167,7 @@ bat:
   contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
 snyk:
   repo: snyk/cli
-  version: v1.1301.0
+  version: v1.1301.1
   artifact: snyk-linux
   contents: :snyk
 drivel:
