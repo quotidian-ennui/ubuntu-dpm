@@ -202,6 +202,6 @@ bkt:
   contents: bkt
 pinact:
   repo: suzuki-shunsuke/pinact
-  version: v3.5.0
+  version: v3.6.0
   artifact: pinact_linux_amd64.tar.gz
   contents: pinact
