@@ -216,7 +216,7 @@ action_baseline() {
   if [[ -n "$DPM_K8S" ]]; then
     sudo apt install -y kubectl helm
   fi
-  pipx install gh-release-install
+  pipx install gh-release-install pre-commit
   install_vscode "$distro_name"
   install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
