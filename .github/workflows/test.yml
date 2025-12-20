@@ -111,48 +111,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           just sdk nvm
-  test_tfenv_install:
-    runs-on: ubuntu-latest
-    name: install-terraform
-    outputs:
-      result: ${{ steps.install.outcome || 'failure' }}
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          persist-credentials: false
-      - name: Install Just
-        uses: taiki-e/install-action@d850aa816998e5cf15f67a78c7b933f2a5033f8a # v2.63.3
-        with:
-          tool: just@${{ env.JUST_VERSION }}
-      - name: Test Install
-        id: install
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          just sdk tvm terraform
-          "$HOME/.local/bin/terraform" -version
-  test_tofuenv_install:
-    runs-on: ubuntu-latest
-    name: install-opentofu
-    outputs:
-      result: ${{ steps.install.outcome || 'failure' }}
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          persist-credentials: false
-      - name: Install Just
-        uses: taiki-e/install-action@d850aa816998e5cf15f67a78c7b933f2a5033f8a # v2.63.3
-        with:
-          tool: just@${{ env.JUST_VERSION }}
-      - name: Test Install
-        id: install
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          just sdk tvm opentofu
-          "$HOME/.local/bin/tofu" -version
   test_tenv_install:
     runs-on: ubuntu-latest
     name: install-tenv
@@ -302,8 +260,6 @@ jobs:
       - test_tool_install
       - test_rust_install
       - test_nvm_install
-      - test_tfenv_install
-      - test_tofuenv_install
       - test_tenv_install
       - test_rvm_install
       - test_sdkman_install
@@ -334,8 +290,6 @@ jobs:
           if all_tests_pass \
             "${{ needs.test_rust_install.outputs.result || 'failure'}}" \
             "${{ needs.test_nvm_install.outputs.result || 'failure'}}" \
-            "${{ needs.test_tfenv_install.outputs.result || 'failure'}}" \
-            "${{ needs.test_tofuenv_install.outputs.result || 'failure'}}" \
             "${{ needs.test_rvm_install.outputs.result || 'failure'}}" \
             "${{ needs.test_sdkman_install.outputs.result || 'failure'}}" \
             "${{ needs.test_goenv_install.outputs.result || 'failure'}}" \
@@ -361,8 +315,6 @@ jobs:
       - test_tool_install
       - test_rust_install
       - test_nvm_install
-      - test_tfenv_install
-      - test_tofuenv_install
       - test_tenv_install
       - test_rvm_install
       - test_sdkman_install
