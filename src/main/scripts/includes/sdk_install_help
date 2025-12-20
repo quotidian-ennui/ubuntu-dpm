@@ -14,7 +14,8 @@ Usage: just sdk [$ACTION_LIST] [params]
   rvm            Install RVM +ruby
   pyenv          Install PYENV + python (because pandas)
   sonar-scanner  Install sonar-scanner cli
-  tvm            Install one of the terraform env managers
+  tenv           Install hashicorp/terraform and opentofu via tenv
+                 (tvm is supported for some backwards compatibility)
 
 Some things have additional paramters as listed here
 'aws'
@@ -28,12 +29,6 @@ Some things have additional paramters as listed here
   install|latest      : Install pyenv itself and a python
   prepare             : Install the sane dev environment as recommended by pyenv
   update              : Update the git repo that provides it
-'tvm'
-  terraform|tf        : install hashicorp/terraform via tfenv
-  opentofu|tofu       : Install opentofu via tofuenv
-  tenv                : install hashicorp/terraform and opentofu via tenv
-                        Since tenv also supports atmos and terragrunt this is
-                        probably preferred.
 'java'
   install             : install baseline java tools (java/gradle/maven/jbang)
                         For backwards compatibility, this is the default behaviour.

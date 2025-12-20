@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+#shellcheck disable=SC2002
+__configure_tenv() {
+  local tf_v
+  local tofu_v
+  tf_v=$(cat "$SDK_CONFIG" | yq -r ".terraform.version")
+  tofu_v=$(cat "$SDK_CONFIG" | yq -r ".opentofu.version")
+  tenv terraform install "$tf_v"
+  tenv terraform use "$tf_v"
+  tenv tofu install "$tofu_v"
+  tenv tofu use "$tofu_v"
+}
+
+sdk_install_tenv() {
+  if which tenv >/dev/null; then
+    __configure_tenv
+  else
+    echo -e "\n>>> Install tenv via 'just install archives' first"
+    exit 2
+  fi
+}
