@@ -78,8 +78,8 @@ repo_trivy() {
 # kubectl
 repo_kubectl() {
   if [[ -n "$DPM_K8S" ]]; then
-    download_keyrings https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key "kubernetes"
-    echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    download_keyrings https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key "kubernetes"
+    echo 'deb [signed-by=/usr/share/keyrings/kubernetes.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
   fi
 }
 
