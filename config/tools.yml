@@ -187,7 +187,7 @@ lnav:
   contents: lnav-{version}/lnav:lnav
 xc:
   repo: joerdav/xc
-  version: v0.8.6
+  version: v0.9.0
   artifact: xc_{version}_linux_amd64
   contents: :xc
 jaq:
