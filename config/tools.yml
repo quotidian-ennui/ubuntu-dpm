@@ -102,7 +102,7 @@ git-absorb:
   contents: git-absorb-{version}-x86_64-unknown-linux-musl/git-absorb:git-absorb
 committed:
   repo: crate-ci/committed
-  version: v1.1.9
+  version: v1.1.10
   artifact: committed-{tag}-x86_64-unknown-linux-musl.tar.gz
   contents: ./committed:committed
 actionlint:
