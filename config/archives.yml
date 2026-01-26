@@ -38,7 +38,7 @@ parquet-cli-wrapper:
 tenv:
   repo: tofuutils/tenv
   version:
-    github_tag: v4.9.0
+    github_tag: v4.9.1
     strip_prefix: v
   artifact: "tenv_{tag}_Linux_x86_64.tar.gz"
   extract: ""
