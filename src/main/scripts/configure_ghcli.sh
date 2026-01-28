@@ -8,4 +8,3 @@ gh extension install quotidian-ennui/gh-my || true
 gh extension install quotidian-ennui/gh-rate-limit || true
 gh extension install quotidian-ennui/gh-squash-merge || true
 gh extension install quotidian-ennui/gh-approve-deploy || true
-gh extension install actions/gh-actions-cache || true
