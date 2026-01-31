@@ -1,8 +1,8 @@
 # Notes:
 # contents == path/to/script:symbolic name in ~/.local/bin
 # so bitbucket/./bb-pr is symlinked to ~/.local/bin/bb-pr
+# bitbucket-pr:
+#   repo: quotidian-ennui/bitbucket-pr
+#   contents: :bb-pr
 fzf-git:
   repo: junegunn/fzf-git.sh
-bitbucket-pr:
-  repo: quotidian-ennui/bitbucket-pr
-  contents: :bb-pr
