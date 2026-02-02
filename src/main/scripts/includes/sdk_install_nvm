@@ -17,8 +17,4 @@ sdk_install_nvm() {
   nvm_loc="$(find "$HOME" -maxdepth 3 -type f -name "nvm.sh")"
   source "$nvm_loc"
   nvm install --lts && nvm use --lts
-  if [[ -n "$WSL_DISTRO_NAME" ]]; then
-    npm install -g -y wsl-open
-  fi
-
 }
