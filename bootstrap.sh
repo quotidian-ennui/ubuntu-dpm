@@ -108,8 +108,11 @@ install_wsl_open() {
   wget -O wslopen.zip "$gitlab_src_url"
   unzip wslopen.zip "$wsl_open_script"
   sudo cp "$wsl_open_script" /usr/bin/wsl-open
+  sudo update-alternatives --remove www-browser /usr/bin/wslview
+  sudo update-alternatives --remove x-www-browser /usr/bin/wslview
   sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/wsl-open 1
   sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/wsl-open 1
+  echo "ℹ️ www-browser -> $(sudo update-alternatives --list www-browser)"
   popd >/dev/null
 }
 
