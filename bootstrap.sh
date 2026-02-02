@@ -97,21 +97,19 @@ repo_ghcli() {
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
 }
 
-# Install WSLU from source, because it is a archived project and no longer any repo entries.
-# https://github.com/wslutilities/wslu/discussions/329
-#
-install_wslu() {
+# Install wsl-open as an alternative to wslu, since wslu is an archived project.
+install_wsl_open() {
   local tmpdir
-  local github_src_url="https://github.com/wslutilities/wslu/archive/refs/tags/v4.1.3.tar.gz"
-  tmpdir=$(mktemp -d -t wslu.XXXXXX)
+  local version="v2.2.2"
+  local wsl_open_script=""wsl-open-$version/wsl-open.sh""
+  local gitlab_src_url="https://gitlab.com/4U6U57/wsl-open/-/archive/$version/wsl-open-$version.zip?ref_type=tags"
+  tmpdir=$(mktemp -d -t wslo.XXXXXX)
   pushd "$tmpdir" >/dev/null 2>&1
-  wget -O wslu.tar.gz "$github_src_url"
-  tar -xzf wslu.tar.gz
-  cd wslu-4.1.3
-  make all
-  sudo make install
-  sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/wslview 1
-  sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/wslview 1
+  wget -O wslopen.zip "$gitlab_src_url"
+  unzip wslopen.zip "$wsl_open_script"
+  sudo cp "$wsl_open_script" /usr/bin/wsl-open
+  sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/wsl-open 1
+  sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/wsl-open 1
   popd >/dev/null
 }
 
@@ -220,7 +218,7 @@ action_baseline() {
   install_vscode "$distro_name"
   install_docker "$distro_name"
   if [[ -n "$WSL_DISTRO_NAME" ]]; then
-    install_wslu
+    install_wsl_open
     # Having wslview in debian & ubuntu can cause trouble with binfmt
     # stop systemctl from starting binfmt.
     # c.f. : https://github.com/microsoft/WSL/issues/8843
