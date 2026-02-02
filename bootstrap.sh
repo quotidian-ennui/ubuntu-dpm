@@ -101,19 +101,23 @@ repo_ghcli() {
 install_wsl_open() {
   local tmpdir
   local version="v2.2.2"
-  local wsl_open_script=""wsl-open-$version/wsl-open.sh""
+  local wsl_open_script="wsl-open-$version/wsl-open.sh"
   local gitlab_src_url="https://gitlab.com/4U6U57/wsl-open/-/archive/$version/wsl-open-$version.zip?ref_type=tags"
   tmpdir=$(mktemp -d -t wslo.XXXXXX)
   pushd "$tmpdir" >/dev/null 2>&1
   wget -O wslopen.zip "$gitlab_src_url"
   unzip wslopen.zip "$wsl_open_script"
   sudo cp "$wsl_open_script" /usr/bin/wsl-open
-  sudo update-alternatives --remove www-browser /usr/bin/wslview
-  sudo update-alternatives --remove x-www-browser /usr/bin/wslview
+  sudo chmod +x /usr/bin/wsl-open
+  sudo update-alternatives --remove www-browser /usr/bin/wslview || true
+  sudo update-alternatives --remove x-www-browser /usr/bin/wslview || true
   sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/wsl-open 1
   sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/wsl-open 1
   echo "ℹ️ www-browser -> $(sudo update-alternatives --list www-browser)"
   popd >/dev/null
+  if [[ -d "$tmpdir" ]]; then
+    rm -rf "$tmpdir"
+  fi
 }
 
 install_vscode() {
