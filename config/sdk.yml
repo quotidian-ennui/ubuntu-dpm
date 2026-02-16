@@ -7,7 +7,7 @@ terraform:
 opentofu:
   version: 1.11.5
 sdkman:
-  java: 21.0.9-amzn
+  java: 21.0.10-amzn
   gradle: 9.3.1
   maven: 3.9.12
   jbang: 0.137.0
