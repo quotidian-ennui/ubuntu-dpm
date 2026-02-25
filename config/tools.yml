@@ -62,7 +62,7 @@ gopass:
     kind: semver
 tfsummarize:
   repo: dineshba/tf-summarize
-  version: 0.3.16
+  version: v0.3.19
   artifact: tf-summarize_linux_amd64.tar.gz
   contents: tf-summarize
 starship:
