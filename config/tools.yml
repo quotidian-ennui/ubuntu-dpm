@@ -39,7 +39,7 @@ terraform-docs:
     pattern: "0.19.0"
 nova:
   repo: fairwindsops/nova
-  version: v3.11.10
+  version: v3.11.11
   artifact: nova_{version}_linux_amd64.tar.gz
   contents: nova
 updatecli:
