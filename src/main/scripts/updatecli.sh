@@ -43,7 +43,7 @@ exec_updatecli() {
       hasRepo=$(echo "$line" | jq -r ".value.repo")
       if [[ "$hasRepo" != "null" ]]; then
         echo "$line" | jq --arg cfg "$config_file" "$filter" | yq -P -o yaml >"$values"
-        GITHUB_TOKEN=$GITHUB_TOKEN updatecli "$@" --values "$values" -c "$template"
+        GITHUB_TOKEN=$GITHUB_TOKEN updatecli pipeline "$@" --values "$values" -c "$template"
       fi
     done
   fi
@@ -59,7 +59,7 @@ exec_updatecli "$ARCHIVE_CONFIG" "$tmpdir" "$ARCHIVE_JQ_FILTER" "$UPDATECLI_ARCH
 case "$UPDATE_TYPE" in
 additions | local | personal) ;;
 *)
-  GITHUB_TOKEN=$GITHUB_TOKEN updatecli "$@"
+  GITHUB_TOKEN=$GITHUB_TOKEN updatecli pipeline "$@"
   ;;
 esac
 

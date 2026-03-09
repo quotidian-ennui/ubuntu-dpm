@@ -41,8 +41,7 @@ sources:
       typefilter:
         latest: true
       versionfilter:
-        kind: regex
-        pattern: ^v[0-9]+_[0-9]+_[0-9]+$
+        kind: semver
     transformers:
       - trimprefix: v
       - replacer:
