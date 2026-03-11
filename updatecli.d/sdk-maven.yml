@@ -38,9 +38,12 @@ sources:
       owner: apache
       repository: maven
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
+      typefilter:
       versionfilter:
-        kind: regex
-        pattern: ^maven-[0-9]+\.[0-9]+\.[0-9]+$
+        kind: regex/semver
+        regex: "^maven-([0-9]+\\.[0-9]+\\.[0-9]+).*$"
+        # because 4.0.0-alpha5 is apparently a release and not a prerelease
+        pattern: "~3"
     transformers:
       - trimprefix: maven-
 
