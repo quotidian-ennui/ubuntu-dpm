@@ -99,6 +99,8 @@ repo_ghcli() {
 
 # Install wsl-open as an alternative to wslu, since wslu is an archived project.
 # version 2.2.2 is commit hash 0bffabb6 so we just download wsl-open at that commit
+# https://gitlab.com/4U6U57/wsl-open/-/raw/v2.2.2/wsl-open.sh?ref_type=tags
+# wsl-open on github mirror is only at 2.2.1 : https://raw.githubusercontent.com/4U6U57/wsl-open/refs/tags/v2.2.1/wsl-open.sh
 install_wsl_open() {
   local wsl_open_script_url="https://gitlab.com/4U6U57/wsl-open/-/raw/0bffabb600c4e3fd6fc09c1cbd89db92ed85d70d/wsl-open.sh?inline=false"
   sudo wget -O /usr/bin/wsl-open "$wsl_open_script_url"
