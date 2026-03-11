@@ -162,7 +162,7 @@ fzf:
   contents: fzf
 fd:
   repo: sharkdp/fd
-  version: v10.4.1
+  version: v10.4.2
   artifact: fd-{tag}-x86_64-unknown-linux-gnu.tar.gz
   contents: fd-{tag}-x86_64-unknown-linux-gnu/fd:fd
 bat:
