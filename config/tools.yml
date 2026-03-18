@@ -132,7 +132,7 @@ lazygit:
   contents: lazygit
 difftastic:
   repo: wilfred/difftastic
-  version: 0.67.0
+  version: 0.68.0
   artifact: difft-x86_64-unknown-linux-gnu.tar.gz
   contents: difft
 gitsemver:
