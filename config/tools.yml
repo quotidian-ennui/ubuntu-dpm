@@ -19,7 +19,7 @@ just:
     trim_prefix: v
 kubectx:
   repo: ahmetb/kubectx
-  version: v0.9.5
+  version: v0.10.2
   artifact: kubectx_{tag}_linux_x86_64.tar.gz
   contents: kubectx
 k9s:
