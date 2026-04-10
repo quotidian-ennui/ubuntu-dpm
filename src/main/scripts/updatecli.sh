@@ -12,6 +12,7 @@ TOOL_JQ_FILTER='
       "yamlpath": (if .value.updatecli.yamlpath == null then "$.\(.key).version" else .value.updatecli.yamlpath end),
       "pattern": (if .value.updatecli.pattern == null then "*" else .value.updatecli.pattern end),
       "kind": (if .value.updatecli.kind == null then "semver" else .value.updatecli.kind end),
+      "regex": .value.updatecli.regex,
       "trim_prefix": .value.updatecli.trim_prefix
     }
     | with_entries(if .value == null then empty else . end)
@@ -24,6 +25,7 @@ ARCHIVE_JQ_FILTER='
       "yamlpath": (if .value.updatecli.yamlpath == null then "$.\(.key).version.github_tag" else .value.updatecli.yamlpath end),
       "pattern": (if .value.updatecli.pattern == null then "*" else .value.updatecli.pattern end),
       "kind": (if .value.updatecli.kind == null then "semver" else .value.updatecli.kind end),
+      "regex": .value.updatecli.regex,
       "trim_prefix": .value.version.strip_prefix
     }
     | with_entries(if .value == null then empty else . end)
