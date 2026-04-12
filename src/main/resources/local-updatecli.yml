@@ -11,6 +11,9 @@ sources:
       versionfilter:
         kind: "{{ .kind }}"
         pattern: "{{ .pattern }}"
+        # {{ if .regex }}
+        regex: "{{ .regex }}"
+        # {{ end }}
     # {{ if .trim_prefix }}
     transformers:
       - trimprefix: "{{ .trim_prefix }}"
