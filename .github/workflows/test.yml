@@ -30,9 +30,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: configure extras
         run: |
           sudo apt -y -qq update
@@ -81,9 +82,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -102,9 +104,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -122,9 +125,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test bootstrap
         id: test-bootstrap
         env:
@@ -154,9 +158,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -174,9 +179,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -194,9 +200,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -214,9 +221,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
@@ -239,9 +247,10 @@ jobs:
           distribution: "adopt"
           java-version: "21"
       - name: Install Just
-        uses: taiki-e/install-action@85b24a67ef0c632dfefad70b9d5ce8fddb040754 # v2.75.10
+        uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
-          tool: just@${{ env.JUST_VERSION }}
+          repo: casey/just
+          tag: ${{ env.JUST_VERSION }}
       - name: Test Install
         id: install
         env:
