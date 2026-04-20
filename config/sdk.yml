@@ -1,9 +1,6 @@
 # Should be self evident.
 #
-# terraform probably preserved in aspic now.
 # @see ../updatecli.d/sdk-*.yml
-terraform:
-  version: 1.6.6
 opentofu:
   version: 1.11.6
 sdkman:

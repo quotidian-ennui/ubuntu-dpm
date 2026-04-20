@@ -146,7 +146,6 @@ jobs:
         run: |
           just sdk tvm tenv
           tofu -version
-          terraform -version
   test_rvm_install:
     runs-on: ubuntu-latest
     name: install-rvm
