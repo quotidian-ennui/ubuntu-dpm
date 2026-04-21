@@ -7,7 +7,7 @@ set -eo pipefail
 
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget lsb-release make man-db"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy gh pipx trivy net-tools zip unzip libarchive-tools"
+BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy gh pipx net-tools zip unzip libarchive-tools"
 JOB_SUMMARY=""
 
 # shellcheck disable=SC2089
@@ -51,28 +51,31 @@ repo_docker() {
 # distro-info --supported | sed -n "/$(lsb_release -sc)/q;p" | tac
 # and iterate.
 repo_trivy() {
-  download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
   local trivy_fallback=""
   local current_release=""
   local current_version=""
-  current_release=$(lsb_release -sc)
-  if [[ "$1" == "ubuntu" ]]; then
-    # focal -> jammy -> noble
-    trivy_fallback="jammy"
-  else
-    # buster -> bullseye -> bookworm -> trixie
-    current_version=$(lsb_release -sr)
-    case "$current_version" in
-    12) trivy_fallback="bullseye" ;;
-    13) trivy_fallback="bookworm" ;;
-    *) trivy_fallback="bookworm" ;;
-    esac
+
+  if [[ -n "$DPM_TRIVY" ]]; then
+    download_keyrings "https://aquasecurity.github.io/trivy-repo/deb/public.key" "trivy"
+    current_release=$(lsb_release -sc)
+    if [[ "$1" == "ubuntu" ]]; then
+      # focal -> jammy -> noble
+      trivy_fallback="jammy"
+    else
+      # buster -> bullseye -> bookworm -> trixie
+      current_version=$(lsb_release -sr)
+      case "$current_version" in
+      12) trivy_fallback="bullseye" ;;
+      13) trivy_fallback="bookworm" ;;
+      *) trivy_fallback="bookworm" ;;
+      esac
+    fi
+    local repo_name="$current_release"
+    if ! curl -fsSL "https://raw.githubusercontent.com/aquasecurity/trivy-repo/main/deb/dists/$current_release/Release" >/dev/null 2>&1; then
+      repo_name="$trivy_fallback"
+    fi
+    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $repo_name main" | sudo tee /etc/apt/sources.list.d/trivy.list
   fi
-  local repo_name="$current_release"
-  if ! curl -fsSL "https://raw.githubusercontent.com/aquasecurity/trivy-repo/main/deb/dists/$current_release/Release" >/dev/null 2>&1; then
-    repo_name="$trivy_fallback"
-  fi
-  echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $repo_name main" | sudo tee /etc/apt/sources.list.d/trivy.list
 }
 
 # kubectl
@@ -167,6 +170,7 @@ Usage: $(basename "$0") repos | baseline | help
 env-var control
   WSL_DISTRO_NAME               : [$WSL_DISTRO_NAME]
   XDG_CURRENT_DESKTOP           : [$XDG_CURRENT_DESKTOP]
+  DPM_TRIVY                     : (install trivy) [$DPM_TRIVY]
   DPM_K8S                       : (install kubectl/helm) [$DPM_K8S]
   DPM_SKIP_DOCKER               : (skip docker) [$DPM_SKIP_DOCKER]
   DPM_TOOLS_YAML                : (tools yaml override) [$DPM_TOOLS_YAML]
@@ -212,6 +216,9 @@ action_baseline() {
   sudo apt install -y $BASELINE_TOOL_LIST
   if [[ -n "$DPM_K8S" ]]; then
     sudo apt install -y kubectl helm
+  fi
+  if [[ -n "$DPM_TRIVY" ]]; then
+    sudo apt install -y trivy
   fi
   pipx install gh-release-install pre-commit
   install_vscode "$distro_name"
