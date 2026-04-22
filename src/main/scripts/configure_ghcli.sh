@@ -9,3 +9,4 @@ gh extension install quotidian-ennui/gh-rate-limit || true
 gh extension install quotidian-ennui/gh-squash-merge || true
 gh extension install quotidian-ennui/gh-approve-deploy || true
 gh extension install quotidian-ennui/gh-merge-train || true
+gh config set telemetry disabled
