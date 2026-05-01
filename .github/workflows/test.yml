@@ -20,6 +20,7 @@ jobs:
   # Basically run 'just tools' to install all the tools
   # and make sure we have "[+]" for as many entries in tools.yml
   test_tool_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-tools
     outputs:
@@ -72,6 +73,7 @@ jobs:
             exit 1
           fi
   test_rust_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-rust
     outputs:
@@ -94,6 +96,7 @@ jobs:
           just sdk rust
           cargo binstall -V
   test_nvm_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-nvm
     outputs:
@@ -115,6 +118,7 @@ jobs:
         run: |
           just sdk nvm
   test_tenv_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-tenv
     outputs:
@@ -147,6 +151,7 @@ jobs:
           just sdk tvm tenv
           tofu -version
   test_rvm_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-rvm
     outputs:
@@ -168,6 +173,7 @@ jobs:
         run: |
           just sdk rvm
   test_sdkman_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-sdkman
     outputs:
@@ -189,6 +195,7 @@ jobs:
         run: |
           just sdk java
   test_goenv_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-goenv
     outputs:
@@ -210,6 +217,7 @@ jobs:
         run: |
           just sdk goenv install
   test_pyenv_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-pyenv
     outputs:
@@ -231,6 +239,7 @@ jobs:
         run: |
           just sdk pyenv install
   test_sonar_scanner_install:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     name: install-sonar-scanner
     outputs:
@@ -261,6 +270,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           sonar-scanner --version
   test_status:
+    timeout-minutes: 2
     name: Assert Tests Passed
     runs-on: ubuntu-latest
     if: always()
@@ -313,6 +323,7 @@ jobs:
             echo ":thumbsdown:" >> "$GITHUB_STEP_SUMMARY"
           fi
   tests_complete:
+    timeout-minutes: 1
     name: Testing completed
     runs-on: ubuntu-latest
     permissions:

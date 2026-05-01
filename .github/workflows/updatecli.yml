@@ -13,6 +13,7 @@ env:
   UPDATECLI_GITHUB_EMAIL: 152897211+qe-repo-updater[bot]@users.noreply.github.com
 jobs:
   updatecli:
+    timeout-minutes: 30
     name: Run updatecli
     runs-on: ubuntu-latest
     permissions:
