@@ -82,7 +82,7 @@ shfmt:
   contents: :shfmt
 hcledit:
   repo: minamijoyo/hcledit
-  version: v0.2.17
+  version: v0.2.18
   artifact: hcledit_{version}_linux_amd64.tar.gz
   contents: hcledit
 tfupdate:
