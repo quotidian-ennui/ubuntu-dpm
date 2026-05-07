@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
       - name: Dependabot Merge
         id: dependabot_merge
-        uses: quotidian-ennui/actions-olio/dependabot-merge@7ee535611789442d6fa202dc02a19c81bf2c4458 # v0.10.4
+        uses: quotidian-ennui/actions-olio/dependabot-merge@370d322048e3996c58a5ec88e9e2461919092c40 # v1.0.0
         with:
           token: ${{ steps.app-token.outputs.token }}
           change_filter: ".github/workflows/**"
