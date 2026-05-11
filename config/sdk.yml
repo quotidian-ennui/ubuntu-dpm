@@ -17,6 +17,6 @@ golang:
 sonar-scanner:
   version: 8.1.0.6389
 python:
-  version: 3.14.4
+  version: 3.14.5
 amazon-ecr-credential-helper:
   version: 0.12.0
