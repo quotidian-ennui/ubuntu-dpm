@@ -152,7 +152,7 @@ gitleaks:
   contents: gitleaks
 jf:
   repo: sayanarijit/jf
-  version: v0.6.2
+  version: v1.0.0
   artifact: jf-x86_64-unknown-linux-gnu.tar.gz
   contents: jf
 fzf:
