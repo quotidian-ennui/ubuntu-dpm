@@ -9,29 +9,9 @@ permissions: {}
 
 jobs:
   actions_merge:
-    runs-on: ubuntu-latest
-    name: Dependabot Merge (action changes)
-    steps:
-      - name: "Create Token"
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: app-token
-        with:
-          client-id: ${{ vars.WORKFLOW_UPDATE_CLIENT_ID }}
-          private-key: ${{ secrets.WORKFLOW_UPDATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: "${{ github.event.repository.name}}"
-          permission-contents: write
-          permission-pull-requests: write
-          permission-workflows: write
-      - name: Checkout branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          ref: ${{ github.event.client_payload.base.ref }}
-          persist-credentials: false
-      - name: Dependabot Merge
-        id: dependabot_merge
-        uses: quotidian-ennui/actions-olio/dependabot-merge@7b36405b1649367c77cb0b041ef8a1f8ad227254 # v1.2.0
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          change_filter: ".github/workflows/**"
+    if: github.event.client_payload.base.actor == 'dependabot[bot]'
+    uses: quotidian-ennui/workflows-olio/.github/workflows/action-dependabot-merge.yml@ba459193955c8bc8339e4fa8e3a135530b6917ff # v2.2.0
+    with:
+      client_id: ${{ vars.WORKFLOW_UPDATE_CLIENT_ID }}
+    secrets:
+      app_private_key: ${{ secrets.WORKFLOW_UPDATE_KEY }}
