@@ -8,18 +8,11 @@ on:
 permissions: {}
 
 jobs:
-  # Check the PR title conforms to 'conventional'
-  pr-title:
-    runs-on: ubuntu-latest
+  check-pr:
+    uses: quotidian-ennui/workflows-olio/.github/workflows/check-pr-with-trigger.yml@ba459193955c8bc8339e4fa8e3a135530b6917ff # v2.2.0
+    with:
+      dispatch_enabled: false
     permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          regexp="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|deps)(\(.+\))?(!)?: "
-          if [[ ! $PR_TITLE =~ $regexp ]]; then
-            echo "PR Title is not 'conventional' matching $regexp" >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+      contents: write
+      pull-requests: write
+      checks: write
