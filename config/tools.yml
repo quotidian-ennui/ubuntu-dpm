@@ -172,7 +172,7 @@ bat:
   contents: bat-{tag}-x86_64-unknown-linux-gnu/bat:bat
 snyk:
   repo: snyk/cli
-  version: v1.1305.0
+  version: v1.1305.1
   artifact: snyk-linux
   contents: :snyk
 dive:
