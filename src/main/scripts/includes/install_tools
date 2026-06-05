@@ -9,6 +9,14 @@
 # and then do the wsl --shutdown restart dance.
 set -eo pipefail
 
+__post_install_step() {
+  local cmd="$1"
+  local file="$2"
+  pushd "$LOCAL_BIN" >/dev/null
+  eval "$cmd $file"
+  popd >/dev/null
+}
+
 install_tools() {
   local files=("$TOOL_CONFIG")
   local tools
@@ -24,13 +32,14 @@ install_tools() {
     files+=("$DPM_TOOLS_ADDITIONS_YAML")
   fi
   # shellcheck disable=SC2016
-  tools=$(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
+  mapfile -t tools < <(yq_wrapper -p yaml -o json eval-all '. as $item ireduce ({}; . *+ $item)' "${files[@]}" | jq -c ".[]")
 
-  for line in $tools; do
-    repo=$(echo "$line" | jq -r ".repo")
-    version=$(echo "$line" | jq -r ".version")
-    artifact=$(echo "$line" | jq -r ".artifact")
-    contents_line=$(echo "$line" | jq -r ".contents")
+  for line in "${tools[@]}"; do
+    repo=$(echo "$line" | jq -r '.repo')
+    version=$(echo "$line" | jq -r '.version')
+    artifact=$(echo "$line" | jq -r '.artifact')
+    contents_line=$(echo "$line" | jq -r '.contents')
+    post_install=$(echo "$line" | jq -r 'select(.post_install != null) | .post_install')
     extract=$(echo "$contents_line" | cut -f1 -d':')
     binary=$(echo "$contents_line" | cut -f2 -d':')
     binary=${binary:-$extract}
@@ -45,6 +54,9 @@ install_tools() {
         # since extract_cmdline needs to be expanded.
         # shellcheck disable=SC2086
         gh_release_install "$repo" "$artifact" "$LOCAL_BIN/$binary" --version "$version" $extract_cmdline
+        if [[ "$post_install" != "" ]]; then
+          __post_install_step "$post_install" "$binary"
+        fi
         # shellcheck disable=SC2004
         installed[$binary]="$version"
       else
