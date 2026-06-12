@@ -10,7 +10,7 @@ permissions: {}
 jobs:
   actions_merge:
     if: github.event.client_payload.base.actor == 'dependabot[bot]'
-    uses: quotidian-ennui/workflows-olio/.github/workflows/action-dependabot-merge.yml@ba459193955c8bc8339e4fa8e3a135530b6917ff # v2.2.0
+    uses: quotidian-ennui/workflows-olio/.github/workflows/action-dependabot-merge.yml@fbf6d0730e3cd74f770b6a6d1e9a105c1a681d83 # v2.2.2
     with:
       client_id: ${{ vars.WORKFLOW_UPDATE_CLIENT_ID }}
     secrets:
