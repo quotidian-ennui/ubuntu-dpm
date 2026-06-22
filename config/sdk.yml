@@ -7,7 +7,7 @@ sdkman:
   java: 21.0.11-amzn
   gradle: 9.5.1
   maven: 3.9.16
-  jbang: 0.138.0
+  jbang: 0.139.3
 rvm:
   ruby: 3.4.9
 nvm:
