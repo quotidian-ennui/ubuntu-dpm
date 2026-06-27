@@ -342,6 +342,6 @@ jobs:
       - test_sonar_scanner_install
     steps:
       - name: test_complete
-        uses: quotidian-ennui/actions-olio/pr-trigger@20d61b495f9f57f9103dd8f052d5808370d5ce8b # v1.2.3
+        uses: quotidian-ennui/actions-olio/pr-trigger@528d118cf867515584403396edee8a564a23bc00 # v1.3.0
         with:
           event_type: test-complete-trigger
