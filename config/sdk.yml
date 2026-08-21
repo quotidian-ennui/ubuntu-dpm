@@ -2,7 +2,7 @@
 #
 # @see ../updatecli.d/sdk-*.yml
 opentofu:
-  version: 1.12.5
+  version: 1.12.6
 sdkman:
   java: 21.0.12-amzn
   gradle: 9.7.1
@@ -11,7 +11,7 @@ sdkman:
 rvm:
   ruby: 3.4.10
 nvm:
-  version: v0.40.6
+  version: v0.40.7
 golang:
   version: 1.26.5
 sonar-scanner:
