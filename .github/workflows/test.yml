@@ -252,8 +252,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: "21"
+          check-latest: false
       - name: Install Just
         uses: jaxxstorm/action-install-gh-release@25e24d2d23ae098373794ef1d6faecb48ee52da8 # v3.0.0
         with:
