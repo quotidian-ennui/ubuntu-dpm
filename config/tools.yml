@@ -54,7 +54,7 @@ tflint:
   contents: tflint
 gopass:
   repo: gopasspw/gopass
-  version: v1.16.1
+  version: v1.17.0
   artifact: gopass-{version}-linux-amd64.tar.gz
   contents: gopass
   updatecli:
