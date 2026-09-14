@@ -1,5 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: "nvm"
+version: 0.121.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -35,6 +36,8 @@ sources:
     name: Github release for nvm
     kind: githubrelease
     spec:
+      age:
+        minimum: 4d
       owner: nvm-sh
       repository: nvm
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

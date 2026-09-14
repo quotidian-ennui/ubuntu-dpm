@@ -1,6 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: "java/corretto"
-version: 0.92.0
+version: 0.121.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -36,6 +36,8 @@ sources:
     name: Github release for java/corretto
     kind: githubrelease
     spec:
+      age:
+        minimum: 4d
       owner: corretto
       repository: corretto-21
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

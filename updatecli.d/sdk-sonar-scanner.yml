@@ -1,5 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: "sonar-scanner"
+version: 0.121.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -35,6 +36,8 @@ sources:
     name: Github release for sonar-scanner
     kind: githubrelease
     spec:
+      age:
+        minimum: 4d
       owner: SonarSource
       repository: sonar-scanner-cli
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

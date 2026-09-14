@@ -1,5 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
 name: "jbang"
+version: 0.121.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -35,6 +36,8 @@ sources:
     name: Github release for jbang
     kind: githubrelease
     spec:
+      age:
+        minimum: 4d
       owner: jbangdev
       repository: jbang
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

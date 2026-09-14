@@ -1,5 +1,6 @@
 # {{ $scmEnabled := and (env "GITHUB_REPOSITORY_OWNER") (env "GITHUB_REPOSITORY_NAME") }}
-name: 'just'
+name: "just"
+version: 0.121.0
 
 # {{ if $scmEnabled }}
 actions:
@@ -36,6 +37,8 @@ sources:
     name: Github release for just
     kind: githubrelease
     spec:
+      age:
+        minimum: 4d
       owner: casey
       repository: just
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
