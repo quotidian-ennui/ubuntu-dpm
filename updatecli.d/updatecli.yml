@@ -38,7 +38,7 @@ sources:
     kind: githubrelease
     spec:
       age:
-        minimum: 4d
+        minimum: 2d
       owner: updatecli
       repository: updatecli
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

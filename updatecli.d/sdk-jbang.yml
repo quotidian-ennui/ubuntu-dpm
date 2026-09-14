@@ -37,7 +37,7 @@ sources:
     kind: githubrelease
     spec:
       age:
-        minimum: 4d
+        minimum: 2d
       owner: jbangdev
       repository: jbang
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'

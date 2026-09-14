@@ -37,7 +37,7 @@ sources:
     kind: githubrelease
     spec:
       age:
-        minimum: 4d
+        minimum: 2d
       owner: golang
       repository: go
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
