@@ -35,6 +35,25 @@ _archives_create_symlink() {
   fi
 }
 
+_ensure_executable_bit() {
+  local dir="$1"
+  local filetype
+  local filenames=()
+
+  pushd "$dir" >/dev/null
+  mapfile -t filenames < <(ls -1)
+  for file in "${filenames[@]}"; do
+    filetype=$(file -b --mime-type "$file")
+    case "$filetype" in
+    application/x-pie-executable | application/x-executable)
+      chmod +x "$file"
+      ;;
+    *) ;;
+    esac
+  done
+  popd >/dev/null
+}
+
 # shellcheck disable=SC2016
 install_archives() {
   local tmpdir
@@ -90,6 +109,7 @@ install_archives() {
           bsdtar -xf "$tmpdir/$artifact" --directory "$install_dir" --strip-components "$stripComponentCount"
           for addition in $path_additions; do
             addition=${addition/"{root}"/"$install_dir"}
+            _ensure_executable_bit "$addition"
             _zips_add_path "$addition"
           done
           for symlink in $symlinks; do
