@@ -38,7 +38,7 @@ _archives_create_symlink() {
 __binary_or_shebang() {
   local filetype
   local filename="$1"
-  filetype=$(file -b --mime-type "$file")
+  filetype=$(file -b --mime-type "$filename")
   if [[ "$filetype" == "text/plain" ]]; then
     if bash -c $"head -n1 $filename" | grep -qP '^#!.+'; then
       filetype="executable_script"
@@ -51,6 +51,7 @@ _ensure_executable_bit() {
   local dir="$1"
   local filetype
   local filenames=()
+  local file
 
   pushd "$dir" >/dev/null
   mapfile -t filenames < <(ls -1)
