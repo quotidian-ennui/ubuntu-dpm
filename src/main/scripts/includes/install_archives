@@ -35,6 +35,18 @@ _archives_create_symlink() {
   fi
 }
 
+__binary_or_shebang() {
+  local filetype
+  local filename="$1"
+  filetype=$(file -b --mime-type "$file")
+  if [[ "$filetype" == "text/plain" ]]; then
+    if bash -c $"head -n1 $filename" | grep -qP '^#!.+'; then
+      filetype="executable_script"
+    fi
+  fi
+  echo "$filetype"
+}
+
 _ensure_executable_bit() {
   local dir="$1"
   local filetype
@@ -43,9 +55,9 @@ _ensure_executable_bit() {
   pushd "$dir" >/dev/null
   mapfile -t filenames < <(ls -1)
   for file in "${filenames[@]}"; do
-    filetype=$(file -b --mime-type "$file")
+    filetype=$(__binary_or_shebang "$file")
     case "$filetype" in
-    application/x-pie-executable | application/x-executable)
+    application/x-pie-executable | application/x-executable | executable_script)
       chmod +x "$file"
       ;;
     *) ;;
@@ -105,6 +117,9 @@ install_archives() {
         if gh release list -R "$repo" --json "tagName" -q '.[] | .tagName' | grep "$tag" >/dev/null 2>&1; then
           echo "[+] $repo (attempt install)"
           gh release download "$tag" -R "$repo" --pattern "$artifact"
+          if [[ -d "$install_dir" ]]; then
+            rm -rf "$install_dir"
+          fi
           mkdir -p "$install_dir"
           bsdtar -xf "$tmpdir/$artifact" --directory "$install_dir" --strip-components "$stripComponentCount"
           for addition in $path_additions; do
