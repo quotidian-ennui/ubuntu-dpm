@@ -41,7 +41,7 @@ __binary_or_shebang() {
   filetype=$(file -b --mime-type "$filename")
   if [[ "$filetype" == "text/plain" ]]; then
     if bash -c $"head -n1 $filename" | grep -qP '^#!.+'; then
-      filetype="executable_script"
+      filetype='text/x-shellscript'
     fi
   fi
   echo "$filetype"
@@ -52,17 +52,15 @@ _ensure_executable_bit() {
   local filetype
   local filenames=()
   local file
+  local exe_mime_types=("application/x-pie-executable" "application/x-executable" "text/x-shellscript")
 
   pushd "$dir" >/dev/null
   mapfile -t filenames < <(ls -1)
   for file in "${filenames[@]}"; do
     filetype=$(__binary_or_shebang "$file")
-    case "$filetype" in
-    application/x-pie-executable | application/x-executable | executable_script)
+    if echo "${exe_mime_types[@]}" | grep -ow "$filetype" >/dev/null; then
       chmod +x "$file"
-      ;;
-    *) ;;
-    esac
+    fi
   done
   popd >/dev/null
 }
