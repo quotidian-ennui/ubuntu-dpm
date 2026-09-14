@@ -35,6 +35,36 @@ _archives_create_symlink() {
   fi
 }
 
+__binary_or_shebang() {
+  local filetype
+  local filename="$1"
+  filetype=$(file -b --mime-type "$filename")
+  if [[ "$filetype" == "text/plain" ]]; then
+    if bash -c $"head -n1 $filename" | grep -qP '^#!.+'; then
+      filetype='text/x-shellscript'
+    fi
+  fi
+  echo "$filetype"
+}
+
+_ensure_executable_bit() {
+  local dir="$1"
+  local filetype
+  local filenames=()
+  local file
+  local exe_mime_types=("application/x-pie-executable" "application/x-executable" "text/x-shellscript")
+
+  pushd "$dir" >/dev/null
+  mapfile -t filenames < <(ls -1)
+  for file in "${filenames[@]}"; do
+    filetype=$(__binary_or_shebang "$file")
+    if echo "${exe_mime_types[@]}" | grep -ow "$filetype" >/dev/null; then
+      chmod +x "$file"
+    fi
+  done
+  popd >/dev/null
+}
+
 # shellcheck disable=SC2016
 install_archives() {
   local tmpdir
@@ -86,10 +116,14 @@ install_archives() {
         if gh release list -R "$repo" --json "tagName" -q '.[] | .tagName' | grep "$tag" >/dev/null 2>&1; then
           echo "[+] $repo (attempt install)"
           gh release download "$tag" -R "$repo" --pattern "$artifact"
+          if [[ -d "$install_dir" ]]; then
+            rm -rf "$install_dir"
+          fi
           mkdir -p "$install_dir"
           bsdtar -xf "$tmpdir/$artifact" --directory "$install_dir" --strip-components "$stripComponentCount"
           for addition in $path_additions; do
             addition=${addition/"{root}"/"$install_dir"}
+            _ensure_executable_bit "$addition"
             _zips_add_path "$addition"
           done
           for symlink in $symlinks; do

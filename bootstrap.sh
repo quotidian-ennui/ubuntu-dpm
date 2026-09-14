@@ -7,7 +7,7 @@ set -eo pipefail
 
 PRE_REQ_TOOLS="apt-transport-https ca-certificates curl gnupg wget lsb-release make man-db"
 DOCKER_TOOL_LIST="docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
-BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy gh pipx net-tools zip unzip libarchive-tools"
+BASELINE_TOOL_LIST="vim nfs-common unison direnv git zoxide jq tidy gh pipx net-tools zip unzip libarchive-tools file"
 JOB_SUMMARY=""
 
 # shellcheck disable=SC2089
