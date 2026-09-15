@@ -1,10 +1,13 @@
 name: "{{ .repo }}"
+version: 0.121.0
 
 sources:
   latest:
     name: Github release for {{ .repo }}
     kind: githubrelease
     spec:
+      age:
+        minimum: 2d
       owner: '{{ (split "/" .repo)._0 }}'
       repository: '{{ (split "/" .repo)._1 }}'
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
