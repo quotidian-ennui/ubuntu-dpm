@@ -9,7 +9,7 @@ sdkman:
   maven: 3.9.16
   jbang: 0.142.0
 rvm:
-  ruby: 3.4.10
+  ruby: 3.4.11
 nvm:
   version: v0.40.8
 golang:
