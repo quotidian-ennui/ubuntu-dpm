@@ -48,9 +48,12 @@ sources:
         regex: "^(\\d*\\.\\d*\\.\\d*).*$"
         pattern: "*"
     transformers:
+      # Use a submatch to transform 21.0.13.0.10 into 21.0.13.0+10
+      # 21.0.13.0+10       | 21.0.13.0+10-amzn
+      # It used to purely be 21.0.12-amzn so they've changed naming.
       - findsubmatch:
-          pattern: "^(\\d*\\.\\d*\\.\\d*).*$"
-          captureindex: 1
+          pattern: "^(\\d+\\.\\d+\\.\\d+\\.\\d+)\\.(\\d+)$"
+          capturepattern: '\1+\2'
 
 targets:
   update_yaml:
