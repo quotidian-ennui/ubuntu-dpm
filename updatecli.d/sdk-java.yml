@@ -55,6 +55,21 @@ sources:
           pattern: "^(\\d+\\.\\d+\\.\\d+\\.\\d+)\\.(\\d+)$"
           capturepattern: '\1+\2'
 
+conditions:
+  check_sdkman:
+    name: JDK {{ source "latest" }} available in SDKMAN
+    kind: shell
+    dependson:
+      - source#latest
+    disablesourceinput: true
+    spec:
+      shell: bash
+      command: >-
+        v='{{ source "latest"}}-amzn';
+        curl -fsSL "https://api.sdkman.io/2/candidates/validate/java/${v//+/%2B}/linuxx64"
+        | grep -qx valid
+        || { echo "$v not yet available in SDKMAN" >&2; exit 1; }
+
 targets:
   update_yaml:
     kind: yaml
