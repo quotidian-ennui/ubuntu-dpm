@@ -15,7 +15,7 @@ nvm:
 golang:
   version: 1.27.3
 sonar-scanner:
-  version: 8.3.1.16491
+  version: 8.4.0.16527
 python:
   version: 3.15.2
 amazon-ecr-credential-helper:
