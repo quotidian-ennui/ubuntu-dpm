@@ -39,21 +39,12 @@ sources:
       age:
         minimum: 2d
       owner: corretto
-      repository: corretto-21
+      repository: corretto-25
       token: '{{ requiredEnv "GITHUB_TOKEN" }}'
-      # comes through as 21.0.5.11.1 or similar so we need to strip out the .11.1 before
-      # semver-ing.
+      # comes through as 25.0.5.1.2 (major.minor.patch.build.rev); semver can't rank 5 parts
+      # (regex/semver on the first 3 made 25.0.5.x all equal) so take the latest release.
       versionfilter:
-        kind: regex/semver
-        regex: "^(\\d*\\.\\d*\\.\\d*).*$"
-        pattern: "*"
-    transformers:
-      # Use a submatch to transform 21.0.13.0.10 into 21.0.13.0+10
-      # 21.0.13.0+10       | 21.0.13.0+10-amzn
-      # It used to purely be 21.0.12-amzn so they've changed naming.
-      - findsubmatch:
-          pattern: "^(\\d+\\.\\d+\\.\\d+\\.\\d+)\\.(\\d+)$"
-          capturepattern: '\1+\2'
+        kind: latest
 
 conditions:
   check_sdkman:
