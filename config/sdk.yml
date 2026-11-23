@@ -5,7 +5,7 @@ opentofu:
   version: 1.13.9
 sdkman:
   java: 25.0.5.1.2-amzn
-  gradle: 9.9.1
+  gradle: 9.9.2
   maven: 3.10.1
   jbang: 0.143.0
 rvm:
