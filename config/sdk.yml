@@ -2,7 +2,7 @@
 #
 # @see ../updatecli.d/sdk-*.yml
 opentofu:
-  version: 1.13.9
+  version: 1.13.10
 sdkman:
   java: 25.0.5.1.2-amzn
   gradle: 9.9.2
